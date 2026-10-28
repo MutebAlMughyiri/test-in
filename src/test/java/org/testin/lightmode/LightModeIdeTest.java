@@ -73,6 +73,7 @@ import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -106,6 +107,14 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull List<Component> everythingIn(final @NotNull JFrame frame) {
         return Drawn.components(frame.getRootPane());
+    }
+
+    private static @NotNull List<String> shownWords(final @NotNull JFrame frame) {
+        return everythingIn(frame).stream().filter(LightModeIdeTest::shownInTheWindow).map(Drawn::text).filter(text -> !text.isEmpty()).toList();
+    }
+
+    private static boolean shownInTheWindow(final @NotNull Component component) {
+        return component instanceof Window || component.isVisible() && Optional.ofNullable(component.getParent()).map(LightModeIdeTest::shownInTheWindow).orElse(true);
     }
 
     private static <T> @NotNull T theOne(final @NotNull JFrame frame, final @NotNull Class<T> kind) {
@@ -630,6 +639,27 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             assertTrue("a key closed the failure form", everythingIn(frame).contains(form));
             assertTrue("the details key opened the details over the failure form", everythingIn(frame).stream().filter(TestCaseDetails.class::isInstance).noneMatch(Component::isShowing));
             assertEquals("a run item status key judged the test case under the failure form", Optional.of(RunItemStatus.PENDING), editor.runItem(fixture.testCases().getFirst().getUuid()).map(RunItem::getStatus));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-046
+    public void testWithEveryPartTurnedOffTheFailureFormStillBringsBackItsLineAndTheStatusBar() {
+        final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(2, 1));
+        final @NotNull TestRunEditor editor = walking(fixture);
+        final @NotNull LightModeScreen window = openedOn(editor);
+        final @NotNull JFrame frame = frameOf(window);
+        try {
+            theOne(frame, ViewMenuButton.class).getSelectedDetails().clear();
+            window.refresh();
+            assertFalse("with every part turned off the run item statuses are still named: " + shownWords(frame), Drawn.holds(shownWords(frame), RunItemStatus.PASSED.getLabel()));
+
+            press(frame, RunItemStatus.FAILED.getShortcut());
+            window.refresh();
+
+            assertTrue("the failure form does not say it records Failed: " + shownWords(frame), Drawn.holds(shownWords(frame), RunItemStatus.FAILED.getLabel()));
+            assertTrue("the failure form does not bring the status bar back to name its keys: " + shownWords(frame), Drawn.holds(shownWords(frame), Bundle.message("shortcut.save.and.next")));
         } finally {
             Disposer.dispose(editor);
         }

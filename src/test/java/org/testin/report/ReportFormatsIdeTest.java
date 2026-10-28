@@ -18,6 +18,7 @@ package org.testin.report;
 
 import com.intellij.notification.Notification;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.testFramework.PlatformTestUtil;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
@@ -291,6 +292,33 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
         report(FileFormat.PDF, testRun);
 
         Await.until("the PDF left Arabic out and said nothing", () -> said.stream().anyMatch(notification -> notification.getTitle().equals(Bundle.message("report.pdf.left.out.title"))));
+    }
+
+    // Rule-REPORT-018
+    public void testThePdfCountsEveryTextItCouldNotPrint() {
+        aTestCase(opens, "سجل الدخول");
+        aTestCase(locks, "قفل الحساب");
+        final @NotNull TestRunNode testRun = aTestRun("Cycle-Arabic", List.of(
+                new RunItem().setUuid(opens).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
+                new RunItem().setUuid(locks).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        report(FileFormat.PDF, testRun);
+
+        Await.until("the PDF left Arabic out and said nothing", () -> said.stream().anyMatch(notification -> notification.getTitle().equals(Bundle.message("report.pdf.left.out.title"))));
+        assertTrue("the PDF does not count the texts it left out: " + said.getFirst().getContent(), said.stream().anyMatch(notification -> notification.getContent().contains(Bundle.message("report.pdf.left.out.many", "2"))));
+    }
+
+    // Rule-REPORT-018
+    public void testAControlCharacterIsNotCountedAsLeftOutOfThePdf() {
+        aTestCase(opens, "Log in" + Character.toString(7) + " with a valid user");
+        final @NotNull TestRunNode testRun = aTestRun("Cycle-Bell", List.of(new RunItem().setUuid(opens).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        report(FileFormat.PDF, testRun);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertTrue("a control character was said to be left out of the PDF", said.stream().noneMatch(notification -> notification.getTitle().equals(Bundle.message("report.pdf.left.out.title"))));
     }
 
     // Rule-REPORT-019
