@@ -173,6 +173,17 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
         assertEquals("two rows given one description did not clash", 1, same.size());
     }
 
+    // Rule-EDITOR-PANEL-224
+    public void testARowGivenTheDescriptionOfARowLeftAsItWasClashes() {
+        final @NotNull List<TestCase> testCases = aTestSetHolding("Log in", "Log out");
+        final @NotNull DescriptionBulkDialog dialog = new DescriptionBulkDialog(getProject(), testCases, _ -> {
+        });
+
+        final @NotNull List<TestCase> written = dialog.applyValues(testCases, List.of(EditedValue.UNCHANGED, EditedValue.of("Log in")));
+
+        assertEquals("a row given the description of a row left as it was did not clash", List.of(), written);
+    }
+
     // Rule-EDITOR-PANEL-206
     public void testARefusedTestCaseIsNotCountedInTheUpdatedMessage() {
         final @NotNull List<TestCase> testCases = aTestSetHolding("Log in", "Log out");
