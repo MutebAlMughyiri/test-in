@@ -54,19 +54,23 @@ public class AgentCheckIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull Path aFakeAgent() {
+        return aFakeAgent("@echo off\r\necho fake-agent %1\r\necho a second line\r\n", """
+                #!/bin/sh
+                echo "fake-agent $1"
+                echo a second line
+                """);
+    }
+
+    private @NotNull Path aFakeAgent(final @NotNull String onWindows, final @NotNull String elsewhere) {
         try {
             if (SystemInfo.isWindows) {
                 final @NotNull Path agent = root.resolve("fake-agent.cmd");
-                Files.writeString(agent, "@echo off\r\necho fake-agent %1\r\necho a second line\r\n", StandardCharsets.US_ASCII);
+                Files.writeString(agent, onWindows, StandardCharsets.US_ASCII);
                 return agent;
             }
 
             final @NotNull Path agent = root.resolve("fake-agent.sh");
-            Files.writeString(agent, """
-                    #!/bin/sh
-                    echo "fake-agent $1"
-                    echo a second line
-                    """, StandardCharsets.US_ASCII);
+            Files.writeString(agent, elsewhere, StandardCharsets.US_ASCII);
             if (!agent.toFile().setExecutable(true))
                 throw new AssertionError("could not make the stand-in agent runnable");
             return agent;
@@ -80,6 +84,16 @@ public class AgentCheckIdeTest extends AbstractTempRootIdeTest {
         final @NotNull Path agent = aFakeAgent();
 
         assertEquals("Check did not print the first line the agent answered to --version", Bundle.message("agent.check.answered", "fake-agent --version"), checked(agent.toString()));
+    }
+
+    // Rule-CODEGEN-085
+    public void testAnAgentThatFailsAndSaysNothingIsSaidToHaveAnsweredNothing() {
+        final @NotNull Path agent = aFakeAgent("@echo off\r\nexit /b 1\r\n", """
+                #!/bin/sh
+                exit 1
+                """);
+
+        assertEquals("an agent that printed nothing was not said to have answered nothing", Bundle.message("agent.check.said.nothing", agent.toString()), checked(agent.toString()));
     }
 
     // Rule-CODEGEN-085
