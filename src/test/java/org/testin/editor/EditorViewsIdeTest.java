@@ -47,6 +47,7 @@ import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorFields;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.view.Drawn;
 
 import javax.accessibility.AccessibleContext;
@@ -321,6 +322,20 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
         chosen.add(TestSetEditorFields.MODULE);
         editor.onToolBarDetailsSelectionChanged();
         assertTrue("the grid does not show the module just ticked", headers(gridOf(editor)).contains(TestSetEditorFields.MODULE.getName()));
+    }
+
+    // Rule-EDITOR-PANEL-021
+    public void testTickingAFieldInATestRunsGridShowsItsColumnAtOnce() {
+        final @NotNull TestRunEditor editor = openedTestRun();
+        final @NotNull Set<TestRunEditorFields> chosen = editor.getSelectedDetails();
+        chosen.remove(TestRunEditorFields.EXECUTED_BY);
+        switchToGrid(editor);
+        assertFalse("the test run's grid shows Executed By before it was ticked", headers(gridOf(editor)).contains(TestRunEditorFields.EXECUTED_BY.getName()));
+
+        chosen.add(TestRunEditorFields.EXECUTED_BY);
+        editor.onToolBarDetailsSelectionChanged();
+
+        assertTrue("the test run's grid does not show Executed By just ticked", headers(gridOf(editor)).contains(TestRunEditorFields.EXECUTED_BY.getName()));
     }
 
     // Rule-EDITOR-PANEL-010
