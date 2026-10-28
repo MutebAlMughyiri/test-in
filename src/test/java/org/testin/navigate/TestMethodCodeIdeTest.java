@@ -94,6 +94,15 @@ public class TestMethodCodeIdeTest extends AbstractCodegenIdeTest {
         Await.until("a test case whose test set has no class was not said to be not automated: " + said.shown(), () -> said.shown().contains(Refused.NO_GENERATED_CODE.getSentence()));
     }
 
+    public void testTheFileOfATestMethodIsNotLookedForWhileTheIdeIndexes() {
+        final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        writtenMethodOf(LOGIN_TEST, testCase);
+        final @NotNull TestMethodFile files = TestMethodFile.available(getProject()).orElseThrow(() -> new AssertionError("a Java test project has no test method files"));
+
+        assertTrue("the file of a written test method was not found", files.fileOf(getProject(), testCase).isPresent());
+        assertEquals("the file of a test method was looked for while the IDE indexed", Optional.empty(), DumbModeTestUtils.computeInDumbModeSynchronously(getProject(), () -> files.fileOf(getProject(), testCase)));
+    }
+
     // UC-CODEGEN-006
     public void testGoToCodeWhileTheIdeIndexesSaysItWaitsAndJumpsWhenIndexingEnds() {
         final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
