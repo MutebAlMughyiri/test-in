@@ -38,6 +38,7 @@ public class BugRepositoryTest {
     public void aCloneAddressNamesTheSameRepository() {
         assertEquals(gh("https://github.com/mtb550/product.git"), "github.com/mtb550/product");
         assertEquals(gh("https://github.com/mtb550/product/"), "github.com/mtb550/product", "a trailing slash is not a segment");
+        assertEquals(gh("https://github.com//mtb550/product"), "github.com/mtb550/product", "a doubled slash is not a segment");
         assertEquals(gh("https://github.com/mtb550/product.git/"), "github.com/mtb550/product");
     }
 
@@ -70,6 +71,7 @@ public class BugRepositoryTest {
         assertEquals(gh("https://github.com/mtb550"), "refused", "an owner is not a repository");
         assertEquals(gh("https://github.com/"), "refused");
         assertEquals(gh("git@github.com"), "refused");
+        assertEquals(gh("https://github.com"), "refused", "a host alone is not a repository");
     }
 
     @Test
@@ -83,6 +85,8 @@ public class BugRepositoryTest {
     @Test
     public void somethingThatIsNotAnAddressIsRefused() {
         assertEquals(gh("https://github.com/mtb550/pro duct"), "refused");
+        assertEquals(gh("https://git$hub.com/mtb550/product"), "refused", "a host no address can hold");
+        assertEquals(gh("https://github.com/mtb$550/product"), "refused", "an owner no address can hold");
         assertEquals(gh("https://github.com/mtb550/product; rm -rf /"), "refused");
         assertTrue(BugRepository.of("").isEmpty());
         assertTrue(BugRepository.of("   ").isEmpty());

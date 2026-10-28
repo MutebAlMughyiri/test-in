@@ -52,6 +52,14 @@ public class GitHubCliTest {
         return gh.cli().whyItCannotSend(bugRepoUrl);
     }
 
+    // Rule-VIEW-PANEL-073
+    @Test
+    public void ghThatTimedOutOrWasCancelledDidNotSucceedWhateverItsExitCode() {
+        assertTrue(GitHubCli.succeeded(answer("", "", 0)));
+        assertFalse(GitHubCli.succeeded(new ProcessOutput("", "", 0, true, false)), "gh that timed out succeeded");
+        assertFalse(GitHubCli.succeeded(new ProcessOutput("", "", 0, false, true)), "gh that was cancelled succeeded");
+    }
+
     @Test
     public void noBugRepoUrlNeverStartsGh() {
         final FakeGh gh = new FakeGh();
@@ -91,6 +99,7 @@ public class GitHubCliTest {
         assertFalse(GitHubCli.isNewEnough("gh version 2.9.100"));
         assertFalse(GitHubCli.isNewEnough("gh version 1.200.0"));
         assertFalse(GitHubCli.isNewEnough("gh version 2.98"));
+        assertFalse(GitHubCli.isNewEnough("gh version 2.99"), "a version too short to compare is not taken for new enough");
         assertFalse(GitHubCli.isNewEnough("gh version something"));
         assertFalse(GitHubCli.isNewEnough(""));
     }
