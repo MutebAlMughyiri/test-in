@@ -63,6 +63,12 @@ public class BulkValueTextTest {
         assertNotEquals(BulkValueText.unescape("C:\\\\next"), "C:\\\next");
     }
 
+    // Rule-EDITOR-PANEL-044
+    @Test
+    public void aBackslashBeforeAnyOtherCharacterIsKeptAsTyped() {
+        assertEquals(BulkValueText.unescape("C:\\temp and \\d+"), "C:\\temp and \\d+");
+    }
+
     @Test
     public void carriageReturnsAreDropped() {
         assertEquals(BulkValueText.escape("first\r\nsecond"), "first\\nsecond");
