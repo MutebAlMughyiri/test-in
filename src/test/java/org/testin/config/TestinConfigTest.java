@@ -270,6 +270,12 @@ public class TestinConfigTest {
                 "https://github.com/mtb550/test-01.git");
         assertEquals(TestinProjectConfig.withoutCredentials("HTTP://ghp_secret@intranet/qa/checkout.git"),
                 "HTTP://intranet/qa/checkout.git");
+        assertEquals(TestinProjectConfig.withoutCredentials("https://ghp_secret@github.com"), "https://github.com", "an address with no path loses its token too");
+    }
+
+    @Test
+    public void aPasswordInAnSshUrlIsStrippedWithItsAccount() {
+        assertEquals(TestinProjectConfig.withoutCredentials("ssh://git:secret@host/qa/checkout.git"), "ssh://host/qa/checkout.git");
     }
 
     @Test
@@ -379,6 +385,7 @@ public class TestinConfigTest {
             assertEquals(TestinYml.parse(written, name).testProjectName(), name, "written as " + written.strip());
         }
         assertEquals(TestinYml.withLines("", Map.of("testinProject", "Nafath App")), "testinProject: Nafath App\n", "an ordinary name stays plain");
+        assertEquals(TestinYml.withLines("", Map.of("testinProject", "Smoke ")), "testinProject: 'Smoke '\n", "a space at the end is kept by quoting");
     }
 
     @Test
@@ -392,5 +399,6 @@ public class TestinConfigTest {
 
         assertEquals(values, Map.of("testinProject", "#1 O'Brien", "location", "local"));
         assertEquals(TestinYml.valuesIn("testinProject: [unclosed\n", Set.of("testinProject")), Map.of(), "a file that does not parse has no values");
+        assertEquals(TestinYml.valuesIn("  \n", Set.of("testinProject")), Map.of(), "a blank file has no values");
     }
 }

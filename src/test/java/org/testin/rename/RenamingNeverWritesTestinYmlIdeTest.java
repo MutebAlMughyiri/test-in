@@ -32,6 +32,7 @@ import org.testin.ui.framework.ConfirmDialog;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
+import org.testin.view.Drawn;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -105,6 +106,17 @@ public class RenamingNeverWritesTestinYmlIdeTest extends AbstractTempRootIdeTest
         ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
 
         Await.until("Save to " + TestinYml.fileName() + " did not write it", () -> bytesOf(yml()).contains("NAFATH2"));
+    }
+
+    // UC-TREE-PANEL-029, Rule-TREE-PANEL-113
+    public void testThePreviewSaysALineTheFileAlreadyHasIsUnchanged() {
+        final @NotNull TestProjectNode testProject = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
+        bound().choose("NAFATH");
+
+        TreeGesture.pressed(getProject(), new SaveTestinYmlAction(getProject()), List.of(testProject));
+        final @NotNull List<String> preview = Drawn.words(ShownDialog.waitedFor(getProject(), ConfirmDialog.class));
+
+        assertTrue("the preview did not say testinProject is unchanged: " + preview, Drawn.holds(preview, "testinProject: NAFATH   " + Bundle.message("yml.save.same")));
     }
 
     // UC-TREE-PANEL-029

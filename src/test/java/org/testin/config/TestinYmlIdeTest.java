@@ -22,6 +22,8 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +36,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class TestinYmlIdeTest extends AbstractReadTheRootIdeTest {
 
@@ -94,6 +98,27 @@ public class TestinYmlIdeTest extends AbstractReadTheRootIdeTest {
 
         assertEquals("the address testin.yml gives, typed with an account, did not take the name the file gives", "Payments", CloneTestProject.nameFor(getProject(), "https://muteb:secret@github.com/team/nafath-test-cases.git"));
         assertEquals("another address took the name testin.yml gives", "OTHER", CloneTestProject.nameFor(getProject(), "https://github.com/team/other-test-cases.git"));
+    }
+
+    // UC-TREE-PANEL-003
+    public void testATestinYmlWithNoRepoUrlTakesNoAddressForIt() {
+        written("testinProject: Payments\n");
+        TestinYml.reload(getProject());
+
+        assertFalse("an address was taken for the repoUrl of a testin.yml that names none", TestinYml.isRepoUrl(getProject(), "https://github.com/team/nafath-test-cases.git"));
+    }
+
+    // UC-TREE-PANEL-029, Rule-TREE-PANEL-113
+    public void testWithNoTestinYmlNoLineIsWrittenYet() {
+        assertEquals("a missing testin.yml gave values", Map.of(), TestinYml.writtenValues(getProject(), Set.of("testinProject")));
+    }
+
+    // UC-TREE-PANEL-029
+    public void testAProjectWithNoFolderSavesNoTestinYml() {
+        final @NotNull Project noFolder = ProjectManager.getInstance().getDefaultProject();
+        assertEquals("the default project has a folder", Optional.empty(), Optional.ofNullable(noFolder.getBasePath()));
+
+        assertFalse("testin.yml was saved for a project with no folder", TestinYml.save(noFolder, TestinYml.lines("Payments")));
     }
 
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-119
