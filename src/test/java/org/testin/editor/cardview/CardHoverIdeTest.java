@@ -88,6 +88,24 @@ public class CardHoverIdeTest extends AbstractCodegenIdeTest {
         return new MouseEvent(list, MouseEvent.MOUSE_EXITED, System.currentTimeMillis(), 0, -1, -1, 0, false, MouseEvent.NOBUTTON);
     }
 
+    // Rule-EDITOR-PANEL-291
+    public void testHoveringTheDotOfATestCaseExecutingNowSaysExecuting() {
+        final @NotNull TestSetNode testSet = createdTestSet("Checkout");
+        final @NotNull TestCase testCase = createdTestCase(testSet, "Log in with a valid user", "m0001");
+        settled();
+        final @NotNull CardList list = cardsOf(testSet);
+        CapturedRunner.startedByTestNg(getProject(), testCase);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        final @NotNull Rectangle cell = list.getCellBounds(0, 0);
+        final @NotNull AbstractCard card = (AbstractCard) list.getCellRenderer().getListCellRendererComponent(list, list.getModel().getElementAt(0), 0, false, false);
+        final boolean said = IntStream.range(0, cell.width * cell.height)
+                .mapToObj(i -> new Point(i % cell.width, i / cell.width))
+                .anyMatch(at -> Bundle.message("execution.executing").equals(card.tooltipAt(at, cell.getSize())));
+
+        assertTrue("hovering the dot of a test case executing now does not say Executing", said);
+    }
+
     // UC-EDITOR-PANEL-043
     public void testHoveringRunShowsTheHandAndWhatItDoesAndPressingItRunsTheTestCase() {
         final @NotNull TestSetNode testSet = createdTestSet("Checkout");

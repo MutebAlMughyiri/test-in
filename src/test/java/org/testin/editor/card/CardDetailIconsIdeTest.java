@@ -149,6 +149,20 @@ public class CardDetailIconsIdeTest extends AbstractIdeTest {
         assertTrue("a field with no icon lost its name: " + line.getText(), line.getText().startsWith(TestRunEditorFields.RUN_STATUS.getName() + ": "));
     }
 
+    // Rule-INTERNAL-132
+    public void testHoveringADateOnACardShowsTheFullDateAndTime() {
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").build();
+        final @NotNull TestCaseCard card = new TestCaseCard(getProject());
+        card.updateData(0, testCase, Set.of(TestSetEditorFields.CREATED_AT), AbstractCard.titleText(1, true, testCase.getDescription()));
+        card.layOutAs(CELL);
+        final @NotNull String stored = Display.formatDate(testCase.getCreatedAt());
+
+        final @NotNull JBLabel line = theLineSaying(card, TestSetEditorFields.CREATED_AT.getName());
+        final @NotNull Rectangle at = SwingUtilities.convertRectangle(line.getParent(), line.getBounds(), card);
+
+        assertEquals("hovering a date does not show the full date and time it was stored with", stored, card.tooltipAt(new Point(at.x + at.width - 2, at.y + at.height / 2), CELL));
+    }
+
     // Rule-EDITOR-PANEL-270
     public void testHoveringTheDurationBadgeOnACardSaysDuration() {
         final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").build();
