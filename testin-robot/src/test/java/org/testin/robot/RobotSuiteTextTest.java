@@ -114,4 +114,10 @@ public class RobotSuiteTextTest {
                     Open Checkout
                 """);
     }
+
+    @Test
+    public void aSuiteWithNoTestCasesSectionGainsOneAfterWhatItHolds() {
+        assertEquals(RobotSuiteText.withTestsSection(""), RobotSuiteText.TESTS_HEADER + "\n", "an empty suite did not gain only the section");
+        assertEquals(RobotSuiteText.withTestsSection("*** Settings ***\nLibrary    Browser\n"), "*** Settings ***\nLibrary    Browser\n\n" + RobotSuiteText.TESTS_HEADER + "\n", "the section was not added after what the suite holds");
+    }
 }

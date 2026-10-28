@@ -34,6 +34,8 @@ public class RobotNamesTest {
         assertEquals(RobotNames.fileOf(List.of("Demo", "Test Cases", "Checkout", "Payment flow")), Optional.of("Demo/Checkout/Payment_flow.robot"), "the Test Cases folder is not a folder of the code");
         assertEquals(RobotNames.folderOf(List.of("Demo", "Test Cases", "Checkout")), Optional.of("Demo/Checkout"));
         assertEquals(RobotNames.fileOf(List.of("Demo", "Test Cases", "???")), Optional.empty(), "a name that comes to nothing has no file");
+        assertEquals(RobotNames.folderOf(List.of("Demo", "Test Cases", "???")), Optional.empty(), "a folder whose name comes to nothing has a folder of code");
+        assertEquals(RobotNames.folderOf(List.of("Test Cases")), Optional.empty(), "the Test Cases folder alone has a folder of code");
     }
 
     // Rule-CODEGEN-122

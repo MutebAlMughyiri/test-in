@@ -102,6 +102,37 @@ public class RobotSuiteTest {
         assertTrue(RobotSuite.holdsAWrittenBody(SUITE, testCases.getLast()), "a keyword the tester wrote is a written body");
     }
 
+    // Rule-CODEGEN-003
+    @Test
+    public void twoLinesAreTestinsOnlyWhenTheyAreTheTodoAndNoOperation() {
+        final @NotNull String suite = """
+                *** Test Cases ***
+                Log in
+                    [Tags]    1e2d3c4b-5a69-4788-9a0b-1c2d3e4f5a6b
+                    [Documentation]    Opens the app
+                    # TODO: Auto-generated test steps for Log in
+                    No Operation
+                Log out
+                    [Tags]    2e2d3c4b-5a69-4788-9a0b-1c2d3e4f5a6b
+                    # TODO: Auto-generated test steps for Log out
+                    Log    done
+                Sign up
+                    [Tags]    3e2d3c4b-5a69-4788-9a0b-1c2d3e4f5a6b
+                    Open    app
+                    No Operation
+                """;
+        final @NotNull List<TestCaseIdentity> testCases = RobotSuite.testCasesIn(suite, new TextRange(0, suite.length()));
+
+        assertFalse(RobotSuite.holdsAWrittenBody(suite, testCases.getFirst()), "a setting under the tags made Testin's two lines the tester's");
+        assertTrue(RobotSuite.holdsAWrittenBody(suite, testCases.get(1)), "a TODO followed by a keyword was taken for what Testin wrote");
+        assertTrue(RobotSuite.holdsAWrittenBody(suite, testCases.getLast()), "a keyword followed by No Operation was taken for what Testin wrote");
+    }
+
+    @Test
+    public void aLineWithNoLineBreakEndsWhereTheTextEnds() {
+        assertEquals(RobotSuite.lineEnd("Log in", 0), "Log in".length());
+    }
+
     // Rule-CODEGEN-069
     @Test
     public void theTestAboveTheTagsIsNamedByItsFirstCell() {

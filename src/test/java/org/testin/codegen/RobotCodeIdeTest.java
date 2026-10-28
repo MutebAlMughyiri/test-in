@@ -22,6 +22,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Said;
@@ -36,6 +37,7 @@ import org.testin.model.node.TestSetPackageNode;
 import org.testin.model.status.TestCaseStatus;
 import org.testin.services.Services;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -240,6 +242,95 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
         assertFalse("the moved test is still in the old suite", suiteText(LOGIN_SUITE).contains(signIn.getUuid().toString()));
         final @NotNull String moved = suiteText("NAFATH/Payment.robot");
         assertTrue("the moved test did not arrive with its step: " + moved, moved.contains("Sign in\n    [Tags]    " + signIn.getUuid()) && moved.contains("Open Browser"));
+    }
+
+    // UC-CODEGEN-002, Rule-CODEGEN-002, Rule-CODEGEN-124
+    public void testATestCaseWithNoNameOrWithATestAlreadyGetsNoNewTest() {
+        final @NotNull TestSetNode login = createdTestSet("Login page");
+        final @NotNull TestCase signIn = createdTestCase(login, "Sign in", "a");
+        final @NotNull TestCase nameless = createdTestCase(login, "...", "b");
+        final @NotNull TestCase again = indexedTestCase(login, "Sign in again", "c");
+        final @NotNull TestCase namelessCopy = indexedTestCase(login, "...", "d");
+
+        CodeChangeType.CREATE_TEST_CASE.execute(getProject(), signIn);
+        CodeChangeType.COPY_TEST_CASE.execute(getProject(), new CopiedTestCase(again, signIn));
+        CodeChangeType.COPY_TEST_CASE.execute(getProject(), new CopiedTestCase(again, signIn));
+        CodeChangeType.COPY_TEST_CASE.execute(getProject(), new CopiedTestCase(namelessCopy, signIn));
+
+        final @NotNull String text = suiteText(LOGIN_SUITE);
+        assertEquals("a test case with a test already got a second: " + text, 1, text.split(signIn.getUuid().toString(), -1).length - 1);
+        assertEquals("a copy written twice has two tests: " + text, 1, text.split(again.getUuid().toString(), -1).length - 1);
+        assertFalse("a test case whose description comes to nothing got a test: " + text, text.contains(nameless.getUuid().toString()));
+        assertFalse("a copy whose description comes to nothing got a test: " + text, text.contains(namelessCopy.getUuid().toString()));
+    }
+
+    // UC-CODEGEN-002, Rule-CODEGEN-095
+    public void testANewTestCaseTakesTheUntaggedTestTheTesterWroteUnderItsName() {
+        final @NotNull TestSetNode login = createdTestSet("Login page");
+        createdTestCase(login, "Sign in", "a");
+        writtenByTheTester("*** Test Cases ***\n", "*** Test Cases ***\nSign up\n    Open Browser    https://example.com\n");
+
+        final @NotNull TestCase signUp = createdTestCase(login, "Sign up", "b");
+
+        final @NotNull String text = suiteText(LOGIN_SUITE);
+        assertTrue("the test the tester wrote was not tagged for the new test case: " + text, text.contains(signUp.getUuid().toString()));
+        assertEquals("a second Sign up was written beside the tester's: " + text, 1, text.split("\nSign up\n", -1).length - 1);
+        assertTrue("the tester's step was lost: " + text, text.contains("    Open Browser    https://example.com\n"));
+    }
+
+    // UC-CODEGEN-002, Rule-CODEGEN-077
+    public void testATestCaseMovedIntoTheTestSetItIsInMovesNoTest() {
+        final @NotNull TestSetNode login = createdTestSet("Login page");
+        final @NotNull TestCase signIn = createdTestCase(login, "Sign in", "a");
+        final @NotNull String before = suiteText(LOGIN_SUITE);
+
+        CodeChangeType.MOVE_TEST_CASE.execute(getProject(), new MovedTestCase(signIn, login));
+
+        assertEquals("a test case moved where it already is changed its suite", before, suiteText(LOGIN_SUITE));
+    }
+
+    // UC-CODEGEN-015, UC-CODEGEN-017, Rule-CODEGEN-121
+    public void testANameThatComesToNothingOrToTheSameFileRenamesNoCode() {
+        final @NotNull TestSetNode login = createdTestSet("Login page");
+        final @NotNull TestSetPackageNode accounts = indexedPackage("accounts", theTestCasesDirectory());
+        createdTestSet("Payment", accounts);
+
+        CodeChangeType.RENAME_TEST_SET.execute(getProject(), new RenamedNode(login, login.treePath(), "???"));
+        CodeChangeType.RENAME_TEST_SET.execute(getProject(), new RenamedNode(login, login.treePath(), "Login: page"));
+        CodeChangeType.RENAME_TEST_SET_PACKAGE.execute(getProject(), new RenamedNode(accounts, accounts.treePath(), "???"));
+
+        assertTrue("the suite file was renamed to nothing or to itself", suiteAt(LOGIN_SUITE).isPresent());
+        assertTrue("the package's folder was renamed to nothing", suiteAt("NAFATH/accounts/Payment.robot").isPresent());
+    }
+
+    // UC-CODEGEN-016, UC-CODEGEN-017, Rule-CODEGEN-054, Rule-CODEGEN-058
+    public void testCodeMovedWhereItAlreadyIsOrIntoItselfStays() {
+        final @NotNull TestSetPackageNode payments = indexedPackage("Payments", theTestCasesDirectory());
+        final @NotNull TestSetNode card = createdTestSet("Card", payments);
+        final @NotNull TestSetPackageNode inner = indexedPackage("Inner", payments);
+
+        CodeChangeType.MOVE_TEST_SET.execute(getProject(), new MovedNode(card, payments.getPath()));
+        CodeChangeType.MOVE_TEST_SET_PACKAGE.execute(getProject(), new MovedNode(payments, payments.getPath()));
+        CodeChangeType.MOVE_TEST_SET_PACKAGE.execute(getProject(), new MovedNode(payments, inner.getPath()));
+
+        assertTrue("code moved where it is, or into itself, did not stay", suiteAt("NAFATH/Payments/Card.robot").isPresent());
+    }
+
+    // UC-CODEGEN-015, Rule-CODEGEN-051
+    public void testRenamingATestSetWhoseSuiteFileWasDeletedWritesNoFile() {
+        final @NotNull TestSetNode login = createdTestSet("Login page");
+        final @NotNull VirtualFile suite = TestSourceRoot.find(getProject()).map(root -> root.findFileByRelativePath(LOGIN_SUITE)).orElseThrow(() -> new AssertionError("no suite at " + LOGIN_SUITE));
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> {
+            try {
+                suite.delete(this);
+            } catch (final IOException ex) {
+                throw new AssertionError("could not delete the suite file", ex);
+            }
+        });
+
+        CodeChangeType.RENAME_TEST_SET.execute(getProject(), new RenamedNode(login, login.treePath(), "Sign in page"));
+
+        assertTrue("renaming a test set whose suite was deleted wrote one", suiteAt("NAFATH/Sign_in_page.robot").isEmpty());
     }
 
     // UC-CODEGEN-014, Rule-CODEGEN-049, Rule-CODEGEN-114
