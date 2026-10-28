@@ -134,6 +134,12 @@ public class TestCaseHistoryTest {
         assertEquals(entries.getFirst().who(), "Muteb");
     }
 
+    // Rule-VIEW-PANEL-098
+    @Test
+    public void aTestCaseThatIsGoneAndWasNeverCommittedHasNoHistory() {
+        assertEquals(TestCaseHistory.entries(MAPPER, List.of(), Map.of(), Optional.empty()), List.of());
+    }
+
     // Rule-VIEW-PANEL-096
     @Test
     public void aVersionThatNoLongerParsesStillShowsWhoAndWhen() {

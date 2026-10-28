@@ -89,4 +89,13 @@ public class HistoryCardsTest {
         assertEquals(history.cards().size(), 1);
         assertEquals(history.problem(), History.NOT_UNDER_GIT.problem());
     }
+
+    // Rule-VIEW-PANEL-107
+    @Test
+    public void aRemovalNotCommittedYetNamesNobodyAndNoTime() {
+        final BugCard removed = BugCard.notCommitted(new BugEvent(BugEventKind.REMOVED, Path.of("Cycle 3"), RunItem.builder().build(), List.of()));
+
+        assertEquals(removed.who(), "", "a removal nobody has committed names somebody");
+        assertEquals(removed.hash(), "");
+    }
 }
