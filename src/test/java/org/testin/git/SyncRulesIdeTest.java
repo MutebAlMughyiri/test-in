@@ -88,6 +88,18 @@ public class SyncRulesIdeTest extends AbstractGitRemoteIdeTest {
     }
 
     // UC-SHARE-016, Rule-SHARE-070
+    public void testASyncOfABranchTheRemoteHasNotGotPushesItAndTracksIt() {
+        mustGit(work, "checkout", "-q", "-b", "release");
+        write(work, "release.testcase", "{}");
+        commitAll(work, "the release's test case");
+
+        final @NotNull Notification done = synced(Said.listening(getProject(), getTestRootDisposable()).notifications());
+
+        assertEquals("the sync did not say the branch now tracks the remote", Bundle.message("git.synced.pushed.upstream"), done.getContent());
+        assertEquals("the branch did not reach the remote", head(work, "HEAD"), head(remote, "release"));
+    }
+
+    // UC-SHARE-016, Rule-SHARE-070
     public void testThePushIsSkippedWhenNothingIsWaiting() {
         theColleagueAdds("theirs.testcase", "{}");
         mustGit(work, "remote", "set-url", "--push", "origin", root.resolve("nowhere.git").toUri().toString());

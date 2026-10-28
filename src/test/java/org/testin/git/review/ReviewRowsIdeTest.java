@@ -26,6 +26,7 @@ import org.testin.NodesOnDisk;
 import org.testin.Said;
 import org.testin.git.AbstractGitRemoteIdeTest;
 import org.testin.git.ShareGestures;
+import org.testin.git.change.ChangeType;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.model.NodeType;
@@ -221,6 +222,21 @@ public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals("reverting a marker did not say only a test case change can be", List.of(Bundle.message("dialog.pending.revert.only.test.case")), said.shown());
         final @NotNull String marker = read(work, work.relativize(login.getPath()).resolve(NodeType.TEST_SET.getMarker()).toString());
         assertEquals("reverting a marker changed it", TestSetStatus.DEPRECATED, Services.getInstance(getProject(), JsonCodec.class).readValue(marker, TestSetMarker.class).getStatus());
+    }
+
+    // UC-SHARE-011, Rule-SHARE-052
+    public void testATestCaseFileThatChangedInNoFieldCannotBeRevertedAndSaysSo() {
+        final @NotNull TestCase third = TestCase.builder().uuid(UUID.randomUUID()).description("Lock the account").order("o").build();
+        assertTrue(indexedTestCases().putTestCaseVerbatim(login.getPath(), third));
+        commitAll(work, "the third test case");
+        final @NotNull String file = work.relativize(login.getPath()).resolve(third.getUuid() + ".testcase").toString();
+        write(work, file, read(work, file) + System.lineSeparator());
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        final @NotNull JBTable table = theReviewTable();
+
+        revertFromTheMenuOn(table, rowNamed(table, "Lock the account"));
+
+        assertEquals("reverting a file that changed in no field did not say it cannot be", List.of(Bundle.message("dialog.pending.revert.not.supported", ChangeType.CHANGE_FILE.getLabel())), said.shown());
     }
 
     // UC-SHARE-011, Rule-SHARE-119

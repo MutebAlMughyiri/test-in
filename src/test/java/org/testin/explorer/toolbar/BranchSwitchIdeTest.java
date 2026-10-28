@@ -352,6 +352,26 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
         }
     }
 
+    // UC-TREE-PANEL-026, Rule-SHARE-126
+    public void testARemoteBranchWhoseLocalOneExistsChecksOutTheLocalOne() {
+        final @NotNull Path elsewhere = aFolderElsewhere();
+        try {
+            final @NotNull Path remote = elsewhere.resolve("remote.git");
+            git(elsewhere, "init", "-q", "--bare", remote.toString());
+            git(testProject.getPath(), "remote", "add", "origin", remote.toString());
+            git(testProject.getPath(), "push", "-q", "origin", "feature");
+            final @NotNull JComboBox<?> box = boxOf(new BranchSelector(getProject(), Optional.of(testProject)));
+            Await.until("the branch box never listed the remote branch", () -> box.isEnabled() && IntStream.range(0, box.getItemCount()).mapToObj(box::getItemAt).anyMatch("origin/feature"::equals));
+
+            box.setSelectedItem("origin/feature");
+
+            Await.until("the local branch of that name was not checked out", () -> branchOnDisk().equals("feature"));
+            assertEquals("a second local branch was started", List.of("feature", "main"), git(testProject.getPath(), "branch", "--format=%(refname:short)").lines().sorted().toList());
+        } finally {
+            FileUtil.delete(elsewhere.toFile());
+        }
+    }
+
     // UC-TREE-PANEL-026
     public void testARemoteThatCannotBeReachedKeepsTheBranchesReadAndSaysWhy() {
         git(testProject.getPath(), "remote", "add", "origin", root.resolve("nowhere").toString());

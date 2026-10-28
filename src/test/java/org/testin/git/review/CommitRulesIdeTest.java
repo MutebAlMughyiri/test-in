@@ -20,6 +20,7 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationGroupManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
@@ -39,6 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static org.testin.git.LocalGit.git;
 import static org.testin.git.LocalGit.mustGit;
@@ -255,6 +257,36 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
         Await.until("the commit did not land on a new branch named release", () -> git(work, "rev-parse", "--verify", "--quiet", "release").filter(hash -> !hash.trim().equals(mainBefore.trim())).isPresent());
         assertEquals("the new branch is not the one checked out", "release", mustGit(work, "branch", "--show-current").trim());
         assertEquals("the commit on the new branch moved main", mainBefore, head(work, MAIN));
+    }
+
+    // UC-SHARE-012, Rule-SHARE-054
+    public void testACommitOfOnlyARemovedFileCommitsTheRemoval() {
+        write(work, "gone.testcase", "{}");
+        commitAll(work, "a test case to remove");
+        try {
+            Files.delete(work.resolve("gone.testcase"));
+        } catch (final IOException ex) {
+            throw new AssertionError("could not remove gone.testcase: " + ex.getMessage(), ex);
+        }
+
+        final @NotNull JComponent review = theReview(work);
+        ShareGestures.type(review, "the removed test case");
+        ShareGestures.commitOnly(review);
+
+        Await.until("the removal was never committed", () -> git(work, "log", "-1", "--format=%s").map(String::trim).filter("the removed test case"::equals).isPresent());
+        assertFalse("the removed file is still committed", mustGit(work, "ls-files").contains("gone.testcase"));
+    }
+
+    // UC-SHARE-014, Rule-SHARE-063
+    public void testARepositoryWithNoCommitYetOffersTheBranchItIsOn() {
+        final @NotNull Path fresh = directory("fresh");
+        mustGit(fresh, "init", "--initial-branch=" + MAIN);
+        write(fresh, "first.testcase", "{}");
+
+        final @NotNull ComboBox<?> branches = Drawn.first(theReview(fresh), ComboBox.class);
+
+        assertEquals("the box does not offer the branch a repository with no commit is on", List.of(MAIN), IntStream.range(0, branches.getItemCount()).mapToObj(branches::getItemAt).map(String::valueOf).toList());
+        assertEquals("the box does not choose that branch", MAIN, String.valueOf(branches.getSelectedItem()));
     }
 
     // UC-SHARE-014
