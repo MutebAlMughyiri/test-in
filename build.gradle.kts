@@ -248,7 +248,7 @@ tasks.jacocoTestCoverageVerification {
             }
             limit {
                 counter = "BRANCH"
-                minimum = "0.59".toBigDecimal()
+                minimum = "0.60".toBigDecimal()
             }
         }
     }
