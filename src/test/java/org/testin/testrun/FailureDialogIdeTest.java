@@ -50,6 +50,7 @@ import org.testin.testrun.failure.FailureDetailDialog;
 import org.testin.ui.framework.AbstractIconButton;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.MultiLineField;
+import org.testin.ui.framework.Screenshots;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
@@ -168,6 +169,17 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
 
     private void editTheFailureOf(final @NotNull TestRunEditor editor) {
         Gestures.press(getProject(), ActionManager.getInstance().getAction("Testin.UpdateRunItem"), editor.getList());
+    }
+
+    // Rule-EDITOR-PANEL-219
+    public void testRemovingTheLastScreenshotTakesTheRowAway() {
+        final @NotNull Screenshots shown = DialogPart.screenshots(Bundle.message("dialog.failure.caption.screenshots")).getComponent();
+        shown.putFirst(List.of(new byte[]{1, 2, 3}));
+
+        removeButtons(shown.getPanel()).getFirst().doClick();
+
+        assertEquals("the screenshot was not removed", List.of(), shown.screenshots());
+        assertFalse("a row with no screenshot left is still drawn", shown.getPanel().isVisible());
     }
 
     // Rule-EDITOR-PANEL-219

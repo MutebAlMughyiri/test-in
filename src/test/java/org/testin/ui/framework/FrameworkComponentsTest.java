@@ -20,28 +20,37 @@ import com.intellij.ui.components.fields.ExtendableTextField;
 import org.jetbrains.annotations.NotNull;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
+import org.testin.view.Drawn;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import javax.imageio.ImageIO;
+import javax.swing.Icon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
+import javax.swing.text.JTextComponent;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 public class FrameworkComponentsTest {
@@ -291,5 +300,90 @@ public class FrameworkComponentsTest {
         final Object key = field.getInputMap().get(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0));
         assertFalse(field.getActionMap().get(key).isEnabled(),
                 "with the list closed, the new field kept Enter from the dialog");
+    }
+
+    @Test
+    public void aFieldThatAcceptsOnlyNumbersCanStillBeEmptied() {
+        final TextInput input = DialogPart.textInput().accepting("[1-9][0-9]*").value("12").build().getComponent();
+        final JTextComponent field = (JTextComponent) input.getFocusComponent();
+
+        field.setText("");
+        assertEquals(input.getText(), "", "a field that accepts only numbers could not be emptied");
+
+        field.setText("twelve");
+        assertEquals(input.getText(), "", "a field that accepts only numbers took words");
+    }
+
+    @Test
+    public void aChoiceLeftEmptyIsNotANewOne() {
+        final ChoiceInput choice = DialogPart.choice("Branch", List.of("main", "release"), "main").getComponent();
+        ((JComboBox<?>) choice.getFocusComponent()).getEditor().setItem("  ");
+
+        assertFalse(choice.isNew(), "an empty choice was taken for a new one");
+    }
+
+    @Test
+    public void aBlankKeycapHasNoRoomAroundIt() {
+        assertEquals(Keycap.of(" ").getInsets().left, 0, "a blank keycap has room around it");
+        assertTrue(Keycap.of("Ctrl").getInsets().left > 0, "a keycap with a key has no room around it");
+    }
+
+    // Rule-INTERNAL-087
+    @Test
+    public void aPlaceWithNothingOnEitherSideIsNoRowAndOneWithOnlyWhereItGoesSaysTo() {
+        assertEquals(DialogPlace.row(List.of(), List.of()), Optional.empty(), "a place with nothing on either side drew a row");
+
+        final JComponent onlyTo = DialogPlace.row(List.of(), List.of("NAFATH", "Login")).orElseThrow(() -> new AssertionError("where a node goes drew no row"));
+        assertTrue(Drawn.words(onlyTo).stream().anyMatch(word -> word.equalsIgnoreCase(Bundle.message("caption.to"))), "where a node goes is not captioned To: " + Drawn.words(onlyTo));
+    }
+
+    // Rule-INTERNAL-087
+    @Test
+    public void aFormRowWithNoLabelIsTheFieldAlone() {
+        final JTextArea field = new JTextArea();
+
+        assertSame(new FormRows().row("", field).getComponent(0), field, "a row with no label wrapped its field in a caption");
+    }
+
+    // Rule-VIEW-PANEL-081
+    @Test
+    public void aScreenshotWithNoBytesDrawsTheEmptyThumbnail() {
+        final Icon empty = ScreenshotImages.thumbnail(new byte[0]);
+
+        assertEquals(List.of(empty.getIconWidth(), empty.getIconHeight()), List.of(ScreenshotImages.noThumbnail().getIconWidth(), ScreenshotImages.noThumbnail().getIconHeight()));
+    }
+
+    @Test
+    public void aLinkIsFollowedOnlyWhenItIsClicked() {
+        final List<String> followed = new ArrayList<>();
+        final HtmlPage page = new HtmlPage("<a href=\"settings\">Settings</a>", followed::add);
+        final JEditorPane text = Drawn.first(page.getPanel(), JEditorPane.class);
+
+        text.fireHyperlinkUpdate(new HyperlinkEvent(text, HyperlinkEvent.EventType.ENTERED, null, "settings"));
+        assertEquals(followed, List.of(), "pointing at a link followed it");
+
+        text.fireHyperlinkUpdate(new HyperlinkEvent(text, HyperlinkEvent.EventType.ACTIVATED, null, "settings"));
+        assertEquals(followed, List.of("settings"), "clicking a link did not follow it");
+    }
+
+    @Test
+    public void aFieldWithNoPlaceholderShowsNoHint() {
+        final TextInput input = DialogPart.textInput().build().getComponent();
+
+        assertEquals(((ExtendableTextField) input.getFocusComponent()).getEmptyText().getText(), "");
+    }
+
+    @Test
+    public void aClickOnASectionsHeaderFoldsItAndASecondOpensIt() {
+        final JTextArea content = new JTextArea();
+        final JComponent section = CollapsiblePanel.build("Source", content, true);
+        final JComponent header = Drawn.first(section, JComponent.class, component -> component.getCursor().getType() == Cursor.HAND_CURSOR);
+        final MouseEvent click = new MouseEvent(header, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, 1, 1, 1, false, MouseEvent.BUTTON1);
+
+        header.dispatchEvent(click);
+        assertFalse(content.isVisible(), "a click on the header did not fold the section");
+
+        header.dispatchEvent(click);
+        assertTrue(content.isVisible(), "a second click on the header did not open the section");
     }
 }

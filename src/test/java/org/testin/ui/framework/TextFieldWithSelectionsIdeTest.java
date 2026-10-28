@@ -26,9 +26,12 @@ import org.testin.Await;
 import org.testin.OnScreen;
 import org.testin.view.Drawn;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 public class TextFieldWithSelectionsIdeTest extends AbstractIdeTest {
@@ -67,6 +70,38 @@ public class TextFieldWithSelectionsIdeTest extends AbstractIdeTest {
         Await.until("the rows were not asked for again for what was typed", () -> rowsShown(list).equals(List.of("Payments", "Pay later")));
         assertEquals("the field was not asked once on showing and once for what was typed", List.of("", "Pay"), asked);
         assertEquals("the field does not say how many matched beside what was typed", List.of("2 found"), notesOn(field));
+    }
+
+    // UC-INTERNAL-001
+    public void testWhatMatchesNothingShowsNoRowAndTheArrowsAndAClickDoNothing() {
+        final @NotNull TextFieldWithSelections<String> search = new TextFieldWithSelections<>(AllIcons.Nodes.Folder, "Find a test set", List.of(), this::theTestSetsMatching, 2);
+        final @NotNull JBList<?> list = Drawn.first(search.getPanel(), JBList.class);
+        final @NotNull ExtendableTextField field = Drawn.first(search.getPanel(), ExtendableTextField.class);
+        final @NotNull AtomicInteger submitted = new AtomicInteger();
+        search.onSubmitRequest(submitted::incrementAndGet);
+        OnScreen.shown(search.getPanel(), getTestRootDisposable());
+        Await.until("the rows were not asked for once the field was shown", () -> rowsShown(list).equals(TEST_SETS));
+
+        field.setText("Reports");
+        Await.until("a query matching nothing still shows rows", () -> rowsShown(list).isEmpty());
+        field.getActionMap().get("testin.framework.selectionDown").actionPerformed(new ActionEvent(field, 0, ""));
+        list.dispatchEvent(new MouseEvent(list, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, 5, 5, 1, false, MouseEvent.BUTTON1));
+
+        assertEquals("a query matching nothing left a row chosen", Optional.empty(), search.selection());
+        assertEquals("a click on a list with no row submitted", 0, submitted.get());
+    }
+
+    // UC-INTERNAL-001
+    public void testTheArrowsMoveOverRowsThatSayNothingBesideTheirName() {
+        final @NotNull TextFieldWithSelections<String> search = new TextFieldWithSelections<>(AllIcons.Nodes.Folder, "Find a test set", List.of(), this::theTestSetsMatching, 2);
+        final @NotNull JBList<?> list = Drawn.first(search.getPanel(), JBList.class);
+        final @NotNull ExtendableTextField field = Drawn.first(search.getPanel(), ExtendableTextField.class);
+        OnScreen.shown(search.getPanel(), getTestRootDisposable());
+        Await.until("the rows were not asked for once the field was shown", () -> rowsShown(list).equals(TEST_SETS));
+
+        field.getActionMap().get("testin.framework.selectionDown").actionPerformed(new ActionEvent(field, 0, ""));
+
+        assertEquals("the down arrow did not move to the second row", Optional.of("Payments"), search.selection());
     }
 
     // UC-INTERNAL-007

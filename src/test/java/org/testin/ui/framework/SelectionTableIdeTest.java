@@ -16,16 +16,22 @@
 
 package org.testin.ui.framework;
 
+import com.intellij.openapi.util.Disposer;
 import com.intellij.util.ui.NamedColorUtil;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.JWindow;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Arrays;
 import java.util.List;
 
 public class SelectionTableIdeTest extends AbstractIdeTest {
@@ -85,6 +91,79 @@ public class SelectionTableIdeTest extends AbstractIdeTest {
         assertEquals("the marker moved up is not gray", NamedColorUtil.getInactiveTextColor(), table.prepareRenderer(table.getCellRenderer(0, 0), 0, 0).getForeground());
         table.removeRowSelectionInterval(0, 0);
         assertEquals("the marker moved up can be unticked", List.of(0), review.getSelectedRows());
+    }
+
+    private static void released(final @NotNull JTable table, final @NotNull MouseEvent event) {
+        for (final MouseListener listener : table.getMouseListeners()) listener.mouseReleased(event);
+    }
+
+    private @NotNull JWindow aWindowOnScreen() {
+        final @NotNull JWindow onScreen = new JWindow();
+        onScreen.setBounds(-4000, -4000, 10, 10);
+        onScreen.setVisible(true);
+        Disposer.register(getTestRootDisposable(), onScreen::dispose);
+        return onScreen;
+    }
+
+    // Rule-SHARE-118
+    public void testARightClickOnAnUntickedRowTicksItForTheMenu() {
+        final @NotNull SelectionTable review = aReviewOfOneChangeAndOneMarker();
+        review.onRowAction("Revert", _ -> {
+        });
+        final @NotNull JTable table = theTable(review);
+        final @NotNull Point onTheChange = new Point(10, table.getCellRect(0, 0, true).y + table.getRowHeight() / 2);
+
+        released(table, new MouseEvent(aWindowOnScreen(), MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), InputEvent.BUTTON3_DOWN_MASK, onTheChange.x, onTheChange.y, 1, true, MouseEvent.BUTTON3));
+        Arrays.stream(Window.getWindows()).flatMap(window -> UIUtil.uiTraverser(window).filter(JPopupMenu.class).toList().stream()).forEach(menu -> menu.setVisible(false));
+
+        assertEquals("a right click on an unticked change did not tick it beside the marker", List.of(0, 1), review.getSelectedRows());
+    }
+
+    public void testOnlyARightClickOnATableWithARowMenuChangesTheTicks() {
+        final @NotNull SelectionTable review = aReviewOfOneChangeAndOneMarker();
+        final @NotNull JTable table = theTable(review);
+        final @NotNull Point onTheChange = new Point(10, table.getCellRect(0, 0, true).y + table.getRowHeight() / 2);
+
+        released(table, rightClickedAt(table, onTheChange));
+        assertEquals("a right click on a table with no row menu ticked the row", List.of(1), review.getSelectedRows());
+
+        review.onRowAction("Revert", _ -> {
+        });
+        released(table, new MouseEvent(table, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, onTheChange.x, onTheChange.y, 1, false, MouseEvent.BUTTON1));
+        assertEquals("a left click's release ticked the row", List.of(1), review.getSelectedRows());
+    }
+
+    // Rule-SHARE-129
+    public void testPointingBelowTheRowsSaysNothing() {
+        final @NotNull SelectionTable review = aReviewOfOneChangeAndOneMarker();
+        final @NotNull JTable table = theTable(review);
+
+        assertNull("pointing below the rows said something", table.getToolTipText(pointedAt(table, new Point(10, table.getRowHeight() * 5))));
+    }
+
+    public void testSelectingAllOfAnEmptyTableTicksNothing() {
+        final @NotNull SelectionTable empty = new SelectionTable(List.of("Change", "Where"), List.of(20, 20));
+
+        empty.selectAll();
+
+        assertEquals("selecting all of an empty table ticked a row", List.of(), empty.getSelectedRows());
+    }
+
+    public void testTakingAwayTheMarkerRowLeavesNothingFixed() {
+        final @NotNull SelectionTable review = aReviewOfOneChangeAndOneMarker();
+
+        review.removeRow(1);
+
+        assertEquals("the change left after the marker went is ticked", List.of(), review.getSelectedRows());
+        assertEquals("the marker row was not taken away", 1, review.getRowCount());
+    }
+
+    // Rule-INTERNAL-144
+    public void testAWidthGivenForAColumnTheTableDoesNotHaveIsPassedOver() {
+        final @NotNull SelectionTable review = new SelectionTable(List.of("Change"), List.of(20, 30));
+        final @NotNull JTable table = theTable(review);
+
+        assertEquals("the one column is not twenty characters wide", 20 * table.getFontMetrics(table.getFont()).charWidth('m'), table.getColumnModel().getColumn(0).getPreferredWidth());
     }
 
     // Rule-SHARE-129

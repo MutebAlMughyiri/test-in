@@ -25,6 +25,7 @@ import com.intellij.ui.SeparatorComponent;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.fields.ExtendableTextField;
+import com.intellij.util.ui.ColorIcon;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +45,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -423,6 +425,42 @@ public class DialogLooksIdeTest extends AbstractIdeTest {
         button.setOn(true);
         final @NotNull Color onFill = at(painted(button), fillStarts + 1, middle);
         assertTrue("the fill while the button is on is not a shade darker than under the pointer", ColorUtil.getLuminance(onFill) < ColorUtil.getLuminance(hoverFill));
+    }
+
+    // Rule-EDITOR-PANEL-248
+    public void testTheGrayIconButtonUnderThePointerDrawsNoFill() {
+        final @NotNull AbstractIconButton button = AbstractIconButton.of("Refresh", AllIcons.Actions.Refresh, () -> {
+        });
+        button.setSize(button.getPreferredSize());
+        final int middle = button.getHeight() / 2;
+        final @NotNull MouseEvent entered = new MouseEvent(button, MouseEvent.MOUSE_ENTERED, System.currentTimeMillis(), 0, middle, middle, 0, false);
+
+        button.setEnabled(false);
+        button.dispatchEvent(entered);
+        final @NotNull BufferedImage grayed = painted(button);
+
+        assertTrue("a gray icon button under the pointer draws a fill", IntStream.range(0, grayed.getWidth()).allMatch(x -> at(grayed, x, 1).getAlpha() == 0));
+    }
+
+    // Rule-INTERNAL-137
+    public void testAnIconButtonGivenANewIconUnderThePointerShowsItLarger() {
+        final @NotNull AbstractIconButton button = AbstractIconButton.of("Refresh", AllIcons.Actions.Refresh, () -> {
+        });
+        button.setSize(button.getPreferredSize());
+        button.dispatchEvent(new MouseEvent(button, MouseEvent.MOUSE_ENTERED, System.currentTimeMillis(), 0, 1, 1, 0, false));
+
+        button.show("Stop", AllIcons.Actions.Suspend);
+
+        assertNotSame("the new icon under the pointer is shown at rest size", AllIcons.Actions.Suspend, button.getIcon());
+    }
+
+    // Rule-VIEW-PANEL-125
+    public void testTheMarkAfterProseIsDrawnAfterItsLastWord() {
+        final @NotNull JTextArea prose = Prose.of("Executing", new ColorIcon(8, Icons.RED));
+        prose.setSize(prose.getPreferredSize().width + 40, prose.getPreferredSize().height);
+        final @NotNull BufferedImage drawn = painted(prose);
+
+        assertTrue("no mark is drawn after the prose", IntStream.range(0, drawn.getWidth()).anyMatch(x -> at(drawn, x, drawn.getHeight() / 2).equals(Icons.RED)));
     }
 
     // UC-INTERNAL-007, Rule-INTERNAL-121
