@@ -197,6 +197,31 @@ public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
         Await.until("undoing the removal did not put the class back with what the tester wrote", () -> codeOf(login).contains("// what the tester wrote"));
     }
 
+    // Rule-CODEGEN-113
+    public void testUndoingTheRemovalLeavesAClassWrittenSinceAsItIs() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull String relativePath = Fqcn.classFileOf(login).orElseThrow(() -> new AssertionError("the test set has no class path"));
+        removeAsked(List.of(login));
+        confirmed();
+        Await.until("removing the test set left its class behind", () -> codeOf(login).isEmpty());
+        Await.until("the removal never went onto the tree's history", () -> undoHistories().canUndo(UndoScope.TREE));
+
+        final @NotNull VirtualFile testSourceRoot = TestSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
+        WriteAction.run(() -> {
+            try {
+                final @NotNull VirtualFile folder = VfsUtil.createDirectoryIfMissing(testSourceRoot, relativePath.substring(0, relativePath.lastIndexOf('/')));
+                VfsUtil.saveText(folder.createChildData(this, relativePath.substring(relativePath.lastIndexOf('/') + 1)), "// written since");
+            } catch (final IOException ex) {
+                throw new AssertionError("could not write a class where the removed one stood", ex);
+            }
+        });
+
+        assertTrue("undoing the removal was refused", undoHistories().undo(UndoScope.TREE));
+
+        Await.until("undoing the removal did not put the test set back", () -> nodes().nodeExists(login.getPath()));
+        assertEquals("undoing the removal wrote over a class written since", "// written since", codeOf(login));
+    }
+
     // Rule-TREE-PANEL-039
     public void testRemovingATestSetRemovesItsCode() {
         final @NotNull TestSetNode login = createdTestSet("Login");
