@@ -144,7 +144,7 @@ public final class TestRunFormOpener {
     private @NotNull CheckedTreeNode convertToCheckedNodes(final @NotNull DefaultMutableTreeNode node) {
         final @NotNull Object userObject = node.getUserObject();
         final @NotNull CheckedTreeNode newNode = new CheckedTreeNode(userObject);
-        if (userObject instanceof AbstractNode folder) newNode.setEnabled(!folder.isRetiredOrUnderOne());
+        if (userObject instanceof AbstractNode folder) newNode.setEnabled(folder.canJoinATestRun());
         if (userObject instanceof TestCase testCase) {
             newNode.setEnabled(testCase.canJoinATestRun());
             newNode.setChecked(testCase.canJoinATestRun());

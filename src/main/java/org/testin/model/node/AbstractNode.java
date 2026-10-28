@@ -153,8 +153,8 @@ public abstract class AbstractNode {
     }
 
     // Rule-TREE-PANEL-008, Rule-TREE-PANEL-030
-    public boolean isRetiredOrUnderOne() {
-        return selfAndAncestors().stream().anyMatch(AbstractNode::isRetired);
+    public boolean canJoinATestRun() {
+        return selfAndAncestors().stream().noneMatch(AbstractNode::isRetired);
     }
 
     // UC-TREE-PANEL-001, Rule-INTERNAL-072

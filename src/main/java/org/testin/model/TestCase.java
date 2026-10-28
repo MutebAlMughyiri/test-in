@@ -161,7 +161,7 @@ public final class TestCase {
 
     // Rule-TREE-PANEL-030, Rule-TREE-PANEL-138
     public boolean canJoinATestRun() {
-        return status.isEnabled() && !parent.isRetiredOrUnderOne();
+        return status.isEnabled() && parent.canJoinATestRun();
     }
 
     // Rule-INTERNAL-117
