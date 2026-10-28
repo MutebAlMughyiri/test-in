@@ -16,7 +16,6 @@
 
 package org.testin.explorer.tree;
 
-import com.intellij.ide.util.treeView.NodeDescriptor;
 import com.intellij.ui.treeStructure.SimpleTree;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -45,9 +44,6 @@ public final class TreeValues {
         }
         if (component instanceof DefaultMutableTreeNode node) {
             return valueOf(node.getUserObject());
-        }
-        if (component instanceof NodeDescriptor<?> descriptor) {
-            return valueOf(descriptor.getElement());
         }
         return Optional.ofNullable(component);
     }
