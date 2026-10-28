@@ -22,7 +22,6 @@ import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.components.JBPanel;
-import com.intellij.util.ui.ComponentWithEmptyText;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.RunItem;
@@ -99,12 +98,7 @@ class FailureForm extends JBPanel<FailureForm> implements DialogHost {
     }
 
     void setZoom(final float zoom) {
-        baseFonts.forEach((component, base) -> {
-            component.setFont(Fonts.zoomed(base, zoom));
-
-            if (component instanceof ComponentWithEmptyText hinted)
-                hinted.getEmptyText().setFont(Fonts.zoomed(Fonts.placeholder(), zoom));
-        });
+        baseFonts.forEach((component, base) -> component.setFont(Fonts.zoomed(base, zoom)));
     }
 
     private void remember(final @NotNull Container parent) {
