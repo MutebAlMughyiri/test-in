@@ -288,6 +288,20 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
         assertEquals(List.of("Open the cart", "Pay", "Log in (Copy)"), descriptionsOf(orderedIn(checkout)));
     }
 
+    // Rule-EDITOR-PANEL-082, Rule-EDITOR-PANEL-083
+    public void testACutPastedIntoItsOwnTestSetMovesUnderTheSelectedOne() {
+        final @NotNull TestSetEditor login = aTestSetOf("Login", "Log in", "Log out", "Sign up");
+        final @NotNull UUID moved = at(login, 0).getUuid();
+        login.getList().setSelectedIndex(0);
+        choose(CUT, login.getList());
+
+        login.getList().setSelectedIndex(1);
+        choose(PASTE, login.getList());
+
+        Await.until("the cut was never moved under the selected test case: " + descriptionsOf(orderedIn(login)), () -> descriptionsOf(orderedIn(login)).equals(List.of("Log out", "Log in", "Sign up")));
+        assertEquals("the cut moved within its test set lost its identity", moved, orderedIn(login).get(1).getUuid());
+    }
+
     // Rule-EDITOR-PANEL-082, Rule-EDITOR-PANEL-084
     public void testAPastedCutKeepsItsIdentityAndIsOneEntryOnTheUndoHistory() {
         final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
