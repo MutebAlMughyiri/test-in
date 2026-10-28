@@ -75,6 +75,19 @@ public class SelectionTableIdeTest extends AbstractIdeTest {
     }
 
     // UC-SHARE-010, Rule-SHARE-129
+    public void testAMarkerStaysTickedAndGrayWhenTheChangeAboveItIsTakenAway() {
+        final @NotNull SelectionTable review = aReviewOfOneChangeAndOneMarker();
+        final @NotNull JTable table = theTable(review);
+
+        review.removeRow(0);
+
+        assertEquals("the marker moved up is not ticked", List.of(0), review.getSelectedRows());
+        assertEquals("the marker moved up is not gray", NamedColorUtil.getInactiveTextColor(), table.prepareRenderer(table.getCellRenderer(0, 0), 0, 0).getForeground());
+        table.removeRowSelectionInterval(0, 0);
+        assertEquals("the marker moved up can be unticked", List.of(0), review.getSelectedRows());
+    }
+
+    // UC-SHARE-010, Rule-SHARE-129
     public void testARightClickBelowTheRowsUnticksTheChangesButNotTheMarker() {
         final @NotNull SelectionTable review = aReviewOfOneChangeAndOneMarker();
         review.onRowAction("Revert", _ -> {
