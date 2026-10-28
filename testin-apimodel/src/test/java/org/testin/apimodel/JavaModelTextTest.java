@@ -27,6 +27,7 @@ import java.util.Objects;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 public class JavaModelTextTest {
     private static final @NotNull String REQUEST = """
@@ -88,5 +89,23 @@ public class JavaModelTextTest {
         final @NotNull String text = JavaModelText.responseRecord("api", model("Odd", "{ \"a\\\"b\\\\c\": 1 }"));
 
         assertEquals(text.lines().filter(line -> line.contains("@JsonProperty")).findFirst().orElseThrow().strip(), "@JsonProperty(\"a\\\"b\\\\c\")");
+    }
+
+    // UC-CODEGEN-022, Rule-CODEGEN-101
+    @Test
+    public void aWholeNumberTooBigForALongBringsItsImport() {
+        final @NotNull String written = JavaModelText.requestClass("com.example.api", model("Ledger", """
+                { "total": 123456789012345678901234567890 }"""));
+
+        assertTrue(written.contains("import java.math.BigInteger;"), "a number too big for a long does not import its type: " + written);
+    }
+
+    // Rule-CODEGEN-103
+    @Test
+    public void aKeyWithNoLetterOrDigitIsNamedField() {
+        final @NotNull String written = JavaModelText.responseRecord("com.example.api", model("Odd", """
+                { "@@": 1 }"""));
+
+        assertTrue(written.contains(" field"), "a key with no letter or digit has no name: " + written);
     }
 }
