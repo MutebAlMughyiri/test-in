@@ -262,6 +262,20 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         assertEquals("a row the tester did not touch changed its status", testCases.getFirst().getStatus(), theTestCases().findTestCase(testCases.getFirst().getUuid()).orElseThrow().getStatus());
     }
 
+    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-041
+    public void testAStatusEmptiedInTheBulkEditorIsNotWritten() {
+        final @NotNull List<TestCase> testCases = aTestSetWithModules("Payments", "Cart");
+        bulkEdit(UpdateTestCaseFields.STATUS);
+        final @NotNull List<String> before = everyFile();
+
+        type(1, "");
+        save();
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertEquals("an emptied status was written", testCases.get(1).getStatus(), theTestCases().findTestCase(testCases.get(1).getUuid()).orElseThrow().getStatus());
+        assertEquals("an emptied status wrote a file", before, everyFile());
+    }
+
     // Rule-EDITOR-PANEL-043
     public void testAnEditedValueTakesAGreenBackground() {
         aTestSetWithModules("Payments", "Cart");

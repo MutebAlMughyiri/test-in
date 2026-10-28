@@ -159,6 +159,52 @@ public class BulkJsonEditorsIdeTest extends AbstractIdeTest {
     }
 
     // UC-EDITOR-PANEL-007
+    public void testTwoCursorsInOneValueNameItOnce() {
+        editors.focusValue(0);
+        values().getCaretModel().addCaret(values().offsetToVisualPosition(startOfTheFirstValue()), false);
+
+        assertEquals("two cursors in one value named it twice", List.of(0), editors.indicesUnderCarets());
+    }
+
+    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-298
+    public void testWithNoValueTheArrowsAndFocusingMoveNothing() {
+        editors.setContent("[]", "[]", List.of());
+        final @NotNull List<Integer> before = caretOffsets(values());
+
+        editors.navigate(1);
+        editors.focusValue(0);
+
+        assertEquals("with no value the cursor moved", before, caretOffsets(values()));
+    }
+
+    // UC-EDITOR-PANEL-007
+    public void testAClickWithoutCtrlAddsNoCursor() {
+        editors.focusValue(0);
+
+        pressed(values(), endOf(1), false);
+
+        assertEquals("a click without Ctrl added a cursor", 1, values().getCaretModel().getCaretCount());
+    }
+
+    // UC-EDITOR-PANEL-007
+    public void testCtrlClickOutsideEveryValueAddsACursorAtTheNearestValue() {
+        editors.focusValue(1);
+
+        pressed(values(), 1, true);
+
+        assertTrue("Ctrl+click outside every value did not add a cursor at the nearest one: " + caretOffsets(values()), caretOffsets(values()).contains(startOfTheFirstValue()));
+    }
+
+    // UC-EDITOR-PANEL-007
+    public void testCtrlClickOnTheOnlyCursorKeepsIt() {
+        editors.focusValue(0);
+
+        pressed(values(), endOf(0), true);
+
+        assertEquals("Ctrl+click on the only cursor took it away", List.of(endOf(0)), caretOffsets(values()));
+    }
+
+    // UC-EDITOR-PANEL-007
     public void testTheLeftSideTakesNoCursorFromAClick() {
         final @NotNull List<Integer> before = caretOffsets(originals());
 

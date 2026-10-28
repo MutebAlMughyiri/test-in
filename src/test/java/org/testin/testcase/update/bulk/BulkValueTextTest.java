@@ -67,6 +67,7 @@ public class BulkValueTextTest {
     @Test
     public void aBackslashBeforeAnyOtherCharacterIsKeptAsTyped() {
         assertEquals(BulkValueText.unescape("C:\\temp and \\d+"), "C:\\temp and \\d+");
+        assertEquals(BulkValueText.unescape("C:\\"), "C:\\", "a backslash that ends the value was lost");
     }
 
     @Test
