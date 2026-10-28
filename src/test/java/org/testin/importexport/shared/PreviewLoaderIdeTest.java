@@ -108,6 +108,24 @@ public class PreviewLoaderIdeTest extends AbstractTempRootIdeTest {
         assertEquals(List.of("test cases.csv"), loaded);
     }
 
+    // UC-SHARE-005, Rule-SHARE-028
+    public void testAPathToNoFileOrToAFolderIsNotRead() {
+        final @NotNull PreviewLoader loader = loader(false);
+        final @NotNull Path folder = root.resolve("sheets" + FileFormat.CSV.getExtension());
+        try {
+            Files.createDirectories(folder);
+        } catch (final IOException ex) {
+            throw new AssertionError("Could not make " + folder + ": " + ex.getMessage(), ex);
+        }
+
+        type(loader, root.resolve("missing" + FileFormat.CSV.getExtension()).toString());
+        waitLongerThanThePause();
+        type(loader, folder.toString());
+        waitLongerThanThePause();
+
+        assertEquals("a path to no file, or to a folder, was read", List.of(), read);
+    }
+
     // UC-SHARE-005, Rule-SHARE-107
     public void testTheFileIsReadAfterTheLastKeystrokeAndTheFormSaysWhichWhileItReads() {
         final @NotNull PreviewLoader loader = loader(false);

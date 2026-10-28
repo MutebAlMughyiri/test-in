@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.stream.IntStream;
@@ -75,5 +76,17 @@ public class SheetCodeUndoIdeTest extends AbstractCodegenIdeTest {
         settled();
 
         assertEquals("Ctrl+Z took back only part of the sheet's code", 0, generatedClass(LOGIN_TEST).orElseThrow().getMethods().length);
+    }
+
+    // UC-SHARE-005, Rule-SHARE-032
+    public void testAnImportThatWritesCodeWritesAMethodForEveryTestCaseItBrings() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull Map<String, List<TestCase>> sheets = Map.of("Login", List.of(TestCase.builder().description("Log in with a valid user").build(), TestCase.builder().description("Log out").build()));
+
+        final @NotNull Future<?> imported = ApplicationManager.getApplication().executeOnPooledThread(() -> new ImportWork(getProject()).importInBackground(login, sheets, true, 2, new EmptyProgressIndicator()));
+        Await.until("the import never finished", imported::isDone);
+        settled();
+
+        assertEquals("an import that writes code did not write a method for each test case it brought", 2, generatedClass(LOGIN_TEST).orElseThrow().getMethods().length);
     }
 }

@@ -27,6 +27,7 @@ import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
 
 import javax.swing.table.TableModel;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -101,6 +102,20 @@ public class SheetPreviewIdeTest extends AbstractIdeTest {
 
         clickTheTickHeading(table);
         assertEquals(List.of(Boolean.TRUE, Boolean.TRUE), ticks(table.getModel()));
+    }
+
+    // UC-SHARE-003, Rule-SHARE-018
+    public void testClickingAnotherHeadingTicksNothing() {
+        final @NotNull SheetPreview preview = shown(Can.EXPORT, sheets("Login", aTestCase("log in with a valid user"), aTestCase("a wrong password is refused")));
+        final @NotNull JBTable table = table(preview);
+        final @NotNull Rectangle description = table.getTableHeader().getHeaderRect(column(Can.EXPORT, TestSetEditorFields.DESCRIPTION));
+        final @NotNull MouseEvent click = new MouseEvent(table.getTableHeader(), MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, description.x + 2, 2, 1, false);
+
+        for (final MouseListener listener : table.getTableHeader().getMouseListeners()) {
+            if (listener instanceof SelectAllHeaderListener) listener.mouseClicked(click);
+        }
+
+        assertEquals("clicking another heading changed the ticks", List.of(Boolean.TRUE, Boolean.TRUE), ticks(table.getModel()));
     }
 
     // UC-SHARE-003, Rule-SHARE-020

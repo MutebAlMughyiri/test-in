@@ -21,6 +21,7 @@ import org.testin.model.TestCase;
 import org.testin.model.status.TestCaseStatus;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -73,5 +74,17 @@ public class ImportJsonIdeTest extends AbstractIdeTest {
         assertEquals("Log in with a valid user", imported.getDescription());
         assertEquals("The dashboard opens", imported.getExpectedResult());
         assertEquals("Accounts", imported.getModule());
+    }
+
+    // UC-SHARE-005, Rule-SHARE-029
+    public void testASheetWithNoTestCaseIsLeftOut() {
+        try {
+            final @NotNull Path file = Files.createTempFile("testin-import", ".json");
+            Files.writeString(file, "{\"Empty\":[],\"Login\":[{\"description\":\"Log in with a valid user\"}]}", StandardCharsets.UTF_8);
+
+            assertEquals("a sheet with no test case was read", List.of("Login"), List.copyOf(new ImportJson().parseFile(getProject(), new File(file.toString())).keySet()));
+        } catch (final IOException ex) {
+            throw new AssertionError("the file could not be written for the test", ex);
+        }
     }
 }

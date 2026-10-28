@@ -195,4 +195,19 @@ public class TestinFolderIdeTest extends AbstractTempRootIdeTest {
         final @NotNull File chosen = form.resolve().orElseThrow(() -> new AssertionError("a folder other than the download folder was refused")).file();
         assertEquals("the file was not saved where the tester chose", elsewhere.toFile(), chosen.getParentFile());
     }
+
+    // UC-REPORT-001, Rule-INTERNAL-067
+    public void testAFormWithNoFileNameOrNoFolderSavesNothing() {
+        settings().defaultDownloadFolder = folder("downloads").toString();
+        assertTrue("a file with no name was saved", DestinationForm.stacked(getProject(), new FileFormat[]{FileFormat.PDF}, FileFormat.PDF, "", "Folder", "Choose").resolve().isEmpty());
+
+        final @NotNull DestinationForm noFolder = DestinationForm.stacked(getProject(), new FileFormat[]{FileFormat.PDF}, FileFormat.PDF, "report", "Folder", "Choose");
+        Drawn.components(noFolder.getPanel()).stream()
+                .filter(JTextComponent.class::isInstance)
+                .map(JTextComponent.class::cast)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("the dialog has no folder box"))
+                .setText("");
+        assertTrue("a file with no folder was saved", noFolder.resolve().isEmpty());
+    }
 }
