@@ -384,6 +384,21 @@ public class DialogShellIdeTest extends AbstractIdeTest {
     }
 
     // UC-INTERNAL-007, Rule-INTERNAL-100
+    public void testADialogThatNamesNoHeightGrowsAsItsContentDoes() {
+        final @NotNull Form growing = shown(new Form(getProject(), List.of(aField("Name")), true, DialogSize.CONTENT));
+        final int openedAt = growing.getPopup().getSize().height;
+        final @NotNull Component center = ((BorderLayout) growing.root().getLayout()).getLayoutComponent(BorderLayout.CENTER);
+        center.setPreferredSize(new Dimension(center.getPreferredSize().width, center.getPreferredSize().height + openedAt));
+
+        growing.refit();
+        final int grown = growing.getPopup().getSize().height;
+        assertTrue("a dialog that names no height did not grow as its content did: " + openedAt + " then " + grown, grown > openedAt);
+
+        growing.refit();
+        assertEquals("refitting a dialog whose content did not change again changed its height", grown, growing.getPopup().getSize().height);
+    }
+
+    // UC-INTERNAL-007, Rule-INTERNAL-100
     public void testTheHeightADialogNamesIsHalfTheFrameOrSevenTenthsOfIt() {
         final @NotNull Rectangle frame = DialogSize.frameOn(getProject());
         final @NotNull List<Integer> named = List.of((int) (frame.height * 0.5), (int) (frame.height * 0.7));
