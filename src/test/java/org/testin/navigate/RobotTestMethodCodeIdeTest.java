@@ -25,6 +25,7 @@ import org.testin.Said;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Refused;
+import org.testin.quickaction.TestCaseQuickAction;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,6 +68,17 @@ public class RobotTestMethodCodeIdeTest extends AbstractCodegenIdeTest {
 
         TestMethodCode.available(getProject()).toCode(getProject(), written);
         Await.until("Navigate to Test Method did not open the Robot test at its name line", () -> caretInTheMovedSuiteAt(suite.indexOf("Refuse a wrong password")));
+    }
+
+    // UC-CODEGEN-006, Rule-CODEGEN-119
+    public void testTheGoToCodeButtonOnACardAsksTheCodeOfItsTestCase() {
+        interpreterIs("Python SDK");
+        final @NotNull TestCase withoutTest = indexedTestCase(createdTestSet("Login"), "Lock the account", "c");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD.execute(getProject(), withoutTest);
+
+        Await.until("the go-to-code button did not ask the code of its test case: " + said.shown(), () -> said.shown().contains(Refused.NO_GENERATED_CODE.getSentence()));
     }
 
     // UC-CODEGEN-006, Rule-CODEGEN-119
