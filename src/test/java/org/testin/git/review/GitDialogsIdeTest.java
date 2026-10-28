@@ -76,6 +76,23 @@ public class GitDialogsIdeTest extends AbstractTempRootIdeTest {
         assertTrue("choosing every repository on this machine was not carried", answeredIdentity(true).global());
     }
 
+    // UC-SHARE-008, Rule-SHARE-108
+    public void testAnIdentityWithNoNameOrNoEmailAddressIsNotHandedOn() {
+        final @NotNull List<Identity> set = new ArrayList<>();
+        new GitIdentityDialog(getProject(), set::add).show();
+        final @NotNull JComponent dialog = ShownDialog.waitedFor(getProject(), GitIdentityDialog.class);
+
+        ShareGestures.typeInto(dialog, 1, "sara@example.invalid");
+        ShareGestures.pressEnter(dialog);
+        assertEquals("an identity with no name was handed on", List.of(), set);
+
+        ShareGestures.typeInto(dialog, 0, "Sara Tester");
+        ShareGestures.typeInto(dialog, 1, "sara at example");
+        ShareGestures.pressEnter(dialog);
+        assertEquals("an identity with no email address was handed on", List.of(), set);
+        assertTrue("a refused identity closed the dialog", ShownDialog.isOpen(getProject(), GitIdentityDialog.class));
+    }
+
     // UC-SHARE-018, Rule-SHARE-082
     public void testTheTestersOwnValueIsChosenToStartWith() {
         final @NotNull List<Set<String>> kept = new ArrayList<>();

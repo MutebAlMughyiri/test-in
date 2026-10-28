@@ -40,5 +40,7 @@ public class GitIdentityDialogTest {
         assertFalse(GitIdentityDialog.isEmailAddress("sara@example."), "nothing after the last dot");
         assertFalse(GitIdentityDialog.isEmailAddress("sara otaibi@example.com"), "a space inside the address");
         assertFalse(GitIdentityDialog.isEmailAddress("sara@@example.com"), "two at signs");
+        assertFalse(GitIdentityDialog.isEmailAddress("sara@e."), "a domain too short to hold a name and a dot");
+        assertFalse(GitIdentityDialog.isEmailAddress("sara@.example"), "a domain that starts with its dot");
     }
 }

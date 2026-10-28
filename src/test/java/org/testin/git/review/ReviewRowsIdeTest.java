@@ -130,6 +130,18 @@ public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
         revert(rightClick(table, row));
     }
 
+    // UC-SHARE-011, Rule-SHARE-052
+    public void testRevertingOneOfTwoChangesToATestCaseKeepsTheOther() {
+        assertTrue("the second change was not saved", indexedTestCases().putTestCase(login.getPath(), indexedTestCases().findTestCase(first.getUuid()).orElseThrow().edit().expectedResult("typed expected").build()));
+        final @NotNull JBTable table = theReviewTable();
+
+        revertFromTheMenuOn(table, rowNamed(table, "typed over the first"));
+
+        final @NotNull TestCase now = indexedTestCases().findTestCase(first.getUuid()).orElseThrow();
+        assertEquals("the reverted description did not come back", "Log in with a valid user", now.getDescription());
+        assertEquals("the change that was not reverted went back too", "typed expected", now.getExpectedResult());
+    }
+
     // UC-SHARE-010, Rule-SHARE-049
     public void testEveryRowArrivesSelected() {
         final @NotNull JBTable table = theReviewTable();
