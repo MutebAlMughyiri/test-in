@@ -325,6 +325,22 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
     }
 
     // UC-SHARE-007, Rule-SHARE-037
+    public void testAnImportCanceledWithOneTestSetLeftEmptyNamesItAlone() {
+        final @NotNull TestSetPackageNode web = new NodesOnDisk(getProject()).testSetPackage(testProject.getTestCasesFolder(), "Web");
+        final @NotNull Map<String, List<TestCase>> twoSheets = sheets("Login", aTestCase("log in with a valid user"));
+        twoSheets.put("Cart", new ArrayList<>(List.of(aTestCase("open Cart"))));
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        imported(web, twoSheets, canceledAfterTheFirstSheet(new AtomicInteger()));
+
+        final @NotNull String leftEmpty = Bundle.message("import.empty.title");
+        Await.until("the test set left empty was not named", () -> said.stream().anyMatch(notification -> notification.getTitle().equals(leftEmpty)));
+        assertEquals("the one test set left empty is not named as one",
+                Bundle.message("import.empty.message", Bundle.message("import.empty.one"), "Cart", ""),
+                said.stream().filter(notification -> notification.getTitle().equals(leftEmpty)).findFirst().orElseThrow().getContent());
+    }
+
+    // UC-SHARE-007, Rule-SHARE-037
     public void testAnImportThatStopsSaysHowManyWereWrittenAndKeepsThem() {
         final @NotNull TestSetPackageNode web = new NodesOnDisk(getProject()).testSetPackage(testProject.getTestCasesFolder(), "Web");
         final @NotNull Map<String, List<TestCase>> twoSheets = sheets("A Login", aTestCase("log in with a valid user"), aTestCase("a wrong password is refused"));
