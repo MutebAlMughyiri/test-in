@@ -256,6 +256,29 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
         assertEquals("one Undo did not take both files back", List.of(Optional.empty(), Optional.empty()), List.of(textOf(api, "LoginRequest.java"), textOf(api, "LoginResponse.java")));
     }
 
+    // UC-CODEGEN-022, Rule-CODEGEN-100
+    public void testWithOnlyTheResponsePastedOnlyItsRecordIsWritten() {
+        final @NotNull PsiDirectory api = aPackage();
+        final @NotNull JComponent dialog = opened(api).getContent();
+        filledIn(dialog, "Login", "");
+
+        created(dialog);
+
+        assertTrue("the response pasted was not written", textOf(api, "LoginResponse.java").isPresent());
+        assertEquals("a request was written though none was pasted", Optional.empty(), textOf(api, "LoginRequest.java"));
+    }
+
+    // UC-CODEGEN-022, Rule-CODEGEN-099
+    public void testCreateWithNoNameWritesNothing() {
+        final @NotNull PsiDirectory api = aPackage();
+        final @NotNull JComponent dialog = opened(api).getContent();
+        filledIn(dialog, "", REQUEST_BODY);
+
+        created(dialog);
+
+        assertEquals("a model with no name was written", List.of(Optional.empty(), Optional.empty()), List.of(textOf(api, "Request.java"), textOf(api, "Response.java")));
+    }
+
     // UC-CODEGEN-022
     public void testCreateWithNeitherBodyPastedWritesNothingAndSaysWhatItNeeds() {
         final @NotNull PsiDirectory api = aPackage();

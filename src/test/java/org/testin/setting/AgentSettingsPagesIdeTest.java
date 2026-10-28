@@ -86,6 +86,9 @@ public class AgentSettingsPagesIdeTest extends AbstractIdeTest {
         assertEquals("the page does not show the stored connection", List.of("claude", "-p"), fieldsOn(shown).stream().map(JBTextField::getText).toList());
         assertFalse("the stored connection, shown as it is, counts as a change", page.isModified());
 
+        fieldsOn(shown).getLast().setText(" exec ");
+        assertTrue("typed arguments alone do not count as a change", page.isModified());
+
         fieldsOn(shown).getFirst().setText("  codex ");
         fieldsOn(shown).getLast().setText(" exec ");
         assertTrue("a typed command does not count as a change", page.isModified());
