@@ -19,7 +19,6 @@ package org.testin.testcase;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.StatusBarItem;
 import org.testin.testcase.create.AbstractTestCaseDialog;
 import org.testin.testcase.create.TestCaseSection;
 import org.testin.util.Bundle;
@@ -30,7 +29,7 @@ import java.util.function.Function;
 
 @Getter
 @AllArgsConstructor
-public enum CreateTestCaseFields implements StatusBarItem {
+public enum CreateTestCaseFields {
     DESCRIPTION(
             TestSetEditorFields.DESCRIPTION,
             Shortcuts.CreateTestCaseDescription,
@@ -102,17 +101,11 @@ public enum CreateTestCaseFields implements StatusBarItem {
 
     private final @NotNull String placeholder;
 
-    @Override
     public @NotNull String getName() {
         return field.getName();
     }
 
     public @NotNull Icon getIcon() {
         return field.getIcon();
-    }
-
-    @Override
-    public @NotNull String getShortcutText() {
-        return shortcut.getShortcutText();
     }
 }
