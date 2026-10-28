@@ -112,6 +112,45 @@ public class CardHoverIdeTest extends AbstractCodegenIdeTest {
         assertTrue("pressing Run left the press to the list as well", press.isConsumed());
     }
 
+    // UC-EDITOR-PANEL-043
+    public void testHoveringTheSameSpotAgainOrLeavingTwiceChangesNothingAndARightPressRunsNothing() {
+        final @NotNull TestSetNode testSet = createdTestSet("Checkout");
+        createdTestCase(testSet, "Log in with a valid user", "m0001");
+        settled();
+        final @NotNull CardList list = cardsOf(testSet);
+        final @NotNull CardMouseListener listener = listenerOf(list);
+        final @NotNull Point run = onRun(list);
+
+        listener.mouseMoved(moved(list, run));
+        listener.mouseMoved(moved(list, run));
+        assertEquals("hovering Run again unmarked it", TestCaseQuickAction.RUN_TEST_METHOD.name(), list.getHoveredIconAction());
+
+        listener.mousePressed(new MouseEvent(list, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON3_DOWN_MASK, run.x, run.y, 1, true, MouseEvent.BUTTON3));
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+        assertEquals("a right press on Run ran the test case", List.of(), runner.executions());
+
+        listener.mouseExited(exited(list));
+        listener.mouseExited(exited(list));
+        assertEquals("leaving twice left a card hovered", -1, list.getHoveredIndex());
+    }
+
+    // UC-EDITOR-PANEL-025, UC-EDITOR-PANEL-043
+    public void testOverATestSetWithNoTestCaseTheMouseFindsNoCard() {
+        final @NotNull TestSetNode testSet = createdTestSet("Checkout");
+        settled();
+        final @NotNull CardList list = cardsOf(testSet);
+        final @NotNull CardMouseListener listener = listenerOf(list);
+        final @NotNull Point anywhere = new Point(10, 10);
+
+        listener.mouseMoved(moved(list, anywhere));
+        listener.mouseClicked(new MouseEvent(list, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK, anywhere.x, anywhere.y, 2, false, MouseEvent.BUTTON1));
+        listener.mouseClicked(new MouseEvent(list, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK, anywhere.x, anywhere.y, 1, false, MouseEvent.BUTTON1));
+
+        assertEquals("the mouse over no card marked one hovered", -1, list.getHoveredIndex());
+        assertEquals("the mouse over no card says something", "", Drawn.hovering(list));
+        assertTrue("a click over no card selected something", list.isSelectionEmpty());
+    }
+
     // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-301
     public void testPressingRunOnADisabledTestCaseRunsNothingAndSaysWhy() {
         final @NotNull TestSetNode testSet = createdTestSet("Checkout");

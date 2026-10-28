@@ -71,6 +71,12 @@ public class CardDetailIconsIdeTest extends AbstractIdeTest {
         return card;
     }
 
+    // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014
+    public void testATitleWithNoOrderOrNoDescriptionHasNoSpaceToSpare() {
+        assertEquals("a title with its order hidden starts with a space", "Log in", AbstractCard.titleText(1, false, " Log in "));
+        assertEquals("a title with no description ends with a space", "1.", AbstractCard.titleText(1, true, "  "));
+    }
+
     // Rule-EDITOR-PANEL-269
     public void testADetailLineLeadsWithItsFieldsIconAndTheScreenReaderStillHearsTheName() {
         final @NotNull TestCaseCard card = aCardWithItsExpectedResult();
