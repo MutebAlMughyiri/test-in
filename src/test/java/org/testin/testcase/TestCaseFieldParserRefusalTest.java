@@ -23,6 +23,7 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 public class TestCaseFieldParserRefusalTest {
@@ -70,5 +71,13 @@ public class TestCaseFieldParserRefusalTest {
     @Test
     public void theNoGroupWordIsNoGroupsEither() {
         assertTrue(TestCaseFieldParser.groups(Groups.NONE).orElseThrow().isEmpty());
+    }
+
+    // UC-SHARE-005, Rule-SHARE-110
+    @Test
+    public void aConstantIsNamedByItsNameWithSpacesForUnderscoresInAnyCapitals() {
+        assertTrue(TestCaseFieldParser.namesConstant(TestSetEditorFields.EXPECTED_RESULT, "expected_result"), "the constant's own name in small letters is not its name");
+        assertTrue(TestCaseFieldParser.namesConstant(TestSetEditorFields.EXPECTED_RESULT, " Expected Result "), "its name with spaces is not its name");
+        assertFalse(TestCaseFieldParser.namesConstant(TestSetEditorFields.EXPECTED_RESULT, "expected"), "a part of its name is its name");
     }
 }
