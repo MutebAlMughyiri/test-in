@@ -18,6 +18,7 @@ package org.testin.git.history;
 
 import com.intellij.notification.Notification;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
 import org.testin.Said;
@@ -43,9 +44,12 @@ import org.testin.testrun.TestRunEditorFields;
 import org.testin.testrun.TestRunStatusChange;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
+import org.testin.view.Drawn;
+import org.testin.view.history.HistoryTab;
 
 import javax.swing.JComponent;
 import javax.swing.JTable;
+import java.awt.BorderLayout;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -634,6 +638,20 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
 
         assertTrue("the test case the test run does not cover was committed", mustGit(testProjectPath, "status", "--porcelain").contains(FileKind.TEST_CASE.fileName(notCovered)));
         assertEquals("a test case the test run does not cover held it back", TestRunStatus.COMMITTED, theTestRunAt(completed).getMarker().getStatus());
+    }
+
+    // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-096
+    public void testTheHistoryTabOfACommittedTestCaseShowsItsCommitAndNoProblem() {
+        committedAsItIs();
+        readEverything();
+        Services.getInstance(getProject(), BoundTestProject.class).choose(String.valueOf(testProjectPath.getFileName()));
+        final @NotNull TestCase testCase = Services.getInstance(getProject(), TestCases.class).findTestCase(testCaseUuid).orElseThrow(() -> new AssertionError("the test case was never read"));
+        final @NotNull JBPanel<?> tab = new JBPanel<>(new BorderLayout());
+
+        new HistoryTab().load(getProject(), tab, Optional.of(testCase));
+
+        Await.until("the History tab never showed the commit: " + Drawn.words(tab), () -> Drawn.holds(Drawn.words(tab), "base"));
+        assertFalse("a history read whole shows a problem: " + Drawn.words(tab), Drawn.holds(Drawn.words(tab), Bundle.message("view.history.not.under.git")));
     }
 
     // Rule-PRODUCT-007

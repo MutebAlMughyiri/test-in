@@ -131,6 +131,26 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
         assertTrue("a changed bug does not name its new severity: " + changed, Drawn.holds(changed, BugSeverity.BLOCKER.getLabel()));
     }
 
+    // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-105
+    public void testABugRecordedOnARunItemThatPassedShowsItsIssueAndNoSeverity() {
+        final @NotNull TestCase testCase = aTestCase();
+        final @NotNull RunItem passedWithItsIssue = RunItem.builder().uuid(testCase.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").build())).build();
+
+        final @NotNull List<String> words = Drawn.words(HistoryCardPanel.of(getProject(), new BugCard("a1b2c3d", "Sara", ZonedDateTime.parse("2026-10-07T16:40:00+03:00"), new BugEvent(BugEventKind.RECORDED, root.resolve("Cycle-1"), passedWithItsIssue, List.of())), testCase, 0));
+
+        assertTrue("a bug recorded on a run item that passed does not show its issue: " + words, Drawn.holds(words, "#412"));
+        assertFalse("a bug recorded on a run item that passed shows a severity: " + words, Drawn.holds(words, TestRunEditorFields.BUG_SEVERITY.getName()));
+    }
+
+    // Rule-VIEW-PANEL-096
+    public void testAnEntryThatCouldNotBeComparedSaysSo() {
+        final @NotNull TestCaseHistoryCard uncompared = new TestCaseHistoryCard(TestCaseHistoryKind.UPDATED, "a1b2c3d4", "Sara", ZonedDateTime.parse("2026-10-07T16:40:00+03:00"), "Cycle 4 review", Bundle.message("view.history.uncompared"), List.of(), "", "");
+
+        final @NotNull List<String> words = Drawn.words(HistoryCardPanel.of(getProject(), uncompared, aTestCase(), 0));
+
+        assertTrue("an entry that could not be compared does not say so: " + words, Drawn.holds(words, Bundle.message("view.history.uncompared")));
+    }
+
     // Rule-VIEW-PANEL-111
     public void testAChangedFieldIsNamedByItsUpdateMenuIconWithItsNameOnHoverAndAFieldWithNoIconInWords() {
         final @NotNull String priority = TestSetEditorFields.PRIORITY.getName();
