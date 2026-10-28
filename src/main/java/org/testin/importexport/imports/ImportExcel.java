@@ -39,6 +39,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class ImportExcel {
+    // Rule-SHARE-134
     private static boolean isEmpty(final @NotNull Row row, final @NotNull DataFormatter dataFormatter) {
         for (int column = 0; column < row.getLastCellNum(); column++) {
             if (!dataFormatter.formatCellValue(row.getCell(column)).trim().isEmpty()) return false;

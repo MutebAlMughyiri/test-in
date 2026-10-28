@@ -50,6 +50,9 @@ There is no key for this. The menu entry is **Import**.
   quote opens a quoted value only at the start of a value; a quote anywhere else
   is kept as typed. A byte-order mark at the start is ignored, and a line with
   no value in it is skipped.
+- **Rule-SHARE-134** — A row of a sheet with nothing in any of its cells is not
+  a test case. It is passed over, so a blank line left between test cases in a
+  workbook does not come in as an empty test case.
 
 ## The screen
 

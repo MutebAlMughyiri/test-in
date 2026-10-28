@@ -119,6 +119,24 @@ public class ExportThenImportIdeTest extends AbstractTempRootIdeTest {
         assertEquals("the dashboard opens", read.getExpectedResult());
     }
 
+    // UC-SHARE-005, Rule-SHARE-134
+    public void testABlankRowBetweenTestCasesIsPassedOver() {
+        final @NotNull File file = root.resolve("Login.xls").toFile();
+        try (HSSFWorkbook workbook = new HSSFWorkbook(); OutputStream out = Files.newOutputStream(file.toPath())) {
+            final @NotNull Sheet sheet = workbook.createSheet("Login");
+            sheet.createRow(0).createCell(0).setCellValue("description");
+            sheet.createRow(1).createCell(0).setCellValue("log in with a valid user");
+            sheet.createRow(2).createCell(0).setCellValue("   ");
+            sheet.getRow(2).createCell(1).setCellValue("");
+            sheet.createRow(3).createCell(0).setCellValue("a wrong password is refused");
+            workbook.write(out);
+        } catch (final IOException ex) {
+            throw new AssertionError("could not write the .xls workbook: " + ex.getMessage(), ex);
+        }
+
+        assertEquals("a blank row came in as a test case", Map.of("Login", List.of("log in with a valid user", "a wrong password is refused")), descriptionsBySheet(FileFormat.XLS.importToFile(getProject(), file)));
+    }
+
     // UC-SHARE-005, Rule-SHARE-110
     public void testOnlyAFormatReadByItsColumnHeadingsHintsAtThem() {
         final @NotNull String columns = "Description, Expected Result";
