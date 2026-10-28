@@ -188,6 +188,18 @@ public class RunItemTest {
         assertEquals(runItem.getExecutions().size(), 1);
     }
 
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-121
+    @Test
+    public void removingALaterExecutionKeepsTheChosenOne() {
+        final @NotNull RunItem runItem = withExecutions(execution(RunItemStatus.FAILED, "first"), execution(RunItemStatus.BLOCKED, "second"), execution(RunItemStatus.PASSED, "third"));
+        runItem.chooseExecution(0);
+
+        runItem.removeExecution(2);
+
+        assertEquals(runItem.getStatus(), RunItemStatus.FAILED, "removing a later execution moved the default");
+        assertEquals(runItem.getDefaultNumber(), 1);
+    }
+
     // Rule-CODEGEN-111, Rule-EDITOR-PANEL-136
     @Test
     public void attemptsShownLiveAreReplacedByTheDecisionAndKeepWhatCameBefore() {

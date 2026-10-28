@@ -61,5 +61,13 @@ public class SeparatedValuesTest {
         assertEquals(SeparatedValues.field("a\tb", '\t'), "\"a\tb\"");
         assertEquals(SeparatedValues.field("first\nsecond", '\t'), "\"first\nsecond\"");
         assertEquals(SeparatedValues.field("say \"hi\"", '\t'), "\"say \"\"hi\"\"\"", "a quote inside is doubled, as a spreadsheet writes it");
+        assertEquals(SeparatedValues.field("first\rsecond", '\t'), "\"first\rsecond\"", "a carriage return alone is a line break too");
+    }
+
+    // Rule-EDITOR-PANEL-254
+    @Test
+    public void aCarriageReturnAloneEndsARowAndAFinalSeparatorLeavesAnEmptyValue() {
+        assertEquals(SeparatedValues.split("a\rb\r", '\t'), List.of(List.of("a"), List.of("b")), "a carriage return alone did not end a row");
+        assertEquals(SeparatedValues.split("a\t", '\t'), List.of(List.of("a", "")), "a separator at the end left no empty value after it");
     }
 }

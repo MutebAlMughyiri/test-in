@@ -139,4 +139,9 @@ public class DisplayFormatTest {
         assertEquals(Display.formatDuration(Duration.ofMillis(1400)), "00:01");
         assertEquals(Display.formatDuration(Duration.ofSeconds(45).plusMillis(237)), "00:45");
     }
+
+    @Test
+    public void aBlankStepTakesNoLineButKeepsItsNumber() {
+        assertEquals(Display.numberedSteps(List.of("Open the app", "  ", "Log in")), "1- Open the app.\n3- Log in.", "a blank step took a line or the steps after it lost their number");
+    }
 }
