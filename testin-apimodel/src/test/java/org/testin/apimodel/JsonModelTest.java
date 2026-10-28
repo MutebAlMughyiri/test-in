@@ -103,10 +103,10 @@ public class JsonModelTest {
     @Test
     public void valuesThatMeetWidenOrBecomeObject() {
         final @NotNull ModelType root = model("Mixed", """
-                [ { "n": 1, "v": 1, "l": 1, "late": null },
-                  { "n": 2.5, "v": "x", "l": 3000000000, "late": { "k": true } } ]""");
+                [ { "n": 1, "v": 1, "l": 1, "b": 1, "late": null },
+                  { "n": 2.5, "v": "x", "l": 3000000000, "b": 92233720368547758070, "late": { "k": true } } ]""");
 
-        assertEquals(fields(root), List.of("n:Double", "v:Object", "l:Long", "late:Late"));
+        assertEquals(fields(root), List.of("n:Double", "v:Object", "l:Long", "b:BigInteger", "late:Late"));
         assertEquals(fields(nested(root, "Late")), List.of("k:Boolean"));
     }
 
