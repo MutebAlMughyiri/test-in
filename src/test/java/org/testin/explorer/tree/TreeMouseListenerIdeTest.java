@@ -97,6 +97,34 @@ public class TreeMouseListenerIdeTest extends AbstractTempRootIdeTest {
     }
 
     // UC-TREE-PANEL-006
+    public void testARightClickOnTheSelectionKeepsIt() {
+        final @NotNull Rectangle loginRow = tree.getRowBounds(1);
+
+        listener.invokePopup(tree, loginRow.x + 2, loginRow.y + loginRow.height / 2);
+
+        assertEquals("a right click on the selection changed it", Optional.of(login), TreeValues.directoryAt(tree.getSelectionPath()));
+    }
+
+    // UC-TREE-PANEL-005
+    public void testOnlyALeftDoubleClickOnARowOpensIt() {
+        final @NotNull Rectangle bounds = tree.getRowBounds(1);
+        final int y = bounds.y + bounds.height / 2;
+        final @NotNull MouseEvent once = new MouseEvent(tree, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK, bounds.x + 2, y, 1, false, MouseEvent.BUTTON1);
+        final @NotNull MouseEvent rightTwice = new MouseEvent(tree, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), InputEvent.BUTTON3_DOWN_MASK, bounds.x + 2, y, 2, false, MouseEvent.BUTTON3);
+        final @NotNull MouseEvent aboveEveryRow = new MouseEvent(tree, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK, bounds.x + 2, -1, 2, false, MouseEvent.BUTTON1);
+
+        for (final MouseEvent click : List.of(once, rightTwice, aboveEveryRow)) listener.mouseClicked(click);
+
+        assertEquals("a single click, a right double click or a click above the rows opened something", List.of(), Services.getInstance(getProject(), TestinEditors.class).openNodePaths());
+    }
+
+    public void testOneNodeIsTheSelectedOneOnlyWhenItIsSelectedAlone() {
+        tree.setSelectionRows(new int[]{1, 2});
+
+        assertEquals("one of two selected test sets was taken for the one selected", Optional.empty(), TreeValues.singleSelected(tree, TestSetNode.class));
+    }
+
+    // UC-TREE-PANEL-006
     public void testARightClickOutsideTheSelectionSelectsTheRowBeforeTheMenuOpens() {
         final @NotNull Rectangle paymentsRow = tree.getRowBounds(2);
 

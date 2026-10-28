@@ -19,7 +19,10 @@ package org.testin.explorer.tree;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.ide.CopyPasteManager;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.testFramework.TestActionEvent;
+import com.intellij.ui.SimpleColoredComponent;
+import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.treeStructure.SimpleTree;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
@@ -35,8 +38,10 @@ import org.testin.model.node.TestSetPackageNode;
 import org.testin.services.Services;
 import org.testin.ui.framework.ConfirmDialog;
 import org.testin.ui.framework.ShownDialog;
+import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 
+import javax.swing.JTree;
 import javax.swing.TransferHandler;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -51,8 +56,11 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class TreeDragAndDropIdeTest extends AbstractTempRootIdeTest {
+
+    private TestProjectNode testProject;
 
     private TestSetNode login;
 
@@ -66,7 +74,7 @@ public class TreeDragAndDropIdeTest extends AbstractTempRootIdeTest {
     protected void setUp() {
         super.setUp();
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
+        testProject = made.testProject(root.resolve("NAFATH"));
         login = made.testSet(testProject.getTestCasesFolder(), "Login");
         payments = made.testSetPackage(testProject.getTestCasesFolder(), "Payments");
 
@@ -178,6 +186,84 @@ public class TreeDragAndDropIdeTest extends AbstractTempRootIdeTest {
         final @NotNull AnActionEvent pressed = TestActionEvent.createTestEvent(SimpleDataContext.builder().add(TestinDataKeys.TREE, tree).build());
 
         assertSame("the action did not find the tree's own handler", handler, TreeTransferHandler.of(pressed).orElseThrow());
+    }
+
+    // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-002
+    public void testATestProjectSelectedCarriesNothingToCopyOrDrag() {
+        tree.setSelectionPath(new TreePath(((DefaultMutableTreeNode) tree.getModel().getRoot()).getPath()));
+        CopyPasteManager.getInstance().setContents(new StringSelection("kept"));
+
+        assertFalse("a test project can be cut or copied", handler.hasTransferableSelection());
+        assertNull("dragging a test project carried something", handler.createTransferable(tree));
+        handler.copySelectionToClipboard(false);
+        assertEquals("copying a test project changed the clipboard", "kept", CopyPasteManager.getInstance().getContents(DataFlavor.stringFlavor));
+    }
+
+    // Rule-TREE-PANEL-004
+    public void testADropOfTwoOntoNamesAlreadyThereSaysSoOnceForBoth() {
+        final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
+        final @NotNull TestSetNode signup = made.testSet(testProject.getTestCasesFolder(), "Signup");
+        made.testSet(payments, login.getName());
+        made.testSet(payments, signup.getName());
+
+        final @NotNull List<String> said = Said.during(getProject(), () -> assertFalse("a drop onto names already there was carried out", handler.dropped(List.of(login, signup), payments, TransferHandler.MOVE)));
+
+        assertEquals("two names taken were not said once together", List.of(Bundle.message("transfer.exists.many", NodeMoveOrCopy.describe(List.of(login, signup)), payments.getName())), said.stream().map(StringUtil::unescapeXmlEntities).toList());
+    }
+
+    // UC-TREE-PANEL-013
+    public void testANodeDroppedWhereItIsOrOntoATestSetMovesNothingAndSaysNothing() {
+        final @NotNull List<String> said = Said.during(getProject(), () -> {
+            assertFalse("a test set dropped where it already is was moved", handler.dropped(List.of(login), testProject.getTestCasesFolder(), TransferHandler.MOVE));
+            assertFalse("a package dropped onto a test set was moved", handler.dropped(List.of(payments), login, TransferHandler.MOVE));
+        });
+
+        assertEquals("a drop that cannot land said a name is taken", List.of(), said);
+    }
+
+    // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-043, Rule-TREE-PANEL-044, Rule-TREE-PANEL-045
+    public void testANodeIsNeverTransferredIntoAnotherTestProject() {
+        final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
+        final @NotNull TestSetPackageNode elsewhere = made.testSetPackage(made.testProject(root.resolve("PAYMENTS")).getTestCasesFolder(), "Archive");
+
+        assertFalse("a test set could be moved into another test project", handler.canTransferInto(login, elsewhere));
+    }
+
+    // UC-TREE-PANEL-013
+    public void testPastingWhereNoCopiedNodeCanLandDoesNothing() {
+        handler.copySelectionToClipboard(false);
+
+        handler.pasteFromClipboard(login);
+
+        assertFalse("a test set was pasted into a test set", nodes().nodeExists(login.getPath().resolve(login.getName())));
+    }
+
+    // UC-TREE-PANEL-013, Rule-TREE-PANEL-050
+    public void testClearingAClipboardThatHoldsNoNodesLeavesItAsItWas() {
+        CopyPasteManager.getInstance().setContents(new StringSelection("kept"));
+
+        handler.clearClipboard();
+
+        assertEquals("clearing a clipboard of no nodes emptied it", "kept", CopyPasteManager.getInstance().getContents(DataFlavor.stringFlavor));
+    }
+
+    // UC-TREE-PANEL-014, Rule-TREE-PANEL-046
+    public void testADropOfTwoCopiesBoth() {
+        final @NotNull TestSetNode signup = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Signup");
+
+        assertTrue("dropping two copies onto the package was refused", handler.dropped(List.of(login, signup), payments, TransferHandler.COPY));
+        ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
+
+        Await.until("confirming did not copy both test sets", () -> nodes().nodeExists(inPayments()) && nodes().nodeExists(payments.getPath().resolve(signup.getName())));
+    }
+
+    public void testACutTestSetIsDrawnGray() {
+        final @NotNull TreePanelCellRenderer renderer = new TreePanelCellRenderer(Set.of(login.getPath()));
+        renderer.getTreeCellRendererComponent(new JTree(), new DefaultMutableTreeNode(login), false, false, true, 0, false);
+        final @NotNull SimpleColoredComponent.ColoredIterator drawn = renderer.iterator();
+
+        assertEquals("the cut test set's name is not drawn", login.getName(), drawn.next());
+        assertEquals("a cut test set is not drawn gray", SimpleTextAttributes.GRAYED_ATTRIBUTES, drawn.getTextAttributes());
     }
 
     // UC-TREE-PANEL-013
