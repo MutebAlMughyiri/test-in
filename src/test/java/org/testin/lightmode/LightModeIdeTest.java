@@ -613,6 +613,97 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
     }
 
     // UC-EDITOR-PANEL-046
+    public void testWhileTheFailureFormIsOpenTheDetailsAndRunItemStatusKeysWaitForIt() {
+        final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(2, 1));
+        final @NotNull TestRunEditor editor = walking(fixture);
+        final @NotNull LightModeScreen window = openedOn(editor);
+        final @NotNull JFrame frame = frameOf(window);
+        try {
+            press(frame, RunItemStatus.FAILED.getShortcut());
+            final @NotNull FailureForm form = theOne(frame, FailureForm.class);
+
+            press(frame, DETAILS);
+            press(frame, RunItemStatus.PASSED.getShortcut());
+            window.refresh();
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertTrue("a key closed the failure form", everythingIn(frame).contains(form));
+            assertTrue("the details key opened the details over the failure form", everythingIn(frame).stream().filter(TestCaseDetails.class::isInstance).noneMatch(Component::isShowing));
+            assertEquals("a run item status key judged the test case under the failure form", Optional.of(RunItemStatus.PENDING), editor.runItem(fixture.testCases().getFirst().getUuid()).map(RunItem::getStatus));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-046
+    public void testHoldingTheDetailsKeyDownTogglesThemOnce() {
+        final @NotNull TestRunEditor editor = walking(aTestRunOf(aTestSetWithSteps(1, 1)));
+        final @NotNull JFrame frame = frameOf(openedOn(editor));
+        try {
+            press(frame, DETAILS);
+            press(frame, DETAILS);
+            assertTrue("holding the details key down toggled them twice", theOne(frame, TestCaseDetails.class).isVisible());
+
+            press(frame, DETAILS_RELEASED);
+            press(frame, DETAILS);
+            assertFalse("pressing the details key again did not hide them", theOne(frame, TestCaseDetails.class).isVisible());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-046
+    public void testTheWheelStopsAtTheLargestText() {
+        final @NotNull TestRunEditor editor = walking(aTestRunOf(aTestSetWithSteps(1, 1)));
+        final @NotNull LightModeScreen window = openedOn(editor);
+        try {
+            for (int notch = 0; notch < 100; notch++) wheel(window.frame().content(), -1);
+            final float largest = describedSize(frameOf(window));
+
+            wheel(window.frame().content(), -1);
+
+            assertEquals("the wheel made the text bigger past the largest", largest, describedSize(frameOf(window)), 0.01f);
+        } finally {
+            new LightModeZoom(1.0f).remember();
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-046
+    public void testLightModeOnTheTestRunItShowsClosesWhenToggledAgain() {
+        final @NotNull TestRunEditor editor = walking(aTestRunOf(aTestSetWithSteps(1, 1)));
+        final @NotNull JFrame frame = lightModeOn(editor);
+        try {
+            lightMode().toggle(editor, () -> {
+            });
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertFalse("toggling light mode on the test run it shows left it open", frame.isShowing());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-046
+    public void testARunItemStatusKeyAfterTheWalkEndedRecordsNothing() {
+        final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(1, 1));
+        final @NotNull TestRunEditor editor = walking(fixture);
+        final @NotNull JFrame frame = frameOf(openedOn(editor));
+        try {
+            press(frame, RunItemStatus.PASSED.getShortcut());
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            Await.until("the walk did not end on the last test case", () -> editor.getWalk().getCurrentlyExecutingIndex() == -1);
+
+            press(frame, RunItemStatus.BLOCKED.getShortcut());
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertEquals("a key after the walk ended recorded something", Optional.of(RunItemStatus.PASSED), editor.runItem(fixture.testCases().getFirst().getUuid()).map(RunItem::getStatus));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-046
     public void testTheWheelMakesTheTextBiggerAndSmallerAndRemembersIt() {
         final @NotNull TestRunEditor editor = walking(aTestRunOf(aTestSetWithSteps(2, 1)));
         final @NotNull LightModeScreen window = openedOn(editor);
