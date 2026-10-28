@@ -6,6 +6,69 @@ is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## Unreleased
 
+## 2.16.0-alpha - 2026-10-28
+
+Your test data carries over: this build reads and writes format 5, as 2.15.0-alpha does.
+
+### Added
+
+- **Robot Framework test projects:** a code project whose interpreter is Python is automated in Robot Framework. Each
+  test set is a suite file and each test case a test in it, its first tag the test case UUID, and Testin keeps the
+  suites in step as test cases and test sets are created, edited, moved and removed, leaving the steps a tester wrote
+  as they are. Navigate to Test Method opens the test, Run Test Method and Run Tests run Robot Framework with the
+  project's interpreter and record each run item from Robot's output, and the mark beside a test in the gutter leads
+  back to its test case. It works in PyCharm too (#2).
+- **The agent works in the Terminal:** Automate Test Case hands the test cases to your command-line agent in a tab of
+  IntelliJ's Terminal named after its command. The agent writes each body over the TODO itself and asks you as it goes.
+  Leave print mode such as `-p` out of the agent's Arguments; the hint under the field says so (#490).
+
+### Changed
+
+- **A test run's dialogs show retired test sets gray:** in Create Test Run and Edit Test Run, a Deprecated test set and
+  everything under an Archived package is listed gray with its status beside its name, and its boxes cannot be changed.
+  A new test run never covers it, Re-create leaves out a test case there, and an edit keeps what the test run already
+  covers. An empty test set is still left out.
+- **A card draws a line break as a space:** an Expected Result typed on two lines no longer reads with its lines run
+  together on the card. The value is stored as typed.
+- **A Disabled test case's Run is gray and says why,** and the method Testin writes for a test case that is already off
+  carries `enabled = false` from the start.
+- **A test case with no automation says Not automated,** and several say how many.
+- **An Assigned test run shows its icon alone:** the name beside it was this machine's tester, wrong on every other
+  machine.
+- **A comma separates groups everywhere:** the Create and Update dialogs kept "smoke, login" as one group while the
+  grid, bulk edit and import made it two. Every surface makes it two now, and the Filter finds every group and module
+  its lists offer.
+- **Bulk edit names the key a value is stored under,** its arrows wrap like Tab, and it follows the IDE's editor font.
+- **Create Test Case's strip names the field keys once,** as Ctrl+Letter Add Field.
+- **A merge question about a field is headed by the field's own name.**
+- **Undo and redo say Undone only once the step has worked,** and one Order change is one undo step over every test
+  case it ranked, so Ctrl+Z puts the whole set back.
+- **A cloned test project is named in capitals, without -test-cases.**
+- **A removed test method goes to the recycle bin as a file of its own,** so its body can be put back after the project
+  closes.
+- **Safe mode:** in a project the IDE does not trust, every Git step says Choose Trust Project once and runs no Git.
+- **The four reports draw one outline,** and the Excel report is written with Apache POI.
+
+### Fixed
+
+- **A step keeps its numbers and dashes:** a Steps value split wherever a number came after a space, so "Enter the
+  2-digit code" became two steps, and pressing Enter on an untouched cell rewrote it and said Updated. A step is one
+  line now, in the grid and in an import.
+- **A sync or a Commit & Push with no branch checked out is refused** instead of pushing `main`. A pull that stopped
+  earlier is offered back before the sync asks which branch, and a pull resolved from View Pending Commits pushes to its
+  own branch.
+- **The page keys turn the page in the grid,** as they do on the cards.
+- **Going to code while the IDE indexes says it waits.**
+- **A test run editor says when the test case asked for is hidden by the filter,** instead of saying nothing.
+- **Automate Test Case is gray with its reason when nothing is selected.**
+- **A blank row in an imported workbook is passed over** rather than coming in as an empty test case.
+- **What Testin creates, removes or moves while a test project is being read stays so** when the read lands.
+- **A test run name that is a path is refused** in Create, Re-create and Edit.
+- **A create or a move no longer lands on a sibling whose name differs only in capitals.**
+- **Refresh keeps the editors answering,** and a save made during it keeps its audit.
+- **A cut test case is kept when its editor closes** before the paste.
+- **Jackson 2.22.4,** since 2.22.3 has CVE-2026-110879.
+
 ## 2.15.0-alpha - 2026-10-17
 
 **Before you update:** wipe your test data. This build reads format 5 and converts nothing. Every file Testin stores is
