@@ -49,7 +49,7 @@ public class RunItemTest {
         return RunItem.builder().uuid(UUID.randomUUID()).executions(List.of(executions)).defaultNumber(executions.length).build();
     }
 
-    // Rule-INTERNAL-135, Rule-VIEW-PANEL-119, Rule-INTERNAL-094
+    // Rule-INTERNAL-135, Rule-VIEW-PANEL-119
     @Test
     public void anOrdinaryRunItemStoresOnlyItsDefaultAndExecutions() {
         final @NotNull RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build();

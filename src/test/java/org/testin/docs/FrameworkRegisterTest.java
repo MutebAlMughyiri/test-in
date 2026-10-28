@@ -68,7 +68,6 @@ public class FrameworkRegisterTest {
         return named;
     }
 
-    // Rule-INTERNAL-120
     @Test
     public void everyFrameworkFileHasARowInTheRegister() {
         final @NotNull Set<String> missing = new TreeSet<>(files());
@@ -77,7 +76,6 @@ public class FrameworkRegisterTest {
         assertEquals(missing, Set.of(), "These framework files have no row in the register on " + PAGE + "; say whether two screens ask for each, one does on purpose, or it is internal");
     }
 
-    // Rule-INTERNAL-120
     @Test
     public void everyRowInTheRegisterNamesAFrameworkFile() {
         final @NotNull Set<String> stale = new TreeSet<>(registered());

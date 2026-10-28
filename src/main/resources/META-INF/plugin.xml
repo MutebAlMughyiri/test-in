@@ -250,7 +250,7 @@
          turned out not to be worth having: they are context menu entries, and
          a tester who wants them clicks them. They are still declared, so Find
          Action offers them and a tester who does want a key can set one. -->
-    <!-- Rule-INTERNAL-071, Rule-PRODUCT-015, Rule-PRODUCT-018 -->
+    <!-- Rule-INTERNAL-071, Rule-PRODUCT-015, Rule-PRODUCT-017, Rule-PRODUCT-018 -->
     <actions>
         <action
                 id="Testin.Search"

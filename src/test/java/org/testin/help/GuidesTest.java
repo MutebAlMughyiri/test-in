@@ -32,7 +32,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 public class GuidesTest {
-    // Rule-INTERNAL-131
     @Test
     public void everyGuideHasItsPageAndEveryPageIsAGuide() {
         final @NotNull Set<String> listed = Arrays.stream(Guide.values()).map(Guide::getPage).collect(Collectors.toSet());

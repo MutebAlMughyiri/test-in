@@ -125,7 +125,6 @@ public class TreeNodeKindsTest {
         assertTrue(new TestRunPackageNode().acceptsTransferred(new TestRunPackageNode()));
     }
 
-    // Rule-TREE-PANEL-080
     @Test
     public void runTestsIsOfferedOnTheTestCaseSideAndOnATestRun() {
         for (final AbstractNode node : everyKind()) {

@@ -200,10 +200,6 @@ and which keys it answers, and the shell builds the rest.
   screenshot. It shows the icon alone at rest, a gray rounded fill under it
   while the pointer is on it, and the fill a shade darker while it is on. A new
   button takes this button rather than drawing its own.
-- **Rule-INTERNAL-120** — Every file in the dialog framework has a row in its
-  register. The row says whether the file is kept because two or more screens
-  ask for it, kept on purpose for the one screen that does, or internal to the
-  framework. A file added or removed changes the register in the same change.
 - **Rule-INTERNAL-121** — Every gap and padding in a dialog is one of five
   steps, named once in Spacing: XS 4, S 6, M 8, L 10 and XL 12. A screen asks
   for a step by name and never writes a number, so changing a step changes every
@@ -274,7 +270,10 @@ holds, and what its keys mean, is on the page for that dialog.
 
 ## The register
 
-Every file in `org.testin.ui.framework`, and why it is there (Rule-INTERNAL-120).
+Every file in `org.testin.ui.framework`, and why it is there: kept because two
+or more screens ask for it, kept on purpose for the one screen that does, or
+internal to the framework. A file added or removed changes this register in
+the same change, and a test fails until it does.
 A screen asks the framework for what it needs by name; a part nobody else will
 ask for lives with its one caller. Counted on 2 October 2026 by how many classes
 outside the framework name each file.

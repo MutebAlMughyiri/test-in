@@ -42,7 +42,6 @@ public class NoSecretKeptTest {
         assertTrue(written.containsValue("https://github.com/mtb550/qa.git"), "the remote itself was dropped with its credentials: " + written);
     }
 
-    // Rule-PRODUCT-004
     @Test
     public void theSettingsHoldNoSecret() {
         final @NotNull List<String> secretLike = Arrays.stream(AppSettingsState.class.getFields())

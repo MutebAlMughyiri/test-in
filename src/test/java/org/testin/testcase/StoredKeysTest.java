@@ -31,7 +31,6 @@ import static org.testng.Assert.assertEquals;
 
 public class StoredKeysTest {
 
-    // Rule-EDITOR-PANEL-298
     @Test
     public void everyFieldNamesTheKeyItsValueIsStoredUnder() {
         final Set<String> stored = Arrays.stream(TestCase.class.getDeclaredFields())

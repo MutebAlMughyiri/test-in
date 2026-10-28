@@ -43,7 +43,6 @@ public class PluginDependenciesTest {
         }
     }
 
-    // Rule-PRODUCT-019
     @Test
     public void testinNeedsOnlyThePlatformAndEveryOtherPluginIsOptional() {
         final @NotNull List<String> required = elements("depends").stream()

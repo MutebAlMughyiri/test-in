@@ -25,14 +25,12 @@ import static org.testng.Assert.assertEquals;
 
 public class StoredNamesTest {
 
-    // Rule-INTERNAL-003, Rule-INTERNAL-008, Rule-INTERNAL-010
     @Test
     public void everyMarkerIsNamedInFullWords() {
         assertEquals(Arrays.stream(NodeType.values()).map(NodeType::getMarker).toList(),
                 List.of(".testproject", ".testcasesfolder", ".testrunsfolder", ".testsetpackage", ".testrunpackage", ".testset", ".testrun"));
     }
 
-    // Rule-INTERNAL-011
     @Test
     public void aTestCaseAndARunItemAreNamedInFullWords() {
         assertEquals(FileKind.TEST_CASE.getExtension(), ".testcase");

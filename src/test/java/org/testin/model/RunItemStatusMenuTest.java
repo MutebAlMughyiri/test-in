@@ -33,7 +33,6 @@ import static org.testng.Assert.assertSame;
 
 public class RunItemStatusMenuTest {
 
-    // Rule-PRODUCT-012
     @Test
     public void aTesterChoosesExactlyPassedFailedOrBlocked() {
         final List<RunItemStatus> runItemStatusesOnMenu = Arrays.stream(RunItemStatus.values())
@@ -43,7 +42,6 @@ public class RunItemStatusMenuTest {
         assertEquals(runItemStatusesOnMenu, List.of(RunItemStatus.PASSED, RunItemStatus.FAILED, RunItemStatus.BLOCKED));
     }
 
-    // Rule-PRODUCT-013
     @Test
     public void thePluginSetsPendingAndUntestedItself() {
         assertFalse(RunItemStatus.PENDING.isJudged(), "queued for a test run, not a run item status");

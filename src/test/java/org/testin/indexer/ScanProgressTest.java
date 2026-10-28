@@ -65,7 +65,6 @@ public class ScanProgressTest {
                 "rescanChangedTestProject must hand the rescan's progress bar to the scan, not start one of its own");
     }
 
-    // Rule-INTERNAL-013
     @Test
     public void bothScanLoopsStopWhenTheTesterCancels() {
         final @NotNull String source = read("IndexingScanner.java");

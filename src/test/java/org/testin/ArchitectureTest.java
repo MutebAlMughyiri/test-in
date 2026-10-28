@@ -126,7 +126,7 @@ public class ArchitectureTest {
         rule.check(CLASSES);
     }
 
-    // Rule-PRODUCT-020, Rule-CODEGEN-061
+    // Rule-CODEGEN-061
     @Test
     public void theCoreWorksWithoutJava() {
         final @NotNull ArchRule rule = noClasses()
@@ -198,7 +198,6 @@ public class ArchitectureTest {
         rule.check(CLASSES);
     }
 
-    // Rule-INTERNAL-089
     @Test
     public void onlyTestinYmlReadsTheConfigFile() {
         final @NotNull ArchRule rule = noClasses()
@@ -248,7 +247,6 @@ public class ArchitectureTest {
         rule.check(CLASSES);
     }
 
-    // Rule-INTERNAL-089
     @Test
     public void onlyAnExplicitGestureWritesTheConfigFile() {
         final @NotNull ArchRule oneCaller = methods()
@@ -280,7 +278,6 @@ public class ArchitectureTest {
         oneWriter.check(CLASSES);
     }
 
-    // Rule-INTERNAL-117
     @Test
     public void onlyTheModelAndTheIndexerChangeAModelValue() {
         final @NotNull ArchRule noSetter = noClasses()

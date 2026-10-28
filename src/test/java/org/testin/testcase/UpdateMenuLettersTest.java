@@ -31,7 +31,6 @@ import static org.testng.Assert.assertSame;
 
 public class UpdateMenuLettersTest {
 
-    // Rule-EDITOR-PANEL-194
     @Test
     public void everyFieldOnTheUpdateMenuHasALetter() {
         for (final UpdateTestCaseFields field : UpdateTestCaseFields.values()) {
@@ -46,7 +45,6 @@ public class UpdateMenuLettersTest {
         assertSame(UpdateTestCaseFields.STATUS.getIcon(), CopyChoice.STATUS.getIcon(), "Status does not draw the Z the copy menu draws");
     }
 
-    // Rule-EDITOR-PANEL-194
     @Test
     public void referenceIsOpenedByRAndDrawsR() {
         assertEquals(UpdateTestCaseFields.REFERENCE.getShortcut().getKey(), KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "Reference is not opened by R");

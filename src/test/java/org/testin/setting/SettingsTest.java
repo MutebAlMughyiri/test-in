@@ -236,7 +236,6 @@ public class SettingsTest {
         assertFalse(settings.showShortcutHints, "the hints came back after the tester turned them off");
     }
 
-    // Rule-SETTING-023
     @Test
     public void onlyTheSettingsPageWritesTheDownloadFolder() {
         final Pattern write = Pattern.compile("\\bdefaultDownloadFolder\\s*=[^=]");

@@ -54,7 +54,7 @@ public class TestCaseStatusSection implements TestCaseSection {
         return testCase.edit().status(testCaseStatus.getSelected()).build();
     }
 
-    // Rule-EDITOR-PANEL-194, Rule-PRODUCT-017
+    // Rule-EDITOR-PANEL-194
     @Override
     public void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull AbstractTestCaseDialog base, final @NotNull Runnable repackAction) {
     }
