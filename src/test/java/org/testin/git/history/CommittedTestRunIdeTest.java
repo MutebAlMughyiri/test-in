@@ -434,6 +434,16 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-239
+    public void testACommitNamedOnlyByAMarkerNeverCommittedShowsTheTestCaseAsItIsNow() {
+        committedAsItIs();
+        final @NotNull Path committed = aCommittedTestRunFrom("0123456789abcdef0123456789abcdef01234567");
+        theTestCaseReads("Press Pay");
+        readEverything();
+
+        assertEquals("Press Pay", theRunItemOf(committed).shownTestCase().getDescription());
+    }
+
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-239
     public void testATestProjectNotUnderGitShowsTheTestCaseAsItIsNow() {
         final @NotNull Path committed = aCommittedTestRunFrom("ea9a50107afbbaa1831909436b781f0e3c2d1a55");
         theTestCaseReads("Press Pay");
@@ -652,6 +662,14 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
 
         Await.until("the History tab never showed the commit: " + Drawn.words(tab), () -> Drawn.holds(Drawn.words(tab), "base"));
         assertFalse("a history read whole shows a problem: " + Drawn.words(tab), Drawn.holds(Drawn.words(tab), Bundle.message("view.history.not.under.git")));
+    }
+
+    // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-113
+    public void testATestProjectNotUnderGitIsNotAskedWhereADeletedTestCaseWas() {
+        Services.getInstance(getProject(), BoundTestProject.class).choose(String.valueOf(testProjectPath.getFileName()));
+        readEverything();
+
+        assertTrue("Git was asked about a test project not under it", TestCaseHistory.deletedFile(getProject(), testCaseUuid).isEmpty());
     }
 
     // Rule-PRODUCT-007
