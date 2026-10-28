@@ -17,12 +17,15 @@
 package org.testin.indexer;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.FileKind;
 import org.testng.annotations.Test;
 
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 public class WatchedPathTest {
@@ -33,6 +36,14 @@ public class WatchedPathTest {
 
     private static @NotNull Optional<Path> of(final Path changed) {
         return WatchedPath.testProjectOf(changed, ROOT);
+    }
+
+    @Test
+    public void aTestCaseFileOutsideATestSetIsNotATestCase() {
+        final Path file = TEST_PROJECT.resolve("Test Cases/Login").resolve(FileKind.TEST_CASE.fileName(UUID.randomUUID()));
+
+        assertTrue(TestProjectIndexer.isTestCaseFile(file, _ -> true), "a test case file in a test set is a test case");
+        assertFalse(TestProjectIndexer.isTestCaseFile(file, _ -> false), "a test case file outside a test set was taken for a test case");
     }
 
     // Rule-INTERNAL-021

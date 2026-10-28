@@ -189,6 +189,12 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         }
     }
 
+    public void testAScreenshotNameTestinDidNotWriteReadsNothing() {
+        final @NotNull TestRunNode testRun = aTestRun(List.of());
+
+        assertEquals("a name that is not a screenshot's read a file", 0, Services.getInstance(getProject(), TestRuns.class).screenshot(testRun.getPath(), "../testin.yml").length);
+    }
+
     // Rule-VIEW-PANEL-081
     public void testTheStacktraceLinkComesFirstThenOneThumbnailForEachScreenshot() {
         final @NotNull TestSetNode testSet = aTestSet("Login");

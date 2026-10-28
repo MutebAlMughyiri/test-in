@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.model.NodeType;
 import org.testin.services.Services;
+import org.testin.testproject.BoundTestProject;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -69,5 +70,21 @@ public class WatchedTestProjectsIdeTest extends AbstractTempRootIdeTest {
 
         indexer().rescanChangedTestProject(testProjectPath, new EmptyProgressIndicator());
         assertFalse("a folder that is no longer a test project stayed in the index", nodes().nodeExists(testProjectPath));
+    }
+
+    // Rule-INTERNAL-016
+    public void testAChangeInATestProjectOtherThanTheOneNamedIsNotRead() {
+        final Path testProjectPath = root.resolve("NAFATH");
+        WriteAction.runAndWait(() -> nodes().addTestProject(
+                Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(testProjectPath)));
+        final @NotNull BoundTestProject bound = Services.getInstance(getProject(), BoundTestProject.class);
+        bound.choose("PAYMENTS");
+        try {
+            indexer().rescanChangedTestProject(testProjectPath, new EmptyProgressIndicator());
+
+            assertFalse("a change in a test project other than the one named was read", nodes().nodeExists(testProjectPath));
+        } finally {
+            bound.choose("");
+        }
     }
 }

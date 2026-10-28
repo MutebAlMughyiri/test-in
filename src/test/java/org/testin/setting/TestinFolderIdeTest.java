@@ -122,6 +122,13 @@ public class TestinFolderIdeTest extends AbstractTempRootIdeTest {
         assertEquals("Testin read a test project that is not directly inside its one folder", Set.of("NAFATH"), indexer().testProjects().keySet());
     }
 
+    // Rule-SETTING-010
+    public void testAFolderThatIsNotThereHoldsNoTestProject() {
+        settings().rootTestinPath = folder("testin").resolve("gone").toString();
+
+        assertEquals("a folder that is not there gave test projects", Set.of(), indexer().testProjects().keySet());
+    }
+
     // Rule-SETTING-012
     public void testChangingTheFolderMakesAProjectWithTheTestinPanelReadTheDiskAgain() {
         final @NotNull Path first = folder("first");
