@@ -193,6 +193,16 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("a removed test set's suite file is still there", suiteAt("NAFATH/Refund.robot").isEmpty());
     }
 
+    // UC-CODEGEN-018, Rule-CODEGEN-113
+    public void testWhatARemovalKeepsForUndoIsTheTestSetsSuiteFileOrThePackagesFolder() {
+        final @NotNull TestSetNode login = createdTestSet("Login page");
+        final @NotNull TestSetPackageNode accounts = indexedPackage("accounts", theTestCasesDirectory());
+        final @NotNull CodeChangeRegistry robot = CodeChangeRegistry.available(getProject()).orElseThrow(() -> new AssertionError("a Robot Framework test project has no code"));
+
+        assertEquals("a removed test set does not keep its suite file", Optional.of(LOGIN_SUITE), robot.fileOf(login));
+        assertEquals("a removed package does not keep its folder", Optional.of("NAFATH/accounts"), robot.folderOf(accounts));
+    }
+
     // UC-CODEGEN-017, UC-CODEGEN-018, Rule-CODEGEN-055, Rule-CODEGEN-057, Rule-CODEGEN-128
     public void testAPackagesFolderMovesWithItAndGoesWithItAndAMoveIntoAnUnreadPlaceLeavesTheSuite() {
         final @NotNull TestSetPackageNode payments = indexedPackage("Payments", theTestCasesDirectory());
