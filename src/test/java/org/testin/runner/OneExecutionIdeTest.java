@@ -245,4 +245,24 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
 
         assertTrue("a test case still reads as running after its execution ended without reporting it", selected.stream().noneMatch(testCase -> execution().isRunning(testCase.getUuid())));
     }
+
+    // UC-CODEGEN-008
+    public void testATestCaseAlreadyRunningIsNotStartedAgain() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase running = createdTestCase(login, "Log in", "b");
+        final @NotNull TestCase waiting = createdTestCase(login, "Log out", "c");
+        theTestCases(List.of(running, waiting));
+        final @NotNull CapturedRunner runner = CapturedRunner.installed(getTestRootDisposable());
+        execution().starting(running);
+        final @NotNull List<String> saidBefore = List.copyOf(balloons);
+
+        ExecuteTestCases.run(getProject(), List.of(running));
+
+        assertEquals("a test case already running was started again", List.of(), runner.executions());
+        assertEquals("running a test case already running said something", saidBefore, balloons);
+
+        ExecuteTestCases.run(getProject(), List.of(running, waiting));
+
+        assertEquals("the execution does not carry only the test case not yet running", List.of(List.of(waiting)), runner.executions());
+    }
 }

@@ -76,4 +76,25 @@ public class TestMethodGutterIdeTest extends AbstractCodegenIdeTest {
 
         assertTrue("an annotation that only looks like TestNG's was given a mark", gutterMarksAt(text, TEST_CASE_UUID).isEmpty());
     }
+
+    // Rule-CODEGEN-029
+    public void testATestNgTestWrittenWithItsWholeNameHasAMark() {
+        final @NotNull String text = aTestMethod("", TEST_CASE_UUID).replace("@Test(", "@org.testng.annotations.Test(");
+
+        assertEquals("a TestNG test written with its whole name has no mark", 1, gutterMarksAt(text, TEST_CASE_UUID).size());
+    }
+
+    // Rule-CODEGEN-029
+    public void testATestNgTestImportedWithItsWholePackageHasAMark() {
+        final @NotNull String text = aTestMethod("import org.testng.annotations.*;\n", TEST_CASE_UUID);
+
+        assertEquals("a TestNG test whose package is imported whole has no mark", 1, gutterMarksAt(text, TEST_CASE_UUID).size());
+    }
+
+    // Rule-CODEGEN-029
+    public void testAnIdentityInAnotherAnnotationHasNoMark() {
+        final @NotNull String text = aTestMethod("import org.testng.annotations.Test;\n", TEST_CASE_UUID).replace("@Test(", "@Scenario(");
+
+        assertTrue("an annotation that is not a test was given a mark", gutterMarksAt(text, TEST_CASE_UUID).isEmpty());
+    }
 }

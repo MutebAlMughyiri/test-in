@@ -25,6 +25,9 @@ import org.testin.config.TestinYml;
 import org.testin.help.Hints;
 import org.testin.help.SetupHint;
 import org.testin.help.SetupStep;
+import org.testin.model.TestCase;
+import org.testin.runner.CapturedRunner;
+import org.testin.runner.ExecuteTestCases;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.util.Bundle;
@@ -33,6 +36,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.UUID;
 
 public class CodeOffHintIdeTest extends AbstractIdeTest {
 
@@ -106,5 +110,17 @@ public class CodeOffHintIdeTest extends AbstractIdeTest {
             bound.choose("");
             Services.getInstance(getProject(), Hints.class).clear(SetupStep.TEST_PROJECT_LINK);
         }
+    }
+
+    // UC-CODEGEN-008, Rule-CODEGEN-082
+    public void testRunningTestCasesWithTheCodeOffStartsNothingAndSaysWhy() {
+        final @NotNull CapturedRunner runner = CapturedRunner.installed(getTestRootDisposable());
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in").build();
+
+        final @NotNull List<String> said = Said.during(getProject(), () -> ExecuteTestCases.run(getProject(), List.of(testCase)));
+
+        assertEquals("a test case was started with the code off", List.of(), runner.executions());
+        assertEquals("the code off was not said once", 1, said.size());
+        Services.getInstance(getProject(), Hints.class).clear(SetupStep.TEST_PROJECT_LINK);
     }
 }

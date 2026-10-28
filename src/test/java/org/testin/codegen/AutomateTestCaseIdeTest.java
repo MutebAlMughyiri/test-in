@@ -22,14 +22,19 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.TestActionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
+import org.testin.Said;
 import org.testin.actions.TestinDataKeys;
+import org.testin.codegen.agent.RecordedAgentTab;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
+import org.testin.notifications.Done;
 import org.testin.services.Services;
+import org.testin.setting.AppSettingsState;
 import org.testin.util.Bundle;
 
 import java.util.List;
@@ -96,5 +101,30 @@ public class AutomateTestCaseIdeTest extends AbstractCodegenIdeTest {
         final @NotNull AnActionEvent again = updated(testCase);
         assertFalse("Automate Test Case is live for a test case whose method is already written", again.getPresentation().isEnabled());
         assertEquals("the tester is not told the method is already there", Bundle.message("automate.already.written.description"), again.getPresentation().getDescription());
+    }
+
+    // UC-CODEGEN-021, Rule-CODEGEN-084
+    public void testWithAnAgentConnectedATestCaseThatHasItsMethodIsSentForItsBody() {
+        final @NotNull TestCase testCase = indexedTestCase(indexedTestSet("Login", indexedPackage("Checkout", theTestCasesDirectory())), "Log in with a valid user", "b");
+        final @NotNull Said firstAutomate = Said.listening(getProject(), getTestRootDisposable());
+        ActionUtil.performAction(automate(), selecting(testCase));
+        Await.until("Automate Test Case wrote no method", () -> firstAutomate.shown().contains(Done.AUTOMATED.getOutcome()));
+        final @NotNull AutomationState state = Services.getInstance(getProject(), AutomationState.class);
+        state.read(getProject(), List.of(testCase), () -> {
+        });
+        Await.until("the automation state never learned the test case has a method", () -> state.hasMethod(testCase.getUuid()));
+        final @NotNull RecordedAgentTab tab = RecordedAgentTab.installed(getProject(), getTestRootDisposable());
+        final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
+        final @NotNull String commandBefore = settings.agentCommand;
+        settings.agentCommand = "no-such-agent";
+        Disposer.register(getTestRootDisposable(), () -> settings.agentCommand = commandBefore);
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        assertTrue("Automate Test Case is gray for a test case whose body the agent can still write", updated(testCase).getPresentation().isEnabled());
+        ActionUtil.performAction(automate(), selecting(testCase));
+
+        Await.until("the agent was not asked for the body", () -> !tab.getTypedLines().isEmpty());
+        assertTrue("the request does not hold the test case: " + tab.getTypedLines(), tab.getTypedLines().getFirst().contains("Log in with a valid user"));
+        assertFalse("Automated was said where no method was written: " + said.shown(), said.shown().contains(Done.AUTOMATED.getOutcome()));
     }
 }
