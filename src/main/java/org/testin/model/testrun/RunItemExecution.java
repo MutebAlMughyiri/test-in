@@ -79,12 +79,10 @@ public class RunItemExecution {
     @Builder.Default
     private List<String> screenshots = List.of();
 
-    // Rule-EDITOR-PANEL-147
     @NotNull
     @Builder.Default
     private BugSeverity bugSeverity = BugSeverity.DEFAULT;
 
-    // Rule-EDITOR-PANEL-147
     @NotNull
     @Builder.Default
     private BugPriority bugPriority = BugPriority.DEFAULT;

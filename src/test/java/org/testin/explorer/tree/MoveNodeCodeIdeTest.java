@@ -112,7 +112,6 @@ public class MoveNodeCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the refused move took the class away from its test set", generatedClass("nafath.LoginTest").isPresent());
     }
 
-    // Rule-TREE-PANEL-098
     public void testAnUndoneMoveTheTreeRefusesLeavesTheClassWhereItWas() {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull TestSetPackageNode checkout = indexedPackage("Checkout", theTestCasesDirectory());

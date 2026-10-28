@@ -84,7 +84,6 @@ public class BadgesTest {
         assertEquals(badges.size(), 0, "a severity is shown only on a failure, so a pass draws no badge");
     }
 
-    // Rule-EDITOR-PANEL-147
     @Test
     public void aFailureTheTesterDidNotTriageDrawsItsDefaults() {
         final List<Badge> badges = bugBadges(RunItem.builder().executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build());

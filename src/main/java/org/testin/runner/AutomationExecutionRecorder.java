@@ -64,6 +64,7 @@ public final class AutomationExecutionRecorder implements Disposable {
         Disposer.register(parentDisposable, () -> recorder.surfaces.remove(onUpdated));
     }
 
+    // Rule-CODEGEN-001
     private void record(final @NotNull String testName, final @NotNull AutomationExecutionStatus automationExecutionStatus, final @NotNull Duration duration, final @NotNull Failure failure) {
         TestinLogger.debug("Execution report: testName='" + testName + "', status='" + automationExecutionStatus + "'");
 

@@ -22,7 +22,6 @@ import static org.testng.Assert.assertEquals;
 
 public class PriorityDefaultTest {
 
-    // Rule-EDITOR-PANEL-031
     @Test
     public void aNewTestCaseStartsAtTheDefaultPriorityWhichIsTheLowestChoice() {
         assertEquals(Priority.DEFAULT, Priority.CHOICES.getLast(), "the default priority is not the lowest the tester can choose");

@@ -42,6 +42,7 @@ public final class TestCaseForm implements DialogComponent {
 
     private final @NotNull Supplier<JComponent> focus;
 
+    // Rule-INTERNAL-102
     public TestCaseForm(final @NotNull Supplier<JComponent> focus, final boolean scrollsOnlyWhenOverflowing) {
         this.focus = focus;
 
