@@ -57,7 +57,7 @@ public class SelectionTableIdeTest extends AbstractIdeTest {
         return new Point(cell.x + cell.width / 2, cell.y + cell.height / 2);
     }
 
-    // UC-SHARE-010, Rule-SHARE-129
+    // Rule-SHARE-129
     public void testAMarkerRowIsTickedGraySaysWhyAndCannotBeUnticked() {
         final @NotNull SelectionTable review = aReviewOfOneChangeAndOneMarker();
         final @NotNull JTable table = theTable(review);
@@ -74,7 +74,7 @@ public class SelectionTableIdeTest extends AbstractIdeTest {
         assertEquals("unticking both rows unticked the marker", List.of(1), review.getSelectedRows());
     }
 
-    // UC-SHARE-010, Rule-SHARE-129
+    // Rule-SHARE-129
     public void testAMarkerStaysTickedAndGrayWhenTheChangeAboveItIsTakenAway() {
         final @NotNull SelectionTable review = aReviewOfOneChangeAndOneMarker();
         final @NotNull JTable table = theTable(review);
@@ -87,7 +87,7 @@ public class SelectionTableIdeTest extends AbstractIdeTest {
         assertEquals("the marker moved up can be unticked", List.of(0), review.getSelectedRows());
     }
 
-    // UC-SHARE-010, Rule-SHARE-129
+    // Rule-SHARE-129
     public void testARightClickBelowTheRowsUnticksTheChangesButNotTheMarker() {
         final @NotNull SelectionTable review = aReviewOfOneChangeAndOneMarker();
         review.onRowAction("Revert", _ -> {

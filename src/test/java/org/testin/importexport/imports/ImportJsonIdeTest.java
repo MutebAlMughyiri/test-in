@@ -61,7 +61,7 @@ public class ImportJsonIdeTest extends AbstractIdeTest {
         assertEquals(TestCaseStatus.PENDING, imported().getStatus());
     }
 
-    // UC-SHARE-005, Rule-SHARE-025, Rule-SHARE-029
+    // UC-SHARE-005, Rule-SHARE-029
     public void testTheOrderInTheFileIsNotRead() {
         assertEquals("an imported test case is placed after everything already in the test set", "", imported().getOrder());
     }

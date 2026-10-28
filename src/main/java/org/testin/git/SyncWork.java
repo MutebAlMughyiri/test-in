@@ -106,7 +106,7 @@ record SyncWork(@NotNull Project project, @NotNull GitRepositoryService git, @No
                 });
     }
 
-    // UC-SHARE-017, Rule-SHARE-077
+    // UC-SHARE-017, Rule-SHARE-075, Rule-SHARE-077
     private @NotNull StoppedRebase stopped(final @NotNull Path repoPath) {
         return new StoppedRebase(project, git, repoPath, Bundle.message("git.rebase.aborted.pull.message"), () -> finishSyncInBackground(repoPath));
     }

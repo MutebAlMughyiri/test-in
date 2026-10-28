@@ -42,7 +42,7 @@ public class MethodRefusedIdeTest extends AbstractCodegenIdeTest {
         return listening.notifications();
     }
 
-    // UC-CODEGEN-005
+    // UC-CODEGEN-019
     public void testWhileTheIdeIndexesNothingIsWrittenAndItIsSaidOnceEachTimeItIndexes() {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull TestCase first = indexedTestCase(login, "Log in", "a");
@@ -63,7 +63,7 @@ public class MethodRefusedIdeTest extends AbstractCodegenIdeTest {
         assertTrue("a method was written while the IDE indexed", methodOf(LOGIN_CLASS, first).isEmpty() && methodOf(LOGIN_CLASS, second).isEmpty());
     }
 
-    // UC-CODEGEN-005
+    // UC-CODEGEN-002
     public void testADescriptionThatCannotNameAMethodGetsNoneAndTheMessageNamesIt() {
         final @NotNull TestCase unnameable = indexedTestCase(createdTestSet("Login"), "123", "a");
 
@@ -74,7 +74,7 @@ public class MethodRefusedIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the message does not name the test case: " + warned.getFirst().getContent(), warned.getFirst().getContent().contains("123"));
     }
 
-    // UC-CODEGEN-005
+    // UC-CODEGEN-002
     public void testSeveralThatCannotBeNamedAreCountedAndThreeOfThemNamed() {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull List<TestCase> unnameable = IntStream.rangeClosed(1, 5).mapToObj(i -> indexedTestCase(login, i + "00", String.valueOf((char) ('a' + i)))).toList();
@@ -85,7 +85,7 @@ public class MethodRefusedIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the message does not name three and count the rest: " + warned.getFirst().getContent(), warned.getFirst().getContent().contains("and 2 more"));
     }
 
-    // UC-CODEGEN-005, Rule-CODEGEN-001
+    // UC-CODEGEN-002, Rule-CODEGEN-001
     public void testATestCaseWhoseMethodNameIsTakenGetsNoMethodAndIsTold() {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull TestCase first = createdTestCase(login, "Log in", "a");
@@ -100,7 +100,7 @@ public class MethodRefusedIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the message does not name the test case left without a method: " + warned.getFirst().getContent(), warned.getFirst().getContent().contains("log in!"));
     }
 
-    // UC-CODEGEN-005, Rule-CODEGEN-002
+    // Rule-CODEGEN-002
     public void testATestCaseWithNoDescriptionGetsNoMethodAndNoMessage() {
         final @NotNull TestCase blank = indexedTestCase(createdTestSet("Login"), "", "a");
 
@@ -110,7 +110,7 @@ public class MethodRefusedIdeTest extends AbstractCodegenIdeTest {
         assertEquals("a test case with no description was reported as refused", List.of(), warned);
     }
 
-    // UC-CODEGEN-005, Rule-CODEGEN-045
+    // UC-CODEGEN-002, Rule-CODEGEN-045
     public void testANewMethodCarriesItsTestCasesGroups() {
         final @NotNull TestCase grouped = indexedTestCase(createdTestSet("Login"), "Pay by card", "a").edit().groups(new ArrayList<>(List.of("smoke", "payments"))).build();
 

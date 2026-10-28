@@ -78,6 +78,7 @@ public final class TestCase {
     @Builder.Default
     private volatile List<String> steps = new ArrayList<>();
 
+    // Rule-EDITOR-PANEL-031
     @NonNull
     @Builder.Default
     private volatile Priority priority = Priority.DEFAULT;

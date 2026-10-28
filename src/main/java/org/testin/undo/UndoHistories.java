@@ -79,7 +79,7 @@ public final class UndoHistories {
         return history.step(history.undoStack, history.redoStack, Operation::undo, succeeded);
     }
 
-    // UC-INTERNAL-005, Rule-INTERNAL-063
+    // UC-INTERNAL-005, UC-TREE-PANEL-017, Rule-INTERNAL-063
     public boolean redo(final @NotNull UndoScope scope, final @NotNull Runnable succeeded) {
         final @NotNull History history = of(scope);
         return history.step(history.redoStack, history.undoStack, Operation::redo, succeeded);

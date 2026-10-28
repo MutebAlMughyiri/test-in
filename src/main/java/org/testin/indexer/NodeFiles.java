@@ -59,7 +59,7 @@ final class NodeFiles {
         this.ownWrites = Services.getInstance(OwnWrites.class);
     }
 
-    // UC-INTERNAL-002, Rule-INTERNAL-112, Rule-INTERNAL-019, Rule-INTERNAL-143
+    // UC-INTERNAL-002, Rule-INTERNAL-112, Rule-INTERNAL-019, Rule-INTERNAL-113, Rule-INTERNAL-143
     void remove(final @NotNull Path path, final @NotNull Runnable cacheUpdate, final @NotNull Consumer<@NotNull Boolean> onRemoved) {
         final @NotNull Path folder = Optional.ofNullable(path.getParent()).orElse(path);
         ownWrites.record(project, path);

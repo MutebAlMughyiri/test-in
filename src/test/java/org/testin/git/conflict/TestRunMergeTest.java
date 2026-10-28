@@ -123,7 +123,7 @@ public class TestRunMergeTest {
         assertEquals(merge.merged().path("default").asInt(), 2, "the later side's default, the reported failure: " + merge.merged());
     }
 
-    // Rule-SHARE-133, Rule-CODEGEN-112
+    // Rule-SHARE-133
     @Test
     public void twoRetriesInOneSecondStayTwoExecutions() {
         final String first = """

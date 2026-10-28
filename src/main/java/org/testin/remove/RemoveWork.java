@@ -72,7 +72,7 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
         new ConfirmDialog(project, Bundle.message("remove.confirm.title"), message, from, "", Bundle.message("remove.confirm.button"), () -> removeNodes(nodesToRemove)).show();
     }
 
-    // UC-TREE-PANEL-012
+    // UC-TREE-PANEL-012, Rule-TREE-PANEL-007
     private void removeNodes(final @NotNull List<AbstractNode> nodesToRemove) {
         remove(nodesToRemove, (went, undoable) -> {
             if (went.isEmpty()) return;

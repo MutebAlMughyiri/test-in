@@ -143,6 +143,7 @@ public enum FileFormat {
                 .toArray(String[]::new);
     }
 
+    // UC-SHARE-005, Rule-SHARE-110
     public @NotNull String hintFor(final @NotNull String columns) {
         return hint.apply(columns);
     }

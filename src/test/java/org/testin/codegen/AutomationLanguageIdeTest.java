@@ -57,7 +57,7 @@ public class AutomationLanguageIdeTest extends AbstractCodegenIdeTest {
         assertEquals("an interpreter Testin does not know was not read as Java", AutomationLanguage.JAVA, AutomationLanguage.of(getProject()));
     }
 
-    // Rule-CODEGEN-117, Rule-CODEGEN-119, Rule-CODEGEN-120
+    // Rule-CODEGEN-117, Rule-CODEGEN-119
     public void testWorkARobotTestProjectHasNoModuleForIsGrayAndWritesNoJava() {
         interpreterIs("Python SDK");
         final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");

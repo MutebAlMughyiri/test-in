@@ -121,12 +121,13 @@ public class MoveNodeCodeIdeTest extends AbstractCodegenIdeTest {
         Await.until("the class did not move with its test set", () -> generatedClass("nafath.checkout.LoginTest").isPresent());
 
         TempTree.delete(checkout.getPath().resolve("Login"));
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
         undoHistories().undo(UndoScope.TREE);
 
-        Await.until("the undone move did not put the class back where the test set still is", () -> {
-            settled();
-            return generatedClass("nafath.checkout.LoginTest").isPresent() && generatedClass("nafath.LoginTest").isEmpty();
-        });
+        Await.until("the tree did not refuse the undone move", () -> !said.shown().isEmpty() || !said.notifications().isEmpty());
+        settled();
+        assertTrue("the refused undo took the class out of the package the test set is still in", generatedClass("nafath.checkout.LoginTest").isPresent());
+        assertTrue("the refused undo put a class back where the test set did not go", generatedClass("nafath.LoginTest").isEmpty());
     }
 
     // Rule-TREE-PANEL-049

@@ -53,6 +53,7 @@ public class GridContextMenuListener extends MouseAdapter {
         showPopupIfRequested(e);
     }
 
+    // UC-EDITOR-PANEL-024, Rule-EDITOR-PANEL-110
     @Override
     public void mouseReleased(final MouseEvent e) {
         if (e.isPopupTrigger() && !popupShownOnPress) {

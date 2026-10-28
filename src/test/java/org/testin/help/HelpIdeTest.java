@@ -116,7 +116,7 @@ public class HelpIdeTest extends AbstractIdeTest {
         hints.clear(SetupStep.BOARD_COLUMNS);
     }
 
-    // Rule-INTERNAL-128, Rule-INTERNAL-129
+    // Rule-INTERNAL-129
     public void testAFiredHintOffersItsGuide() {
         final @NotNull Hints hints = nothingWaits();
 

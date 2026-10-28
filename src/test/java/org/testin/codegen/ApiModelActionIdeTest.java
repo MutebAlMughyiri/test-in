@@ -203,7 +203,10 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
 
     // UC-CODEGEN-022, Rule-CODEGEN-098
     public void testTheEntryCarriesItsName() {
-        assertEquals(Bundle.message("action.Testin.ApiModel.text"), action().getTemplatePresentation().getText());
+        final @NotNull Presentation shown = shownOn(aPackage());
+
+        assertEquals("the entry does not carry its name", Bundle.message("action.Testin.ApiModel.text"), shown.getText());
+        assertTrue("the entry is gray on a Java package", shown.isEnabled());
     }
 
     // UC-CODEGEN-022, Rule-CODEGEN-098

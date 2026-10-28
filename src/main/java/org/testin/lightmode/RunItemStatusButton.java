@@ -42,6 +42,7 @@ class RunItemStatusButton extends JBPanel<RunItemStatusButton> {
 
     private boolean hovered;
 
+    // UC-EDITOR-PANEL-046
     RunItemStatusButton(final @NotNull String key, final @NotNull String text, final @NotNull Runnable onClick) {
         super(new FlowLayout(FlowLayout.CENTER, JBUI.scale(6), JBUI.scale(PADDING)));
         this.onClick = onClick;

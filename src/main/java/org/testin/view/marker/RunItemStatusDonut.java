@@ -82,6 +82,7 @@ public final class RunItemStatusDonut implements DialogComponent {
         panel.add(block, BorderLayout.NORTH);
     }
 
+    // UC-TREE-PANEL-027
     private static @NotNull JBPanel<?> legend(final @NotNull List<NodeFigureRow> slices, final @NotNull NodeFigures figures) {
         final @NotNull JBPanel<?> rows = new JBPanel<>();
         rows.setLayout(new BoxLayout(rows, BoxLayout.Y_AXIS));

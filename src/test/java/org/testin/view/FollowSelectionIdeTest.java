@@ -60,7 +60,7 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
         assertFalse("moving the selection filled a panel that was off the screen: " + details(), holds(details(), "Log in with no password"));
     }
 
-    // Rule-VIEW-PANEL-015, Rule-EDITOR-PANEL-289
+    // Rule-VIEW-PANEL-015
     public void testAnEditorBehindAnotherLeavesThePanelAsItIs() {
         final @NotNull TestSetNode testSet = aTestSet("Login");
         final @NotNull TestCase first = aTestCase(testSet, "Log in with a valid user", "a");

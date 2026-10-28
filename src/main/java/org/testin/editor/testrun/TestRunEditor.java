@@ -442,7 +442,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
                 .reduce(Duration.ZERO, Duration::plus);
     }
 
-    // UC-EDITOR-PANEL-027, Rule-EDITOR-PANEL-119
+    // UC-EDITOR-PANEL-027, Rule-EDITOR-PANEL-119, Rule-TREE-PANEL-111
     @Override
     public boolean isBusy() {
         return walk.isExecuting() || super.isBusy();

@@ -40,7 +40,6 @@ public class PriorityDotTest {
         return image;
     }
 
-    // UC-EDITOR-PANEL-020
     @Test
     public void eachPriorityIsADotInItsOwnColorInTheMiddleOfItsIcon() {
         for (final Priority priority : Priority.values()) {

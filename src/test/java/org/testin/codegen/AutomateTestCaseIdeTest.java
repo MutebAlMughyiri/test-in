@@ -81,7 +81,7 @@ public class AutomateTestCaseIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the entry is gray for a test case it can write a method for", updated(indexedTestCase(login, "Log in", "c")).getPresentation().isEnabled());
     }
 
-    // Rule-CODEGEN-025
+    // UC-CODEGEN-005, Rule-CODEGEN-025
     public void testAutomateWritesTheMethodAndItsClassAndTellsATestCaseThatHasOne() {
         final @NotNull TestCase testCase = indexedTestCase(indexedTestSet("Login", indexedPackage("Checkout", theTestCasesDirectory())), "Log in with a valid user", "b");
 

@@ -348,7 +348,7 @@ public class DialogShellIdeTest extends AbstractIdeTest {
         assertEquals("a table does not ask for eight rows", 8 * table.getRowHeight(), table.getPreferredScrollableViewportSize().height);
     }
 
-    // UC-INTERNAL-007, Rule-INTERNAL-144
+    // Rule-INTERNAL-144
     public void testATableColumnIsACountOfCharactersOfTheTablesOwnFont() {
         final @NotNull JBTable table = Drawn.components(DialogPart.table().column("Test project", 26).column("Status", 10).build().getComponent().getPanel()).stream()
                 .filter(JBTable.class::isInstance).map(JBTable.class::cast).findFirst().orElseThrow();

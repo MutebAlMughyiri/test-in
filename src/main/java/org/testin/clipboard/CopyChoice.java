@@ -148,6 +148,7 @@ public enum CopyChoice implements MenuItem {
         return copied.apply(testCase);
     }
 
+    // Rule-EDITOR-PANEL-008
     public @NotNull String copiedMessage(final int testCases) {
         return testCases == 1
                 ? Bundle.message("copy.done.one", name)

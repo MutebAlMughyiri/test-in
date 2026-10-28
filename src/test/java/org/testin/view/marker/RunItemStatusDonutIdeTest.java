@@ -50,7 +50,7 @@ public class RunItemStatusDonutIdeTest extends AbstractIdeTest {
         return image;
     }
 
-    // Rule-TREE-PANEL-126
+    // UC-TREE-PANEL-027
     public void testTheLegendNamesEachRunItemStatusWithItsCount() {
         final @NotNull JComponent donut = new RunItemStatusDonut(SLICES, FIGURES).getPanel();
 
