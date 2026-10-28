@@ -21,6 +21,8 @@ import org.testin.util.Bundle;
 import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -182,5 +184,60 @@ public class TestCaseMergerTest {
         assertFalse(TestCaseMerger.isTestCase("Test Runs/Cycle 1/Cycle 1.json"),
                 "a test run records what happened; it is not something two people edit into one");
         assertFalse(TestCaseMerger.isTestCase("Test Cases/Login/notes.txt"));
+        assertFalse(TestCaseMerger.isTestCase("Test Runs/Cycle 1/6197ec6e.testcase"), "a test case file outside the Test Cases folder is not a test case");
+    }
+
+    // Rule-SHARE-078, Rule-SHARE-081
+    @Test
+    public void aFieldOneSideTookAwayIsAskedAboutWithNothingOnThatSideAndAListWithItsItems() {
+        final String base = """
+                { "order" : "m", "module" : "Login", "steps" : [ "Open the app" ] }
+                """;
+        final String mine = """
+                { "order" : "m", "steps" : [ "Open the app", "Type the password" ] }
+                """;
+        final String theirs = """
+                { "order" : "m", "module" : "Accounts", "steps" : [ "Open the app", "Press Sign in" ] }
+                """;
+
+        final List<Question> asked = TestCaseMerger.of(RealJsonCodec.build(), base, mine, theirs).questions();
+        final Question module = asked.stream().filter(question -> question.field().equals("module")).findFirst().orElseThrow(() -> new AssertionError("the module was not asked about: " + asked));
+        final Question steps = asked.stream().filter(question -> question.field().equals("steps")).findFirst().orElseThrow(() -> new AssertionError("the steps were not asked about: " + asked));
+
+        assertEquals(module.mine(), "", "the side that took the field away is not asked about as nothing");
+        assertEquals(module.theirs(), "Accounts");
+        assertTrue(steps.mine().contains("Type the password"), "a list is not asked about with its items: " + steps.mine());
+    }
+
+    // Rule-SHARE-080
+    @Test
+    public void aFieldEmptiedOnBothSidesIsTheSameWhetherNullOrGone() {
+        final String base = """
+                { "order" : "m", "module" : "Login" }
+                """;
+        final String mine = """
+                { "order" : "m", "module" : null }
+                """;
+        final String theirs = """
+                { "order" : "m" }
+                """;
+
+        assertTrue(TestCaseMerger.of(RealJsonCodec.build(), base, mine, theirs).isSettled(), "a field emptied on both sides was asked about");
+    }
+
+    // Rule-SHARE-109
+    @Test
+    public void whoCreatedATestCaseIsNeverAQuestion() {
+        final String base = """
+                { "order" : "m", "createdBy" : "muteb" }
+                """;
+        final String mine = """
+                { "order" : "m", "createdBy" : "sara" }
+                """;
+        final String theirs = """
+                { "order" : "m", "createdBy" : "ali" }
+                """;
+
+        assertTrue(TestCaseMerger.of(RealJsonCodec.build(), base, mine, theirs).isSettled(), "who created the test case was asked about");
     }
 }

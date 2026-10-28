@@ -24,6 +24,7 @@ import org.testin.git.conflict.Question;
 import org.testin.git.conflict.ResolveConflictDialog;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
+import org.testin.view.Drawn;
 
 import javax.swing.JComponent;
 import javax.swing.JRadioButton;
@@ -91,6 +92,20 @@ public class GitDialogsIdeTest extends AbstractTempRootIdeTest {
         ShareGestures.pressEnter(dialog);
         assertEquals("an identity with no email address was handed on", List.of(), set);
         assertTrue("a refused identity closed the dialog", ShownDialog.isOpen(getProject(), GitIdentityDialog.class));
+    }
+
+    // UC-SHARE-018, Rule-SHARE-081
+    public void testWhatWasSettledIsSaidAboveTheQuestionsAndTheirValueIsKeptWhenChosen() {
+        final @NotNull List<Set<String>> kept = new ArrayList<>();
+        new ResolveConflictDialog(getProject(), "Log in with a valid user", List.of(new Question("description", "Log in with a valid user", "Sign in with a valid account")),
+                List.of(Bundle.message("git.merge.position")), kept::add, () -> kept.add(Set.of("skipped"))).show();
+        final @NotNull JComponent dialog = ShownDialog.waitedFor(getProject(), ResolveConflictDialog.class);
+
+        assertTrue("what was settled is not said: " + Drawn.words(dialog), Drawn.holds(Drawn.words(dialog), Bundle.message("git.merge.position")));
+
+        radio(dialog, Bundle.message("dialog.conflict.option.remote", "Sign in with a valid account")).doClick();
+        ShareGestures.pressEnter(dialog);
+        assertEquals("their value chosen was not kept", List.of(Set.of("description")), kept);
     }
 
     // UC-SHARE-018, Rule-SHARE-082

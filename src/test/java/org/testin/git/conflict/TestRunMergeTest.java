@@ -191,6 +191,43 @@ public class TestRunMergeTest {
         assertEquals(merge.merged().path("updatedBy").asText(), "Sara", "the audit block takes the later edit");
     }
 
+    // Rule-SHARE-080
+    @Test
+    public void aTestRunRanFromTheFirstStartToTheLastStopWhicheverSideIsMine() {
+        final MergeOutcome merge = TestRunMarkerMerger.of(RealJsonCodec.build(), BASE_MARKER, THEIRS_MARKER, MINE_MARKER);
+
+        assertEquals(merge.merged().path("executionStartedAt").asText(), "Monday 14-09-2026 At 09:30:00 [Asia/Riyadh]", "my earlier start was not kept");
+        assertEquals(merge.merged().path("executionEndedAt").asText(), "Monday 14-09-2026 At 11:35:00 [Asia/Riyadh]", "my later stop was not kept");
+    }
+
+    // Rule-SHARE-080
+    @Test
+    public void aSideThatNeverStartedTheTestRunTakesTheOtherSidesTimes() {
+        final String neverStarted = """
+                {
+                  "createdBy" : "Muteb",
+                  "createdAt" : "Sunday 13-09-2026 At 09:00:00 [Asia/Riyadh]",
+                  "updatedBy" : "Omar",
+                  "updatedAt" : "Monday 14-09-2026 At 09:10:00 [Asia/Riyadh]",
+                  "status" : "CREATED",
+                  "configuration" : { "platform" : "Web" }
+                }""";
+
+        final MergeOutcome mineNeverStarted = TestRunMarkerMerger.of(RealJsonCodec.build(), BASE_MARKER, neverStarted, THEIRS_MARKER);
+        assertEquals(mineNeverStarted.merged().path("executionStartedAt").asText(), "Monday 14-09-2026 At 09:30:00 [Asia/Riyadh]", "their start was not taken where I never started");
+
+        final MergeOutcome theyNeverStarted = TestRunMarkerMerger.of(RealJsonCodec.build(), BASE_MARKER, MINE_MARKER, neverStarted);
+        assertEquals(theyNeverStarted.merged().path("executionStartedAt").asText(), "Monday 14-09-2026 At 10:00:00 [Asia/Riyadh]", "my start was dropped where they never started");
+    }
+
+    // Rule-SHARE-133
+    @Test
+    public void anExecutionBothSidesReportedKeepsOneOfTheirIssues() {
+        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), runItem(BOTH, LATE_REPORTED), runItem(BOTH, LATE_REPORTED.replace("issues/412", "issues/413")));
+
+        assertTrue(merge.merged().path("executions").get(1).path("bugIssueUrl").asText().matches(".*issues/41[23]"), "the execution both sides reported lost its issue: " + merge.merged());
+    }
+
     // Rule-SHARE-130
     @Test
     public void aCommittedTestRunBringsItsCommitWithItsStatus() {
