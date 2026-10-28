@@ -52,6 +52,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -187,6 +188,28 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         } finally {
             ShownDialog.close(getProject(), StacktraceDialog.class);
         }
+    }
+
+    // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-081
+    public void testScreenshotsWithNoStacktraceAreDrawnWithNoLink() {
+        final @NotNull TestCase testCase = aTestCase(aTestSet("Login"), "Log in with a valid user", "a");
+        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().uuid(testCase.getUuid()).build()));
+        final @NotNull List<String> names = Services.getInstance(getProject(), TestRuns.class).storeScreenshots(testRun.getPath(), List.of(aScreenshot(320, 200)));
+        final @NotNull RunItem failed = RunItem.builder().uuid(testCase.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).screenshots(names).build())).build();
+
+        final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), testCase, Optional.of(failed), testRun.treePath());
+
+        assertFalse("a failure with no stacktrace drew the Stacktrace link", Drawn.holds(Drawn.words(tab), Bundle.message("view.stacktrace.link")));
+        assertTrue("the screenshot of a failure with no stacktrace was not drawn", Drawn.components(tab).stream().anyMatch(component -> component instanceof JBLabel label && String.valueOf(label.getToolTipText()).contains(names.getFirst())));
+    }
+
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-027
+    public void testStepsThatAreAllBlankDrawNoStep() {
+        final @NotNull TestCase testCase = aTestCase(aTestSet("Login"), "Log in with a valid user", "a").edit().steps(new ArrayList<>(List.of(" ", ""))).build();
+
+        final @NotNull JBPanel<?> tab = drawnWithEveryBandOpen(testCase, Optional.empty(), List.of());
+
+        assertTrue("steps that are all blank drew a step: " + Drawn.words(tab), Drawn.words(tab).stream().noneMatch(word -> word.startsWith("1- ")));
     }
 
     public void testAScreenshotNameTestinDidNotWriteReadsNothing() {
