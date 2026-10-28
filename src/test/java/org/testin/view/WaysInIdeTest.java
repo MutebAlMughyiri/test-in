@@ -133,4 +133,21 @@ public class WaysInIdeTest extends AbstractViewPanelIdeTest {
         assertEquals("Enter on the number did not move the keyboard into the panel", 1, view.timesTheDetailsTabTookTheKeyboard());
         assertTheShownTestCasesAre(1);
     }
+
+    // Rule-VIEW-PANEL-010, Rule-EDITOR-PANEL-272
+    public void testEnterOnARowTakenWholeByItsNumberHandsThatTestCase() {
+        final @NotNull TestSetEditor editor = anEditor();
+        editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
+        settled();
+        final @NotNull JBTable grid = Drawn.first(editor.getComponent(), JBTable.class);
+        final int number = IntStream.range(0, grid.getColumnCount()).filter(column -> GridTables.isSequenceColumn(grid, column)).findFirst().orElseThrow(() -> new AssertionError("the grid has no number column"));
+        grid.setRowSelectionInterval(0, 0);
+        grid.setColumnSelectionInterval(0, grid.getColumnCount() - 1);
+        grid.getColumnModel().getSelectionModel().setAnchorSelectionIndex(number);
+
+        assertTrue("Enter on a row taken whole by its number did nothing", KeyPress.press(getProject(), grid, GridKeys.enter()));
+
+        assertEquals("Enter on a row taken whole by its number did not move the keyboard into the panel", 1, view.timesTheDetailsTabTookTheKeyboard());
+        assertTheShownTestCasesAre(1);
+    }
 }
