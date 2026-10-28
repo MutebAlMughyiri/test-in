@@ -114,6 +114,28 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
         assertFalse("the grid takes a dropped card", grid.getTransferHandler() instanceof TestCaseTransferHandler);
     }
 
+    // UC-EDITOR-PANEL-010, Rule-EDITOR-PANEL-059
+    public void testACardDroppedWhereItIsChangesNothing() {
+        final @NotNull TestSetEditor editor = aTestSetOf("Log in", "Log out", "Sign up");
+        final @NotNull List<String> before = everyFile();
+
+        assertFalse("a card dropped where it is was taken for a move", drag(editor, new int[]{1}, 2));
+
+        assertEquals("a card dropped where it is wrote a file", before, everyFile());
+    }
+
+    // UC-EDITOR-PANEL-010
+    public void testCardsDraggedFromAnotherTestSetAreRefused() {
+        final @NotNull TestSetEditor from = aTestSetOf("Log in", "Log out");
+        final @NotNull TestSetNode payments = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Payments");
+        EditorFixtures.testCase(getProject(), payments, "Pay by card", "m0000");
+        final @NotNull TestSetEditor into = EditorFixtures.openTestSetEditor(getProject(), payments, getTestRootDisposable());
+        from.getList().setSelectedIndex(0);
+        final @NotNull Transferable dragged = Objects.requireNonNull(new DroppedAt(getProject(), from, 0).createTransferable(from.getList()), "nothing was picked up");
+
+        assertFalse("cards from another test set were dropped in", new DroppedAt(getProject(), into, 0).importData(new TransferHandler.TransferSupport(into.getList(), dragged)));
+    }
+
     // UC-EDITOR-PANEL-010, Rule-EDITOR-PANEL-057
     public void testTheCardsTakeADraggedCardAndRefuseAnythingElse() {
         final @NotNull TestSetEditor editor = aTestSetOf("Log in", "Log out");
