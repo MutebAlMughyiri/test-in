@@ -16,6 +16,7 @@
 
 package org.testin.explorer.toolbar;
 
+import com.intellij.ide.trustedProjects.TrustedProjects;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.testFramework.PlatformTestUtil;
@@ -39,6 +40,7 @@ import org.testin.view.Drawn;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -50,6 +52,8 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
+
+    private static final @NotNull String TRUST_CHECKED_IN_TESTS = "idea.trust.headless.disabled";
 
     private @NotNull String rootWas = "";
 
@@ -217,6 +221,37 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
 
         Await.until("switching anyway did not switch", () -> branchOnDisk().equals("feature"));
         assertTrue("switching lost the uncommitted change", Files.exists(notes));
+    }
+
+    // UC-TREE-PANEL-026, Rule-TREE-PANEL-085
+    public void testSwitchingWithSeveralUncommittedChangesCountsThem() {
+        changedTheLoginMarker();
+        writeUncommitted(testProject.getPath().resolve("notes.txt"));
+
+        branchBox().setSelectedItem("feature");
+
+        final @NotNull JComponent asked = ShownDialog.waitedFor(getProject(), ConfirmDialog.class);
+        assertTrue("the question does not count the uncommitted changes: " + Drawn.words(asked), String.join(" ", Drawn.words(asked)).contains(Bundle.message("branch.uncommitted.many", "2")));
+    }
+
+    // UC-TREE-PANEL-026, Rule-SHARE-132
+    public void testInSafeModeChoosingABranchSwitchesNothingAndPutsTheBoxBack() {
+        final @NotNull JComboBox<?> box = branchBox();
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        final @NotNull String checkedBefore = System.getProperty(TRUST_CHECKED_IN_TESTS, "true");
+        System.setProperty(TRUST_CHECKED_IN_TESTS, "false");
+        TrustedProjects.setProjectTrusted(getProject(), false);
+        try {
+            box.setSelectedItem("feature");
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertEquals("a branch was switched in safe mode", "main", branchOnDisk());
+            assertEquals("the box did not go back to the branch checked out", "main", Objects.toString(box.getSelectedItem(), ""));
+            assertEquals("safe mode was not said once", List.of(Bundle.message("git.safe.mode")), said.shown());
+        } finally {
+            TrustedProjects.setProjectTrusted(getProject(), true);
+            System.setProperty(TRUST_CHECKED_IN_TESTS, checkedBefore);
+        }
     }
 
     // Rule-TREE-PANEL-132
