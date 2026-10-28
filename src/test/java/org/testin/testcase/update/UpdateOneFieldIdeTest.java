@@ -169,9 +169,10 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
         ShownDialog.open(getProject(), UpdateTestCaseDialog.class, () -> UpdateTestCaseAction.openField(getProject(), editor, UpdateTestCaseFields.EXPECTED_RESULT));
         save();
         assertFalse("the dialog stayed open", ShownDialog.isOpen(getProject(), UpdateTestCaseDialog.class));
+        PlatformTestUtil.waitForAllBackgroundActivityToCalmDown();
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertEquals("a save that changed nothing said something", List.of(), balloons.shown());
-        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         assertEquals("a save that changed nothing wrote the file", before, fileOf(testCase));
         assertFalse("a save that changed nothing went on the undo history", Services.getInstance(getProject(), UndoHistories.class).canUndo(scope));
     }
