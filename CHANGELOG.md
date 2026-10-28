@@ -13,10 +13,10 @@ Your test data carries over: this build reads and writes format 5, as 2.15.0-alp
 ### Added
 
 - **Robot Framework test projects:** a code project whose interpreter is Python is automated in Robot Framework. Each
-  test set is a suite file and each test case a test in it, its first tag the test case UUID, and Testin keeps the
-  suites in step as test cases and test sets are created, edited, moved and removed, leaving the steps a tester wrote
-  as they are. Navigate to Test Method opens the test, Run Test Method and Run Tests run Robot Framework with the
-  project's interpreter and record each run item from Robot's output, and the mark beside a test in the gutter leads
+  test set is a suite file and each test case a test in it, its first tag the test case UUID. Testin keeps the suites
+  in step as test cases and test sets are created, edited, moved and removed, and leaves the steps a tester wrote as
+  they are. Navigate to Test Method opens the test. Run Test Method and Run Tests run Robot Framework with the
+  project's interpreter, and each run item is recorded from Robot's output. The mark beside a test in the gutter leads
   back to its test case. It works in PyCharm too (#2).
 - **The agent works in the Terminal:** Automate Test Case hands the test cases to your command-line agent in a tab of
   IntelliJ's Terminal named after its command. The agent writes each body over the TODO itself and asks you as it goes.
@@ -64,7 +64,7 @@ Your test data carries over: this build reads and writes format 5, as 2.15.0-alp
 - **A blank row in an imported workbook is passed over** rather than coming in as an empty test case.
 - **What Testin creates, removes or moves while a test project is being read stays so** when the read lands.
 - **A test run name that is a path is refused** in Create, Re-create and Edit.
-- **A create or a move no longer lands on a sibling whose name differs only in capitals.**
+- **Creating or moving a node no longer lands on a sibling whose name differs only in capitals.**
 - **Refresh keeps the editors answering,** and a save made during it keeps its audit.
 - **A cut test case is kept when its editor closes** before the paste.
 - **Jackson 2.22.4,** since 2.22.3 has CVE-2026-110879.
