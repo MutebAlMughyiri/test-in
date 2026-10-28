@@ -50,6 +50,7 @@ import java.util.Optional;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotSame;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
@@ -343,6 +344,7 @@ public class FrameworkComponentsTest {
         final JTextArea field = new JTextArea();
 
         assertSame(new FormRows().row("", field).getComponent(0), field, "a row with no label wrapped its field in a caption");
+        assertNotSame(new FormRows().row("Folder", field).getComponent(0), field, "a row with a label left its field without a caption");
     }
 
     // Rule-VIEW-PANEL-081

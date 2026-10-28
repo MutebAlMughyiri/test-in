@@ -25,6 +25,7 @@ import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
@@ -63,5 +64,10 @@ public class ShortcutMatchesTest {
     public void aShortcutKnowsItsOwnSetFromAnother() {
         assertTrue(Shortcuts.Enter.is(Shortcuts.Enter.getCustomShortcut()));
         assertFalse(Shortcuts.Enter.is(Shortcuts.InsertNewLine.getCustomShortcut()));
+    }
+
+    @Test
+    public void aKeyThatIsNoKeyIsWrittenAsNothing() {
+        assertEquals(Shortcuts.shortcutText(Shortcuts.NO_KEY), "");
     }
 }

@@ -16,6 +16,7 @@
 
 package org.testin.order;
 
+import com.intellij.testFramework.PlatformTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
@@ -23,6 +24,7 @@ import org.testin.NodesOnDisk;
 import org.testin.TreeGesture;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestProjectIndexer;
+import org.testin.model.markers.Marker;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -30,8 +32,10 @@ import org.testin.ui.framework.ShownDialog;
 import org.testin.undo.UndoHistories;
 import org.testin.undo.UndoScope;
 import org.testin.util.Shortcuts;
+import org.testin.view.Drawn;
 
 import java.util.List;
+import javax.swing.text.JTextComponent;
 
 public class OrderNodeIdeTest extends AbstractTempRootIdeTest {
 
@@ -81,6 +85,19 @@ public class OrderNodeIdeTest extends AbstractTempRootIdeTest {
             assertEquals(tooLarge + " cleared the number the node had", 3, orderOfLogin());
             ShownDialog.close(getProject(), OrderDialog.class);
         }
+    }
+
+    // UC-TREE-PANEL-015, Rule-TREE-PANEL-055
+    public void testTheSamePlaceChangesNothingAndAnEmptyBoxTakesThePlaceAway() {
+        ordered("3");
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+        assertFalse("the place the node already had went onto the history", undoHistories().canUndo(UndoScope.TREE));
+
+        ordered("");
+        Await.until("an empty box did not take the place away", () -> orderOfLogin() == Marker.NOT_ORDERED);
+
+        TreeGesture.pressed(getProject(), new OrderNodeAction(), List.of(login));
+        assertEquals("a node with no place opened the box with a number", "", Drawn.first(ShownDialog.content(getProject(), OrderDialog.class), JTextComponent.class, JTextComponent::isEditable).getText());
     }
 
     // Rule-TREE-PANEL-103, UC-TREE-PANEL-017
