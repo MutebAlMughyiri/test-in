@@ -158,6 +158,27 @@ public class SettingsPageRulesIdeTest extends AbstractTempRootIdeTest {
         assertEquals("the gear did not open the Testin page itself", List.of(SettingsConfigurable.class), opened);
     }
 
+    // UC-SETTING-001, Rule-SETTING-008
+    public void testEachValueThePageNoLongerMatchesCountsAsAChange() {
+        final @NotNull SettingsConfigurable page = new SettingsConfigurable();
+        page.createComponent();
+        final @NotNull List<Runnable> changes = List.of(
+                () -> settings().rootTestinPath = root.resolve("elsewhere").toString(),
+                () -> settings().logLevel = LogLevel.DEBUG.name().equals(settings().logLevel) ? LogLevel.WARN.name() : LogLevel.DEBUG.name(),
+                () -> settings().testerRole = settings().testerRole + "Lead",
+                () -> settings().defaultDownloadFolder = settings().defaultDownloadFolder + "Reports",
+                () -> settings().showShortcutHints = !settings().showShortcutHints);
+
+        for (final Runnable change : changes) {
+            XmlSerializerUtil.copyBean(wasStored, settings());
+            page.reset();
+            assertFalse("the stored values, shown as they are, count as a change", page.isModified());
+
+            change.run();
+            assertTrue("a value the page no longer matches does not count as a change", page.isModified());
+        }
+    }
+
     // Rule-SETTING-024
     public void testTheLogLevelTakesEffectTheMomentApplyIsPressed() {
         final @NotNull LogWriter log = Services.getInstance(LogWriter.class);

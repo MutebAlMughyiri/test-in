@@ -107,6 +107,23 @@ public class RenameNodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the class under the old name is still there", generatedClass(loginClass()).isEmpty());
     }
 
+    // UC-TREE-PANEL-011, Rule-TREE-PANEL-004
+    public void testRenamingToTheSameNameChangesNothingAndNoNameIsRefused() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+
+        TreeGesture.pressed(getProject(), new RenameAction(), List.of(login));
+        ShownDialog.typed(getProject(), RenameDialog.class, "");
+        ShownDialog.press(getProject(), RenameDialog.class, Shortcuts.Enter);
+        assertTrue("a rename to no name closed the dialog", ShownDialog.isOpen(getProject(), RenameDialog.class));
+
+        ShownDialog.typed(getProject(), RenameDialog.class, "Login");
+        ShownDialog.press(getProject(), RenameDialog.class, Shortcuts.Enter);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertTrue("renaming to the same name moved the test set", nodes().nodeExists(login.getPath()));
+        assertFalse("renaming to the same name went on the undo history", undoHistories().canUndo(UndoScope.TREE));
+    }
+
     // Rule-TREE-PANEL-037
     public void testARenameIsUndone() {
         final @NotNull TestSetNode login = createdTestSet("Login");

@@ -117,4 +117,10 @@ public class AgentCommandTest {
         assertTrue(typed.promptTemplate().contains("{description}"),
                 "a blank prompt means the shipped one, so a later release's better wording reaches a tester who never edited it");
     }
+
+    // UC-CODEGEN-021, Rule-CODEGEN-086
+    @Test
+    public void aTemplateTheTesterEditedIsTheirs() {
+        assertEquals(new AgentConnection("pi", "-p", "Write {description} with Selenide").promptTemplate(), "Write {description} with Selenide");
+    }
 }
