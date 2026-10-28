@@ -134,7 +134,7 @@ public class CardHoverIdeTest extends AbstractCodegenIdeTest {
         assertEquals("leaving twice left a card hovered", -1, list.getHoveredIndex());
     }
 
-    // UC-EDITOR-PANEL-025, UC-EDITOR-PANEL-043
+    // UC-EDITOR-PANEL-025
     public void testOverATestSetWithNoTestCaseTheMouseFindsNoCard() {
         final @NotNull TestSetNode testSet = createdTestSet("Checkout");
         settled();
