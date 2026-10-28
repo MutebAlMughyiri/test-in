@@ -16,6 +16,11 @@
 
 package org.testin.testcase.update;
 
+import com.intellij.openapi.ui.popup.JBPopup;
+import com.intellij.ui.SimpleColoredComponent;
+import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.ui.UiInterceptors;
+import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.fields.IntegerField;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
@@ -44,6 +49,8 @@ import org.testin.view.Drawn;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -150,6 +157,30 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
 
         assertTrue("the order key on two cards was not refused in words: " + said.shown(), said.shown().contains(Bundle.message("update.order.one.at.a.time")));
         assertFalse("the order key on two cards opened the order dialog", ShownDialog.isOpen(getProject(), UpdateTestCaseDialog.class));
+    }
+
+    // UC-EDITOR-PANEL-009
+    public void testOrderOnTheUpdateMenuOfSeveralTestCasesIsGrayAndSaysWhyInPlaceOfItsKey() {
+        final @NotNull TestSetEditor editor = sixTestCases();
+        final @NotNull List<JBPopup> shown = new ArrayList<>();
+        UiInterceptors.register(new UiInterceptors.UiInterceptor<>(JBPopup.class) {
+            @Override
+            protected void doIntercept(final @NotNull JBPopup popup) {
+                shown.add(popup);
+            }
+        });
+
+        new UpdateTestCaseMenu(getProject(), List.of(editor.getList().getModel().getElementAt(0), editor.getList().getModel().getElementAt(1)), (_, _) -> {
+        }).show();
+
+        final @NotNull JBList<?> offered = Drawn.first(shown.getFirst().getContent(), JBList.class);
+        final @NotNull SimpleColoredComponent order = (SimpleColoredComponent) Drawn.row(offered, Arrays.asList(UpdateTestCaseFields.values()).indexOf(UpdateTestCaseFields.ORDER));
+        final @NotNull SimpleColoredComponent.ColoredIterator name = order.iterator();
+        name.next();
+        assertFalse("Order can be chosen for two test cases", order.isEnabled());
+        assertEquals("Order's name is not gray for two test cases", SimpleTextAttributes.GRAYED_ATTRIBUTES, name.getTextAttributes());
+        assertTrue("Order does not say why in place of its key: " + order.getCharSequence(false), order.getCharSequence(false).toString().endsWith(Bundle.message("update.order.one.at.a.time")));
+        shown.getFirst().cancel();
     }
 
     // Rule-EDITOR-PANEL-055
