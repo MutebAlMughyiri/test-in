@@ -17,10 +17,8 @@
 package org.testin.view;
 
 import com.intellij.codeInsight.daemon.GutterMark;
-import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
@@ -33,25 +31,12 @@ import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.util.Bundle;
 
-import javax.swing.JPanel;
-import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public class TestCaseMarkOpensTheViewPanelIdeTest extends AbstractCodegenIdeTest {
 
     private ViewOnScreen view;
-
-    private static void clicked(final @NotNull GutterMark mark) {
-        clicked(((LineMarkerInfo.LineMarkerGutterIconRenderer<?>) mark).getLineMarkerInfo());
-    }
-
-    private static <T extends PsiElement> void clicked(final @NotNull LineMarkerInfo<T> info) {
-        final @NotNull T element = Optional.ofNullable(info.getElement()).orElseThrow(() -> new AssertionError("the mark stands beside nothing"));
-        Optional.ofNullable(info.getNavigationHandler()).orElseThrow(() -> new AssertionError("the mark does nothing when clicked"))
-                .navigate(new MouseEvent(new JPanel(), MouseEvent.MOUSE_CLICKED, 0, 0, 1, 1, 1, false), element);
-    }
 
     @Override
     protected void setUp() {

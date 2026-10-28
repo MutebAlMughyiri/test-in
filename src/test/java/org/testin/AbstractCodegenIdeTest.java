@@ -16,6 +16,8 @@
 
 package org.testin;
 
+import com.intellij.codeInsight.daemon.GutterMark;
+import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.module.Module;
@@ -56,6 +58,8 @@ import org.testin.model.node.TestSetPackageNode;
 import org.testin.services.Services;
 import org.testng.annotations.Test;
 
+import javax.swing.JPanel;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -169,6 +173,16 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
 
     protected void whenIndexed() {
         Await.until("the IDE never finished indexing", () -> !DumbService.isDumb(getProject()));
+    }
+
+    protected static void clicked(final @NotNull GutterMark mark) {
+        clicked(((LineMarkerInfo.LineMarkerGutterIconRenderer<?>) mark).getLineMarkerInfo());
+    }
+
+    private static <T extends PsiElement> void clicked(final @NotNull LineMarkerInfo<T> info) {
+        final @NotNull T element = Optional.ofNullable(info.getElement()).orElseThrow(() -> new AssertionError("the mark stands beside nothing"));
+        Optional.ofNullable(info.getNavigationHandler()).orElseThrow(() -> new AssertionError("the mark does nothing when clicked"))
+                .navigate(new MouseEvent(new JPanel(), MouseEvent.MOUSE_CLICKED, 0, 0, 1, 1, 1, false), element);
     }
 
     protected @NotNull Optional<PsiClass> generatedClass(final @NotNull String qualifiedName) {

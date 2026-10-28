@@ -23,7 +23,6 @@ import com.intellij.codeInsight.daemon.LineMarkerProviders;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.IndexNotReadyException;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.SyntaxTraverser;
 import com.intellij.testFramework.DumbModeTestUtils;
@@ -35,27 +34,14 @@ import org.testin.Said;
 import org.testin.notifications.Refused;
 import org.testin.util.Bundle;
 
-import javax.swing.JPanel;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class TestCaseMarkIdeTest extends AbstractCodegenIdeTest {
 
     private static @NotNull String aTestMethod(final @NotNull String testName) {
         return LoginTestSource.withTestNg(testName);
-    }
-
-    private static void clicked(final @NotNull GutterMark mark) {
-        clicked(((LineMarkerInfo.LineMarkerGutterIconRenderer<?>) mark).getLineMarkerInfo());
-    }
-
-    private static <T extends PsiElement> void clicked(final @NotNull LineMarkerInfo<T> info) {
-        final @NotNull T element = Optional.ofNullable(info.getElement()).orElseThrow(() -> new AssertionError("the mark stands beside nothing"));
-        Optional.ofNullable(info.getNavigationHandler()).orElseThrow(() -> new AssertionError("the mark does nothing when clicked"))
-                .navigate(new MouseEvent(new JPanel(), MouseEvent.MOUSE_CLICKED, 0, 0, 1, 1, 1, false), element);
     }
 
     private @NotNull List<GutterMark> marksBeside(final @NotNull String testName) {
