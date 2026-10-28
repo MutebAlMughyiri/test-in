@@ -20,8 +20,6 @@ import com.intellij.openapi.project.Project;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.util.Bundle;
-import org.testin.logger.TestinLogger;
 import org.testin.codegen.CodeOn;
 import org.testin.navigate.TestMethodCode;
 import org.testin.help.Guide;
@@ -51,8 +49,6 @@ public final class ExecuteTestCases {
         if (starting.isEmpty()) return;
 
         starting.forEach(execution::starting);
-        AutomationExecutor.available(project).ifPresentOrElse(
-                runner -> runner.run(project, starting),
-                () -> TestinLogger.debug(Bundle.message("runner.none", String.valueOf(starting.size()))));
+        AutomationExecutor.available(project).ifPresent(runner -> runner.run(project, starting));
     }
 }
