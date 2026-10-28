@@ -223,6 +223,26 @@ public class TestCaseMergerTest {
                 """;
 
         assertTrue(TestCaseMerger.of(RealJsonCodec.build(), base, mine, theirs).isSettled(), "a field emptied on both sides was asked about");
+        assertTrue(TestCaseMerger.of(RealJsonCodec.build(), base, theirs, mine).isSettled(), "a field emptied on both sides was asked about when the remote side wrote null");
+    }
+
+    // Rule-SHARE-078, Rule-SHARE-081
+    @Test
+    public void aFieldOneSideSetToNullIsAskedAboutWithNothingOnThatSide() {
+        final String base = """
+                { "order" : "m", "module" : "Login" }
+                """;
+        final String mine = """
+                { "order" : "m", "module" : null }
+                """;
+        final String theirs = """
+                { "order" : "m", "module" : "Accounts" }
+                """;
+
+        final List<Question> asked = TestCaseMerger.of(RealJsonCodec.build(), base, mine, theirs).questions();
+
+        assertEquals(asked.size(), 1, "the field set to null was not asked about once: " + asked);
+        assertEquals(asked.getFirst().mine(), "", "the side that set the field to null is not asked about as nothing");
     }
 
     // Rule-SHARE-109

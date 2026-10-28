@@ -291,14 +291,16 @@ public class GridIdeTest extends AbstractIdeTest {
         final @NotNull Rectangle cell = table.getCellRect(0, SEQUENCE, true);
         final @NotNull MouseEvent rightPress = new MouseEvent(table, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON3_DOWN_MASK, (int) cell.getCenterX(), (int) cell.getCenterY(), 1, false, MouseEvent.BUTTON3);
         final @NotNull MouseEvent belowTheRows = new MouseEvent(table, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK, (int) cell.getCenterX(), table.getRowHeight() * 5, 1, false, MouseEvent.BUTTON1);
+        final @NotNull MouseEvent rightOfTheColumns = new MouseEvent(table, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK, table.getColumnModel().getTotalColumnWidth() + 5, (int) cell.getCenterY(), 1, false, MouseEvent.BUTTON1);
 
         for (final MouseListener listener : table.getMouseListeners()) {
             if (!(listener instanceof SequenceColumnRowSelector)) continue;
             listener.mousePressed(rightPress);
             listener.mousePressed(belowTheRows);
+            listener.mousePressed(rightOfTheColumns);
         }
 
-        assertEquals("a right press or a press below the rows took a row", 0, table.getSelectedRowCount());
+        assertEquals("a right press, or a press below the rows or right of the columns, took a row", 0, table.getSelectedRowCount());
     }
 
     // Rule-EDITOR-PANEL-086
