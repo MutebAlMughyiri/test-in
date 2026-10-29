@@ -23,6 +23,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.testFramework.ExtensionTestUtil;
 import com.intellij.testFramework.TestActionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
@@ -30,6 +31,7 @@ import org.testin.Await;
 import org.testin.Said;
 import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.agent.RecordedAgentTab;
+import org.testin.codegen.agent.TestMethodFile;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
@@ -126,5 +128,23 @@ public class AutomateTestCaseIdeTest extends AbstractCodegenIdeTest {
         Await.until("the agent was not asked for the body", () -> !tab.getTypedLines().isEmpty());
         assertTrue("the request does not hold the test case: " + tab.getTypedLines(), tab.getTypedLines().getFirst().contains("Log in with a valid user"));
         assertFalse("Automated was said where no method was written: " + said.shown(), said.shown().contains(Done.AUTOMATED.getOutcome()));
+    }
+
+    // UC-CODEGEN-021, Rule-CODEGEN-084
+    public void testWithAnAgentConnectedButNoModuleToFindTheMethodsFileTheAgentIsAskedNothing() {
+        final @NotNull TestCase testCase = indexedTestCase(indexedTestSet("Login", indexedPackage("Checkout", theTestCasesDirectory())), "Log in with a valid user", "b");
+        final @NotNull RecordedAgentTab tab = RecordedAgentTab.installed(getProject(), getTestRootDisposable());
+        final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
+        final @NotNull String commandBefore = settings.agentCommand;
+        settings.agentCommand = "no-such-agent";
+        Disposer.register(getTestRootDisposable(), () -> settings.agentCommand = commandBefore);
+        ExtensionTestUtil.maskExtensions(TestMethodFile.EP, List.of(), getTestRootDisposable());
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        ActionUtil.performAction(automate(), selecting(testCase));
+        Await.until("Automate Test Case wrote no method", () -> said.shown().contains(Done.AUTOMATED.getOutcome()));
+        settled();
+
+        assertEquals("the agent was asked although no module finds the file of the methods", List.of(), tab.getTypedLines());
     }
 }

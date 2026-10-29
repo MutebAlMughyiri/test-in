@@ -329,6 +329,16 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("code moved where it is, or into itself, did not stay", suiteAt("NAFATH/Payments/Card.robot").isPresent());
     }
 
+    // UC-CODEGEN-016, Rule-CODEGEN-121
+    public void testATestSetMovedIntoAPackageWhoseNameMakesNoFolderKeepsItsSuite() {
+        final @NotNull TestSetNode login = createdTestSet("Login page");
+        final @NotNull TestSetPackageNode nameless = indexedPackage("-test-cases", theTestCasesDirectory());
+
+        CodeChangeType.MOVE_TEST_SET.execute(getProject(), new MovedNode(login, nameless.getPath()));
+
+        assertTrue("a test set moved into a package whose name makes no folder lost its suite", suiteAt(LOGIN_SUITE).isPresent());
+    }
+
     // UC-CODEGEN-015, Rule-CODEGEN-051
     public void testRenamingATestSetWhoseSuiteFileWasDeletedWritesNoFile() {
         final @NotNull TestSetNode login = createdTestSet("Login page");

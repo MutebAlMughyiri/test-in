@@ -24,6 +24,7 @@ import org.testin.editor.testset.TestCaseCard;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.status.TestCaseStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.testcase.CreateTestCaseFields;
@@ -147,6 +148,21 @@ public class CardDetailIconsIdeTest extends AbstractIdeTest {
         final @NotNull Rectangle line = SwingUtilities.convertRectangle(theLineSaying(card, EXPECTED).getParent(), theLineSaying(card, EXPECTED).getBounds(), card);
 
         assertEquals(TestSetEditorFields.EXPECTED_RESULT.getName(), card.tooltipAt(new Point(line.x + 2, line.y + line.height / 2), CELL));
+    }
+
+    // Rule-EDITOR-PANEL-269
+    public void testHoveringALineAwayFromItsIconAndEveryBadgeNamesNeitherTheFieldNorTheBadge() {
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").expectedResult(EXPECTED).reference(REFERENCE).status(TestCaseStatus.TO_BE_UPDATED).build();
+        final @NotNull TestCaseCard card = new TestCaseCard(getProject());
+        card.updateData(0, testCase, Set.of(TestSetEditorFields.EXPECTED_RESULT, TestSetEditorFields.REFERENCE), AbstractCard.titleText(1, true, testCase.getDescription()));
+        card.layOutAs(CELL);
+        final @NotNull JBLabel line = theLineSaying(card, REFERENCE);
+        final @NotNull Rectangle at = SwingUtilities.convertRectangle(line.getParent(), line.getBounds(), card);
+
+        final @NotNull String said = card.tooltipAt(new Point(at.x + at.width - 2, at.y + at.height / 2), CELL);
+
+        assertFalse("hovering a line's text named its field, as its icon does", TestSetEditorFields.REFERENCE.getName().equals(said));
+        assertFalse("hovering a line away from every badge showed the badge's tooltip", said.contains(TestCaseStatus.TO_BE_UPDATED.getLabel()));
     }
 
     // Rule-EDITOR-PANEL-269

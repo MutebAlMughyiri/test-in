@@ -320,6 +320,25 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-134
+    public void testAStatusRecordedAgainOnACompletedTestRunLeavesItCompleted() {
+        final @NotNull List<TestCase> testCases = createdTestCases(1);
+        final @NotNull TestRunEditor editor = opened(aPendingTestRunOver(testCases));
+        try {
+            editor.onStartExecutionClicked();
+            awaitWalkOn(editor, testCases.getFirst());
+            record(editor, RunItemStatus.PASSED);
+            Await.until("the test run was not marked Completed when its only test case was judged", () -> editor.getParent().getMarker().getStatus() == TestRunStatus.COMPLETED);
+
+            runItemStatuses().applyRunItemStatus(editor, testCases, RunItemStatus.BLOCKED);
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertEquals("a status recorded again on a completed test run changed its status", TestRunStatus.COMPLETED, editor.getParent().getMarker().getStatus());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
     // Rule-EDITOR-PANEL-134, Rule-EDITOR-PANEL-186
     public void testTheTestRunIsCompletedOnceEveryTestCaseInItIsJudged() {
         final @NotNull List<TestCase> testCases = createdTestCases(2);

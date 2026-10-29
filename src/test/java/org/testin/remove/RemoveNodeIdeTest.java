@@ -46,6 +46,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
 
@@ -281,5 +282,22 @@ public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
 
         undoHistories().undo(UndoScope.TREE);
         Await.until("a removal redone could not be undone again, so the redo did not keep it aside", () -> nodes().nodeExists(wasAt) && Files.isDirectory(wasAt));
+    }
+
+    // UC-TREE-PANEL-017
+    public void testARedoOfARemovalWhoseTestSetIsAlreadyGoneIsRefusedAndStaysToRedo() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull Path wasAt = login.getPath();
+        removeAsked(List.of(login));
+        confirmed();
+        Await.until("the removal never went onto the tree's history", () -> undoHistories().canUndo(UndoScope.TREE));
+        undoHistories().undo(UndoScope.TREE);
+        Await.until("undoing the removal did not put the test set back", () -> nodes().nodeExists(wasAt) && undoHistories().canRedo(UndoScope.TREE));
+        final @NotNull AtomicBoolean removedBehindTheHistory = new AtomicBoolean();
+        nodes().removeTestSet(wasAt, removedBehindTheHistory::set);
+        Await.until("the test set was not removed behind the history", removedBehindTheHistory::get);
+
+        assertFalse("a redo with nothing left to remove said it worked", undoHistories().redo(UndoScope.TREE));
+        assertTrue("a redo with nothing left to remove was taken off the history", undoHistories().canRedo(UndoScope.TREE));
     }
 }

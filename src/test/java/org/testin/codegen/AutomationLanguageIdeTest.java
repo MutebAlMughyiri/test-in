@@ -22,12 +22,21 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
+import com.intellij.testFramework.DumbModeTestUtils;
+import com.intellij.testFramework.ExtensionTestUtil;
 import com.intellij.testFramework.TestActionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
+import org.testin.Said;
 import org.testin.actions.TestinDataKeys;
 import org.testin.config.AutomationLanguage;
 import org.testin.model.TestCase;
+import org.testin.model.node.TestSetPackageNode;
+import org.testin.rename.NodeRename;
+import org.testin.runner.AutomationExecution;
+import org.testin.runner.AutomationExecutor;
+import org.testin.runner.ExecuteTestCases;
+import org.testin.services.Services;
 
 import java.util.List;
 import java.util.Optional;
@@ -71,5 +80,27 @@ public class AutomationLanguageIdeTest extends AbstractCodegenIdeTest {
         for (final String actionId : List.of("Testin.AutomateTestCase", "Testin.NavigateToTestMethod", "Testin.RunTestMethod")) {
             assertTrue(actionId + " is gray on a Robot Framework test project, which has a module for it", theMenuEntry(actionId, testCase).getPresentation().isEnabled());
         }
+    }
+
+    // UC-CODEGEN-008, Rule-CODEGEN-117
+    public void testRunningWhereTheLanguageHasNoRunnerStartsNothingAndSaysItIsNotAvailableYet() {
+        interpreterIs("Python SDK");
+        final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        settled();
+        ExtensionTestUtil.maskExtensions(AutomationExecutor.EP, List.of(), getTestRootDisposable());
+
+        final @NotNull List<String> said = Said.during(getProject(), () -> ExecuteTestCases.run(getProject(), List.of(testCase)));
+
+        assertTrue("running where the language has no runner did not say it is not available yet: " + said, said.stream().anyMatch(line -> line.contains(AutomationLanguage.ROBOT_FRAMEWORK.getDisplayName())));
+        assertFalse("a test case started where its language has no runner", Services.getInstance(getProject(), AutomationExecution.class).isRunning(testCase.getUuid()));
+    }
+
+    // UC-TREE-PANEL-011, Rule-CODEGEN-081
+    public void testWhereTheLanguageHasNoCodeModuleARenameWhileTheIdeIndexesIsLetThrough() {
+        interpreterIs("Python SDK");
+        ExtensionTestUtil.maskExtensions(CodeChangeRegistry.EP, List.of(), getTestRootDisposable());
+        final @NotNull TestSetPackageNode checkout = indexedPackage("Checkout", theTestCasesDirectory());
+
+        assertFalse("a rename was refused while the IDE indexes although no module can move its code", DumbModeTestUtils.computeInDumbModeSynchronously(getProject(), () -> NodeRename.refused(getProject(), checkout, "Payments")));
     }
 }

@@ -290,6 +290,18 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals("the box does not choose that branch", MAIN, String.valueOf(branches.getSelectedItem()));
     }
 
+    // UC-SHARE-014, Rule-SHARE-063
+    public void testOnNoBranchTheBoxOffersTheBranchesAndNoEmptyOne() {
+        mustGit(work, "checkout", "--detach");
+        write(work, "first.testcase", "{\"on\":\"no branch\"}");
+
+        final @NotNull ComboBox<?> branches = Drawn.first(theReview(work), ComboBox.class);
+
+        final @NotNull List<String> offered = IntStream.range(0, branches.getItemCount()).mapToObj(branches::getItemAt).map(String::valueOf).toList();
+        assertTrue("the box does not offer the branches on no branch: " + offered, offered.contains(MAIN));
+        assertFalse("the box offers an empty branch on no branch: " + offered, offered.contains(""));
+    }
+
     // UC-SHARE-012, UC-SHARE-013
     public void testACommitWithNoMessageCommitsNothingAndKeepsTheReviewOpen() {
         write(work, "first.testcase", "{\"on\":\"main\"}");

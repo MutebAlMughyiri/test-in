@@ -79,4 +79,22 @@ public class AdoptByDescriptionIdeTest extends AbstractCodegenIdeTest {
         final @NotNull PsiMethod helper = generatedClass("nafath.LoginTest").orElseThrow().findMethodsByName("logInWithAValidUser", false)[0];
         assertFalse("a helper of the same name that is no test was taken for the test case", helper.getText().contains(testCase.getUuid().toString()));
     }
+
+    // Rule-CODEGEN-095
+    public void testAHandWrittenTestOfTheSameNameIsAdoptedNotDoubled() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull PsiClass written = generatedClass("nafath.LoginTest").orElseThrow();
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> {
+            written.add(JavaPsiFacade.getElementFactory(getProject()).createMethodFromText("@org.testng.annotations.Test\npublic void logInWithAValidUser() { login(\"sara\"); }", written));
+        });
+
+        final @NotNull TestCase testCase = TestCase.builder().parent(login).description("Log in with a valid user").build();
+        CodeChangeType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(testCase));
+
+        final @NotNull PsiClass after = generatedClass("nafath.LoginTest").orElseThrow();
+        assertEquals("a stub was written beside the tester's test of the same name", 1, after.getMethods().length);
+        final @NotNull PsiMethod adopted = after.getMethods()[0];
+        assertTrue("the tester's test of the same name was not tagged with the test case", adopted.getText().contains(testCase.getUuid().toString()));
+        assertTrue("the tester's body was not kept", adopted.getText().contains("login(\"sara\")"));
+    }
 }

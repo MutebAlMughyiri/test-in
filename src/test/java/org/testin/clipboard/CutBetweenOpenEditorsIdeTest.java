@@ -94,4 +94,17 @@ public class CutBetweenOpenEditorsIdeTest extends AbstractOpenEditorsIdeTest {
         Await.until("the pasted cut did not arrive in the editor it was pasted into: " + shownIn(checkout), () -> shownIn(checkout).equals(List.of("Pay", "Log in")));
         Await.until("the cut card is still shown in the editor it was cut from: " + shownIn(login), () -> shownIn(login).equals(List.of("Log out")));
     }
+
+    // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-083
+    public void testACutPastedElsewhereInTheEditorItCameFromMovesThereAndIsShownOnce() {
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetEditor login = openedWith(testProject, "Login", List.of("Log in", "Log out", "Sign up"));
+        login.getList().setSelectedIndex(0);
+        choose("Testin.CutTestCaseNode", login.getList());
+        login.getList().setSelectedIndex(1);
+
+        choose("Testin.PasteTestCaseNode", login.getList());
+
+        Await.until("the cut did not move under the test case selected in its own editor: " + shownIn(login), () -> shownIn(login).equals(List.of("Log out", "Log in", "Sign up")));
+    }
 }

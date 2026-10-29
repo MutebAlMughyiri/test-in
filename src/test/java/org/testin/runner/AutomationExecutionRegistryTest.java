@@ -269,6 +269,21 @@ public class AutomationExecutionRegistryTest {
         assertTrue(registry.isRunning(retried.getUuid()), "it stays running until the decided result is reported");
     }
 
+    // Rule-CODEGEN-110
+    @Test
+    public void aTestCaseStartingInOneExecutionDecidesNothingHeldByAnother() {
+        final TestCase held = aTestCase("held in the first execution");
+        final TestCase starting = aTestCase("starts in the second");
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
+        registry.launched(List.of(held.getUuid()), "Testin: the first");
+        registry.launched(List.of(starting.getUuid()), "Testin: the second");
+        assertTrue(registry.attempted(held.getUuid(), attempt(AutomationExecutionStatus.PASSED, "")).isEmpty(), "a pass is held until its execution moves on");
+
+        final Map<UUID, Attempts> decided = registry.attempted(starting.getUuid(), attempt(AutomationExecutionStatus.RUNNING, ""));
+
+        assertFalse(decided.containsKey(held.getUuid()), "a test case starting in another execution decided the one held in the first");
+    }
+
     // Rule-CODEGEN-111
     @Test
     public void eachAttemptIsShownTheMomentItArrivesAndOnlyOnce() {
