@@ -70,6 +70,8 @@ Your test data carries over: this build reads and writes format 5, as 2.15.0-alp
   under the selection or at the end, not at the top.
 - **Save to testin.yml says it could not save a read-only testin.yml** instead of Saved.
 - **The branch box goes back to none selected** when no branch is checked out and a switch asks first or Git refuses it.
+- **While the IDE indexes, Automate Test Case waits before it asks the agent,** so a body you wrote is never sent as
+  empty and is written over only once you say so.
 - **A cut test case is kept when its editor closes** before the paste.
 - **Jackson 2.22.4,** since 2.22.3 has CVE-2026-110879.
 

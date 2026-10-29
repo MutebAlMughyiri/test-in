@@ -18,7 +18,6 @@ package org.testin.codegen.agent;
 
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ReadAction;
-import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import lombok.AccessLevel;
@@ -51,7 +50,8 @@ public final class WriteBodies {
         if (!connection.isConnected() || testCases.isEmpty() || TestMethodFile.available(project).isEmpty()) return;
         if (OptionalPlugin.TERMINAL.isMissingAndWarned(project)) return;
 
-        BackgroundWork.logged(ReadAction.nonBlocking(() -> DumbService.isDumb(project) ? Map.<UUID, Boolean>of() : TestMethodCode.available(project).methodsFor(project, testCases))
+        BackgroundWork.logged(ReadAction.nonBlocking(() -> TestMethodCode.available(project).methodsFor(project, testCases))
+                .inSmartMode(project)
                 .expireWith(ProjectLifetime.of(project))
                 .finishOnUiThread(ModalityState.defaultModalityState(), written -> askOrConfirm(project, connection, testCases, written))
                 .submit(AppExecutorUtil.getAppExecutorService()), "Reading which test methods have a written body");

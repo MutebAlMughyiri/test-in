@@ -22,6 +22,8 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiCodeBlock;
 import com.intellij.psi.PsiMethod;
+import com.intellij.testFramework.DumbModeTestUtils;
+import com.intellij.testFramework.PlatformTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
@@ -116,6 +118,45 @@ public class AgentRequestIdeTest extends AbstractCodegenIdeTest {
         final @NotNull String request = theRequestSentTo(tab);
         assertTrue("the request does not ask for the empty one: " + request, request.contains("Sign out"));
         assertFalse("the request asks for the body the tester left: " + request, request.contains("Sign in"));
+    }
+
+    // UC-CODEGEN-021, Rule-CODEGEN-091
+    public void testWritingOverEveryBodyTheTesterWroteAsksTheAgentForThemAll() {
+        final @NotNull RecordedAgentTab tab = RecordedAgentTab.installed(getProject(), getTestRootDisposable());
+        anAgentIsChosen();
+        final @NotNull TestCase signIn = createdTestCase(createdTestSet("Login"), "Sign in", "a");
+        settled();
+        aBodyWrittenInto(signIn);
+
+        WriteBodies.forAll(getProject(), List.of(signIn));
+        ShownDialog.waitedFor(getProject(), ConfirmDialog.class);
+        ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
+
+        final @NotNull String request = theRequestSentTo(tab);
+        assertTrue("writing over every body the tester wrote did not ask for it: " + request, request.contains("Sign in"));
+    }
+
+    // UC-CODEGEN-021, Rule-CODEGEN-091
+    public void testWhileTheIdeIndexesABodyTheTesterWroteIsSentOnlyOnceTheTesterAnswers() {
+        final @NotNull RecordedAgentTab tab = RecordedAgentTab.installed(getProject(), getTestRootDisposable());
+        anAgentIsChosen();
+        final @NotNull TestCase signIn = createdTestCase(createdTestSet("Login"), "Sign in", "a");
+        settled();
+        aBodyWrittenInto(signIn);
+        final @NotNull DumbModeTestUtils.EternalTaskShutdownToken indexing = DumbModeTestUtils.startEternalDumbModeTask(getProject());
+        try {
+            WriteBodies.forAll(getProject(), List.of(signIn));
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertEquals("a body the tester wrote was sent while the IDE indexes", List.of(), tab.getTypedLines());
+        } finally {
+            DumbModeTestUtils.endEternalDumbModeTaskAndWaitForSmartMode(getProject(), indexing);
+        }
+
+        ShownDialog.waitedFor(getProject(), ConfirmDialog.class);
+        ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Escape);
+        settled();
+        assertEquals("leaving the body the tester wrote still asked the agent", List.of(), tab.getTypedLines());
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-091
