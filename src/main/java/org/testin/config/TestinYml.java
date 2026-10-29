@@ -210,12 +210,16 @@ public final class TestinYml {
         try {
             final @NotNull Optional<VirtualFile> existing = Optional.ofNullable(folder.findChild(name));
             final @NotNull VirtualFile file = existing.isPresent() ? existing.orElseThrow() : folder.createChildData(TestinYml.class, name);
+            if (!Files.isWritable(file.toNioPath())) return refused(folder, "the file is read-only");
+
             final @NotNull Optional<Document> open = Optional.ofNullable(FileDocumentManager.getInstance().getCachedDocument(file));
 
             if (open.isPresent()) {
                 final @NotNull Document document = open.orElseThrow();
                 document.setText(withLines(document.getText(), owned));
                 FileDocumentManager.getInstance().saveDocument(document);
+                if (FileDocumentManager.getInstance().isDocumentUnsaved(document))
+                    return refused(folder, "the IDE kept the open file unsaved");
             } else {
                 VfsUtil.saveText(file, withLines(VfsUtilCore.loadText(file), owned));
             }
@@ -223,9 +227,13 @@ public final class TestinYml {
             TestinLogger.info("Saved " + file.getPath() + ": " + owned);
             return true;
         } catch (final IOException ex) {
-            TestinLogger.warn("Could not save testin.yml in " + folder.getPath() + ": " + FailureText.of(ex));
-            return false;
+            return refused(folder, FailureText.of(ex));
         }
+    }
+
+    private static boolean refused(final @NotNull VirtualFile folder, final @NotNull String reason) {
+        TestinLogger.warn("Could not save testin.yml in " + folder.getPath() + ": " + reason);
+        return false;
     }
 
     // Rule-TREE-PANEL-114

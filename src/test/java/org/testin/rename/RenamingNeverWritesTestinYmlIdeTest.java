@@ -16,6 +16,10 @@
 
 package org.testin.rename;
 
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
@@ -73,6 +77,7 @@ public class RenamingNeverWritesTestinYmlIdeTest extends AbstractTempRootIdeTest
         try {
             if (ymlWas.isPresent()) Files.writeString(yml(), ymlWas.orElseThrow());
             else Files.deleteIfExists(yml());
+            LocalFileSystem.getInstance().refreshNioFiles(List.of(yml()));
         } catch (final IOException ex) {
             throw new AssertionError("could not put " + TestinYml.fileName() + " back: " + ex.getMessage(), ex);
         }
@@ -164,6 +169,29 @@ public class RenamingNeverWritesTestinYmlIdeTest extends AbstractTempRootIdeTest
 
             Await.until("a save the disk refused was not said: " + said.shown(), () -> said.shown().contains(Bundle.message("yml.save.failed")));
             assertEquals("a refused save changed " + TestinYml.fileName(), before, bytesOf(yml()));
+        } finally {
+            assertTrue("could not make " + TestinYml.fileName() + " writable again", yml().toFile().setWritable(true));
+        }
+    }
+
+    // UC-TREE-PANEL-029
+    public void testASaveTheDiskRefusesWithTestinYmlOpenSaysSoAndLeavesItAsItWas() {
+        final @NotNull TestProjectNode testProject = new NodesOnDisk(getProject()).testProject(root.resolve("Payments"));
+        bound().choose("Payments");
+        final @NotNull String before = bytesOf(yml());
+        final @NotNull VirtualFile file = Optional.ofNullable(LocalFileSystem.getInstance().refreshAndFindFileByNioFile(yml())).orElseThrow();
+        final @NotNull Document open = Optional.ofNullable(FileDocumentManager.getInstance().getDocument(file)).orElseThrow();
+        final @NotNull String shown = open.getText();
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        assertTrue("could not make " + TestinYml.fileName() + " read-only", yml().toFile().setWritable(false));
+        try {
+            TreeGesture.pressed(getProject(), new SaveTestinYmlAction(getProject()), List.of(testProject));
+            Await.until("Save to " + TestinYml.fileName() + " asked nothing", () -> ShownDialog.isOpen(getProject(), ConfirmDialog.class));
+            ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
+
+            Await.until("a save the disk refused was not said: " + said.shown(), () -> said.shown().contains(Bundle.message("yml.save.failed")));
+            assertEquals("a refused save changed " + TestinYml.fileName(), before, bytesOf(yml()));
+            assertEquals("a refused save changed the open " + TestinYml.fileName(), shown, open.getText());
         } finally {
             assertTrue("could not make " + TestinYml.fileName() + " writable again", yml().toFile().setWritable(true));
         }
