@@ -278,6 +278,19 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the tester's step was lost: " + text, text.contains("    Open Browser    https://example.com\n"));
     }
 
+    // UC-CODEGEN-002, Rule-CODEGEN-095
+    public void testAnUntaggedTestUnderAnotherNameIsLeftToTheTester() {
+        final @NotNull TestSetNode login = createdTestSet("Login page");
+        createdTestCase(login, "Sign in", "a");
+        writtenByTheTester("*** Test Cases ***\n", "*** Test Cases ***\nSign out\n    Close Browser\n");
+
+        final @NotNull TestCase signUp = createdTestCase(login, "Sign up", "b");
+
+        final @NotNull String text = suiteText(LOGIN_SUITE);
+        assertTrue("the new test case got no test of its own: " + text, text.contains(signUp.getUuid().toString()) && text.contains("\nSign up\n"));
+        assertTrue("the tester's test under another name was taken: " + text, text.contains("\nSign out\n    Close Browser\n"));
+    }
+
     // UC-CODEGEN-002, Rule-CODEGEN-077
     public void testATestCaseMovedIntoTheTestSetItIsInMovesNoTest() {
         final @NotNull TestSetNode login = createdTestSet("Login page");
@@ -331,6 +344,24 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
         CodeChangeType.RENAME_TEST_SET.execute(getProject(), new RenamedNode(login, login.treePath(), "Sign in page"));
 
         assertTrue("renaming a test set whose suite was deleted wrote one", suiteAt("NAFATH/Sign_in_page.robot").isEmpty());
+    }
+
+    // UC-CODEGEN-016
+    public void testMovingATestSetWhoseSuiteFileWasDeletedWritesNoFile() {
+        final @NotNull TestSetNode login = createdTestSet("Login page");
+        final @NotNull TestSetPackageNode shop = indexedPackage("Shop", theTestCasesDirectory());
+        final @NotNull VirtualFile suite = TestSourceRoot.find(getProject()).map(root -> root.findFileByRelativePath(LOGIN_SUITE)).orElseThrow(() -> new AssertionError("no suite at " + LOGIN_SUITE));
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> {
+            try {
+                suite.delete(this);
+            } catch (final IOException ex) {
+                throw new AssertionError("could not delete the suite file", ex);
+            }
+        });
+
+        CodeChangeType.MOVE_TEST_SET.execute(getProject(), new MovedNode(login, shop.getPath()));
+
+        assertTrue("moving a test set whose suite was deleted wrote one", suiteAt("NAFATH/Shop/Login_page.robot").isEmpty());
     }
 
     // UC-CODEGEN-014, Rule-CODEGEN-049, Rule-CODEGEN-114

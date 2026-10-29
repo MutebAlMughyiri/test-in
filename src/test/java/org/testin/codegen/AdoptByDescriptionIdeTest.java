@@ -47,4 +47,36 @@ public class AdoptByDescriptionIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the tester's method was not tagged with the test case", signIn.getText().contains(testCase.getUuid().toString()));
         assertTrue("the tester's body was not kept", signIn.getText().contains("login(\"sara\")"));
     }
+
+    // Rule-CODEGEN-095
+    public void testAHandWrittenTestWithAnEmptyDescriptionIsNotAdopted() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull PsiClass written = generatedClass("nafath.LoginTest").orElseThrow();
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> {
+            written.add(JavaPsiFacade.getElementFactory(getProject()).createMethodFromText(
+                    "@org.testng.annotations.Test(description = \"\")\npublic void unnamed() { login(\"sara\"); }", written));
+        });
+
+        final @NotNull TestCase testCase = TestCase.builder().parent(login).description("Log in with a valid user").build();
+        CodeChangeType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(testCase));
+
+        final @NotNull PsiClass after = generatedClass("nafath.LoginTest").orElseThrow();
+        assertEquals("a hand-written test with no description was taken for the test case", 2, after.getMethods().length);
+        assertFalse("the hand-written test with no description was tagged", after.findMethodsByName("unnamed", false)[0].getText().contains(testCase.getUuid().toString()));
+    }
+
+    // Rule-CODEGEN-095
+    public void testAHelperOfTheSameNameThatIsNoTestIsNotAdopted() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull PsiClass written = generatedClass("nafath.LoginTest").orElseThrow();
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> {
+            written.add(JavaPsiFacade.getElementFactory(getProject()).createMethodFromText("public void logInWithAValidUser() { login(\"sara\"); }", written));
+        });
+
+        final @NotNull TestCase testCase = TestCase.builder().parent(login).description("Log in with a valid user").build();
+        CodeChangeType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(testCase));
+
+        final @NotNull PsiMethod helper = generatedClass("nafath.LoginTest").orElseThrow().findMethodsByName("logInWithAValidUser", false)[0];
+        assertFalse("a helper of the same name that is no test was taken for the test case", helper.getText().contains(testCase.getUuid().toString()));
+    }
 }
