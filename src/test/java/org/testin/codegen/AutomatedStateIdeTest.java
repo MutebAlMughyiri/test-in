@@ -34,6 +34,7 @@ import org.testin.model.Automated;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
+import org.testin.testproject.BoundTestProject;
 import org.testin.testrun.form.TestRunFormFilter;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
@@ -43,6 +44,7 @@ import java.awt.Container;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
 
@@ -153,6 +155,24 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
         });
 
         Await.until("a method written since the last look did not show", () -> state().of(testCases.get(1).getUuid()) == Automated.WRITTEN);
+    }
+
+    // Rule-CODEGEN-082
+    public void testTurningTheCodeOffForgetsWhatWasRead() {
+        final @NotNull List<TestCase> testCases = threeStatesOfAutomation();
+        readAndAwait(testCases);
+        final @NotNull BoundTestProject bound = Services.getInstance(getProject(), BoundTestProject.class);
+        final @NotNull AtomicBoolean answered = new AtomicBoolean();
+        try {
+            bound.choose("Payments");
+
+            state().read(getProject(), testCases, () -> answered.set(true));
+
+            Await.until("turning the code off was never answered", answered::get);
+            assertTrue("the automation read while the code was on is still shown with it off", testCases.stream().allMatch(testCase -> state().of(testCase.getUuid()) == Automated.UNKNOWN));
+        } finally {
+            bound.choose("");
+        }
     }
 
     // Rule-EDITOR-PANEL-210
