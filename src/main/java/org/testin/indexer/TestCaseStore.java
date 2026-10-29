@@ -155,15 +155,13 @@ final class TestCaseStore {
         if (from.equals(to)) return true;
 
         if (testDataFiles.discard(from)) {
-            if (!fromSet.equals(toSet))
-                Optional.ofNullable(testCaseUuidsByTestSet.get(fromSet.toString())).ifPresent(testCaseUuids -> testCaseUuids.remove(testCaseUuid));
+            Optional.ofNullable(testCaseUuidsByTestSet.get(fromSet.toString())).ifPresent(testCaseUuids -> testCaseUuids.remove(testCaseUuid));
             placedSinceReadBegan.put(testCaseUuid, toSet.toString());
             return true;
         }
 
         testDataFiles.discard(to);
-        if (!fromSet.equals(toSet))
-            Optional.ofNullable(testCaseUuidsByTestSet.get(toSet.toString())).ifPresent(testCaseUuids -> testCaseUuids.remove(testCaseUuid));
+        Optional.ofNullable(testCaseUuidsByTestSet.get(toSet.toString())).ifPresent(testCaseUuids -> testCaseUuids.remove(testCaseUuid));
         was.ifPresent(original -> testCasesByUuid.put(testCaseUuid, original));
         return false;
     }
