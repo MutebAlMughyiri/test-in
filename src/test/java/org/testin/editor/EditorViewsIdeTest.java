@@ -23,6 +23,7 @@ import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.testFramework.TestActionEvent;
 import com.intellij.ui.components.JBList;
@@ -51,15 +52,19 @@ import org.testin.testrun.TestRunEditorFields;
 import org.testin.view.Drawn;
 
 import javax.accessibility.AccessibleContext;
+import javax.swing.JWindow;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.text.JTextComponent;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Rectangle;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -366,5 +371,23 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
         for (final MouseListener listener : list.getMouseListeners()) listener.mouseClicked(click);
 
         assertTrue("a click outside every card left test cases selected", list.isSelectionEmpty());
+    }
+
+    // Rule-EDITOR-PANEL-110
+    public void testRightClickingACardInTheSelectionKeepsTheWholeSelection() {
+        final @NotNull TestSetEditor editor = openedTestSet(6);
+        final @NotNull JBList<TestCase> list = editor.getList();
+        list.setSize(900, 4000);
+        list.setSelectedIndices(new int[]{0, 1, 3});
+        final @NotNull JWindow onScreen = new JWindow();
+        onScreen.setBounds(-4000, -4000, 10, 10);
+        onScreen.setVisible(true);
+        Disposer.register(getTestRootDisposable(), onScreen::dispose);
+        final @NotNull Rectangle card = list.getCellBounds(1, 1);
+
+        final @NotNull MouseEvent click = new MouseEvent(onScreen, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), InputEvent.BUTTON3_DOWN_MASK, card.x + 10, card.y + card.height / 2, 1, true, MouseEvent.BUTTON3);
+        for (final MouseListener listener : list.getMouseListeners()) listener.mouseClicked(click);
+
+        assertEquals("right-clicking a card in the selection narrowed it", List.of(0, 1, 3), Arrays.stream(list.getSelectedIndices()).boxed().toList());
     }
 }

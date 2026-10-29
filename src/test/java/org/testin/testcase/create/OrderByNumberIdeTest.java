@@ -77,4 +77,30 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
             assertEquals("a test case around the one moved was written again", placed.get(file), FilesUnder.snapshot(testSet.getPath()).get(file));
         }
     }
+
+    // Rule-EDITOR-PANEL-223
+    public void testThePlaceATestCaseAlreadyHasChangesNothing() {
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Login");
+        EditorFixtures.testCase(getProject(), testSet, "Log in", "a");
+        final @NotNull TestCase second = EditorFixtures.testCase(getProject(), testSet, "Log out", "b");
+        EditorFixtures.testCase(getProject(), testSet, "Sign up", "c");
+
+        assertEquals("typing the place a test case already has gave it another", "b", movedTo(2, second).getOrder());
+    }
+
+    // Rule-EDITOR-PANEL-223
+    public void testATestCaseTheOnlyOneWithNoPlaceTakesTheTypedOneAndPlacesNoOther() {
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Login");
+        EditorFixtures.testCase(getProject(), testSet, "Log in", "a");
+        EditorFixtures.testCase(getProject(), testSet, "Log out", "b");
+        final @NotNull TestCase unplaced = EditorFixtures.testCase(getProject(), testSet, "Sign up", "");
+        final @NotNull OrderSection order = new OrderSection(getProject());
+        order.fillData(stored(unplaced));
+        order.getPosition().setValue(1);
+
+        final @NotNull TestCase moved = order.applyTo(stored(unplaced));
+
+        assertEquals("a test case around the one placed was given a place too", List.of(), order.getRankedAlongside());
+        assertTrue("the test case was not placed first: " + moved.getOrder(), moved.getOrder().compareTo("a") < 0);
+    }
 }
