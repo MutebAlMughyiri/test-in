@@ -44,11 +44,13 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
 
     private Path ranSomethingElse;
 
+    private TestProjectNode testProject;
+
     @Override
     protected void setUp() {
         super.setUp();
 
-        final TestProjectNode testProject = WriteAction.computeAndWait(() -> {
+        testProject = WriteAction.computeAndWait(() -> {
             final TestProjectNode testProjectNode = mapper().setTestProjectNode(root.resolve("NAFATH"));
             nodes().addTestProject(testProjectNode);
 
@@ -134,6 +136,17 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
     public void testATestRunThatDoesNotCoverTheTestCaseIsNoRow() {
         assertFalse("a test run with no run item status for the test case was listed",
                 forTheUuid().stream().anyMatch(hit -> hit.node().getPath().equals(ranSomethingElse)));
+    }
+
+    // UC-INTERNAL-001, Rule-INTERNAL-098
+    public void testATestRunWhoseRunItemsAreNotReadYetIsNoRow() {
+        final @NotNull Path notRead = WriteAction.computeAndWait(() -> {
+            final @NotNull Path path = testProject.getTestRunsFolder().getPath().resolve("Cycle-3");
+            nodes().addTestRunNode(mapper().setTestRunNode(path, testProject.getTestRunsFolder()));
+            return path;
+        });
+
+        assertFalse("a test run whose run items are not read yet was listed", forTheUuid().stream().anyMatch(hit -> hit.node().getPath().equals(notRead)));
     }
 
     // UC-INTERNAL-001

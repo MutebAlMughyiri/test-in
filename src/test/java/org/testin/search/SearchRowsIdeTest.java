@@ -108,6 +108,14 @@ public class SearchRowsIdeTest extends AbstractReadTheRootIdeTest {
         assertEquals("the search does not say how many matched", Bundle.message("dialog.search.found", 60), answer.note());
     }
 
+    // UC-INTERNAL-001, Rule-INTERNAL-073
+    public void testASearchThatMatchesNothingOrNothingTypedSaysNoCount() {
+        new NodesOnDisk(getProject()).testSet(nafath.getTestCasesFolder(), "Login");
+
+        assertEquals("a search that matches nothing says how many matched", "", GlobalSearchDialog.rowsFor(getProject(), "Refund the order").note());
+        assertEquals("nothing typed says how many matched", "", GlobalSearchDialog.rowsFor(getProject(), "").note());
+    }
+
     // UC-INTERNAL-001, Rule-INTERNAL-074
     public void testThePathSitsAgainstTheNameItBelongsToWhateverLengthTheNameIs() {
         new NodesOnDisk(getProject()).testSet(nafath.getTestCasesFolder(), "Login");
