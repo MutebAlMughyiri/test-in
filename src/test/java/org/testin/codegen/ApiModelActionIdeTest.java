@@ -245,6 +245,13 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
         }
     }
 
+    // UC-CODEGEN-022, Rule-CODEGEN-098
+    public void testOnTheSourceRootTheDialogSaysTheModelGoesThere() {
+        final @NotNull JComponent dialog = opened(directoryOf(sourceRoot())).getContent();
+
+        assertTrue("the dialog does not say the model goes into the source root: " + Drawn.words(dialog), Drawn.holds(Drawn.words(dialog), Bundle.message("dialog.api.model.path.root")));
+    }
+
     // Rule-CODEGEN-105
     public void testCreateOpensBothFilesSaysCreatedAndOneUndoTakesThemBothBack() {
         final @NotNull PsiDirectory api = aPackage();

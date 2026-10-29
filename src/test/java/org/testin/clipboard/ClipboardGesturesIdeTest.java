@@ -315,6 +315,25 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
         assertEquals(List.of("Log in (Copy)"), descriptionsOf(orderedIn(empty)));
     }
 
+    // Rule-EDITOR-PANEL-083
+    public void testWithOnlyATestCaseThatHasNoPlaceSelectedPastedTestCasesLandAtTheEnd() {
+        final @NotNull TestSetEditor login = aTestSetOf("Login", "Log in");
+        final @NotNull TestSetEditor checkout = aTestSetOf("Checkout", "Open the cart", "Pay");
+        final @NotNull TestCase unplaced = TestCase.builder().uuid(UUID.randomUUID()).description("Get a receipt").order("").createdBy("Ann").build();
+        unplaced.setParent(checkout.getParent());
+        theTestCases().putTestCaseVerbatim(checkout.getParent().getPath(), unplaced);
+        checkout.reloadData();
+        Await.until("the test case with no place never showed", () -> checkout.getAllTestCases().size() == 3);
+        login.getList().setSelectedIndex(0);
+        choose(COPY, login.getList());
+
+        checkout.getList().setSelectedValue(checkout.getAllTestCases().stream().filter(testCase -> testCase.getUuid().equals(unplaced.getUuid())).findFirst().orElseThrow(), false);
+        choose(PASTE, checkout.getList());
+
+        Await.until("the copy was never pasted", () -> orderedIn(checkout).size() == 4);
+        assertEquals("a paste under a test case with no place did not land after every placed one", "Log in (Copy)", descriptionsOf(orderedIn(checkout).stream().filter(testCase -> !testCase.getOrder().isEmpty()).toList()).getLast());
+    }
+
     // Rule-EDITOR-PANEL-082, Rule-EDITOR-PANEL-084
     public void testAPastedCutKeepsItsIdentityAndIsOneEntryOnTheUndoHistory() {
         final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
