@@ -157,7 +157,7 @@ public final class TestRunWordGenerator {
         final @NotNull XWPFParagraph paragraph = document.createParagraph();
         paragraph.setSpacingAfter(spacingAfterPoints * 20);
         final @NotNull XWPFRun textRun = paragraph.createRun();
-        writeLines(textRun, text, false);
+        writeLines(textRun, text);
         textRun.setFontSize(size);
         textRun.setFontFamily(ReportFont.FAMILY);
         textRun.setBold(bold);
@@ -334,7 +334,7 @@ public final class TestRunWordGenerator {
     }
 
     // UC-REPORT-001, Rule-REPORT-023
-    private void writeLines(final @NotNull XWPFRun textRun, final @NotNull String text, final boolean replaceFirst) {
+    private void writeLines(final @NotNull XWPFRun textRun, final @NotNull String text) {
         final @NotNull List<String> lines = text.lines().toList();
 
         if (lines.isEmpty()) {
@@ -342,8 +342,7 @@ public final class TestRunWordGenerator {
             return;
         }
 
-        if (replaceFirst) textRun.setText(lines.getFirst(), 0);
-        else textRun.setText(lines.getFirst());
+        textRun.setText(lines.getFirst());
 
         for (final String line : lines.subList(1, lines.size())) {
             textRun.addBreak();
@@ -352,10 +351,8 @@ public final class TestRunWordGenerator {
     }
 
     private void setCellText(final @NotNull XWPFTableCell cell, final @NotNull String text, final int size, final boolean bold, final @NotNull String color) {
-        final @NotNull XWPFParagraph paragraph = cell.getParagraphs().getFirst();
-        final boolean fresh = paragraph.getRuns().isEmpty();
-        final @NotNull XWPFRun textRun = fresh ? paragraph.createRun() : paragraph.getRuns().getFirst();
-        writeLines(textRun, text, !fresh);
+        final @NotNull XWPFRun textRun = cell.getParagraphs().getFirst().createRun();
+        writeLines(textRun, text);
         textRun.setFontSize(size);
         textRun.setFontFamily(ReportFont.FAMILY);
         textRun.setBold(bold);
