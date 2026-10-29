@@ -41,6 +41,8 @@ There is no key for this. The **Branch** box is in the review.
   kept. That holds for reading the changes, committing, choosing a branch,
   putting a folder under Git, setting the remote or the identity, Sync, the
   push, and every step of resolving conflicts.
+- **Rule-SHARE-135** — A Branch box left empty commits on the branch that is
+  checked out.
 
 ## The screen
 

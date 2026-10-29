@@ -119,7 +119,7 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
                 request -> commitOnBranch(path, request)).show();
     }
 
-    // UC-SHARE-014, Rule-SHARE-065, Rule-SHARE-127
+    // UC-SHARE-014, Rule-SHARE-065, Rule-SHARE-127, Rule-SHARE-135
     private void commitOnBranch(final @NotNull Path repoPath, final @NotNull Request request) {
         final @NotNull String target = request.branch();
 

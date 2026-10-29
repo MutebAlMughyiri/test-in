@@ -10,7 +10,7 @@ whole team pulls.
 |---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Part of Testin**  | Sharing work with the team                                                                                                                                                   |
 | **Answers**         | How test cases leave Testin and come back, and how a test project is kept in step with a team                                                                                |
-| **Numbering**       | Use cases are `UC-SHARE-001` to `UC-SHARE-023`. Rules are `Rule-SHARE-001` to `Rule-SHARE-134`                                                                               |
+| **Numbering**       | Use cases are `UC-SHARE-001` to `UC-SHARE-023`. Rules are `Rule-SHARE-001` to `Rule-SHARE-135`                                                                               |
 | **State**           | **Written** — [#181](https://github.com/MutebAlMughyiri/test-in/issues/181)                                                                                                  |
 | **Checked against** | `main` at `1270e599`, 20 September 2026. Every page in this part was read against the code: the messages, the keys, the dialog titles, the button labels and the file names. |
 | **Written to**      | [How a document is written](../standard.md)                                                                                                                                  |

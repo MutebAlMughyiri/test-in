@@ -289,7 +289,7 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals("the box does not choose that branch", MAIN, String.valueOf(branches.getSelectedItem()));
     }
 
-    // UC-SHARE-014
+    // UC-SHARE-014, Rule-SHARE-135
     public void testAnEmptiedBranchBoxCommitsOnTheBranchCheckedOut() {
         write(work, "first.testcase", "{\"on\":\"main\"}");
         final @NotNull String mainBefore = head(work, MAIN);
