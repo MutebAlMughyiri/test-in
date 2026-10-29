@@ -66,6 +66,10 @@ Your test data carries over: this build reads and writes format 5, as 2.15.0-alp
 - **A test run name that is a path is refused** in Create, Re-create and Edit.
 - **Creating or moving a node no longer lands on a sibling whose name differs only in capitals.**
 - **Refresh keeps the editors answering,** and a save made during it keeps its audit.
+- **A cut pasted back where it was stays there.** A paste into a test set that holds a test case with no place lands
+  under the selection or at the end, not at the top.
+- **Save to testin.yml says it could not save a read-only testin.yml** instead of Saved.
+- **The branch box goes back to none selected** when no branch is checked out and a switch asks first or Git refuses it.
 - **A cut test case is kept when its editor closes** before the paste.
 - **Jackson 2.22.4,** since 2.22.3 has CVE-2026-110879.
 
