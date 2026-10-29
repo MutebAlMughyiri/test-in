@@ -91,8 +91,7 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 // Rule-CODEGEN-025
-                if (written > 0)
-                    Services.getInstance(project, Notifier.class).softShowCounted(project, Done.AUTOMATED, written);
+                Services.getInstance(project, Notifier.class).softShowCounted(project, Done.AUTOMATED, written);
 
                 editor.ifPresent(TestinEditor::refreshView);
             });
