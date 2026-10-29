@@ -45,6 +45,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.junit.Assert.assertNotEquals;
+
 public class CardDetailIconsIdeTest extends AbstractIdeTest {
     private static final @NotNull String EXPECTED = "The dashboard opens.";
 
@@ -161,7 +163,7 @@ public class CardDetailIconsIdeTest extends AbstractIdeTest {
 
         final @NotNull String said = card.tooltipAt(new Point(at.x + at.width - 2, at.y + at.height / 2), CELL);
 
-        assertFalse("hovering a line's text named its field, as its icon does", TestSetEditorFields.REFERENCE.getName().equals(said));
+        assertNotEquals("hovering a line's text named its field, as its icon does", TestSetEditorFields.REFERENCE.getName(), said);
         assertFalse("hovering a line away from every badge showed the badge's tooltip", said.contains(TestCaseStatus.TO_BE_UPDATED.getLabel()));
     }
 

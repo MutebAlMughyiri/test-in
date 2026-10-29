@@ -198,8 +198,8 @@ over them; `Escape` leaves them, and the test cases still holding their
 Local History keeps the tester's own body.
 
 **If the IDE is still indexing** — Testin waits for indexing to end before it
-reads which bodies the tester wrote, then asks and sends as above, so a body the
-tester wrote is never sent as if it were empty.
+reads which bodies the tester wrote. Then it asks and sends as above, so a body
+the tester wrote is never sent as if it were empty.
 
 **If the agent has ended, or its tab was closed** — the next Automate Test Case
 opens a new tab.
