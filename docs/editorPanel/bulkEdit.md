@@ -119,6 +119,9 @@ Select several test cases, then `F2` or the field's own letter.
 4. **The line facing the cursor** — highlighted on the left, so the two sides
    line up.
 
+`Ctrl+Click` on the right side adds a cursor where the tester clicks, and takes
+away a cursor clicked again. On a Mac, `Cmd+Click` does the same.
+
 ## The ten bulk editors
 
 **Bulk Edit Descriptions**, **Bulk Edit Expected Results**, **Bulk Edit
