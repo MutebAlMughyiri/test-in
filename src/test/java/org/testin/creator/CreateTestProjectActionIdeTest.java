@@ -106,6 +106,16 @@ public class CreateTestProjectActionIdeTest extends AbstractReadTheRootIdeTest {
         }
     }
 
+    private static void putBack(final @NotNull Path yml, final @NotNull Optional<String> was) {
+        try {
+            if (was.isPresent()) Files.writeString(yml, was.orElseThrow());
+            else Files.deleteIfExists(yml);
+            LocalFileSystem.getInstance().refreshNioFiles(List.of(yml));
+        } catch (final IOException ex) {
+            throw new AssertionError("could not put " + TestinYml.fileName() + " back: " + ex.getMessage(), ex);
+        }
+    }
+
     private @NotNull BoundTestProject bound() {
         return Services.getInstance(getProject(), BoundTestProject.class);
     }
@@ -165,13 +175,7 @@ public class CreateTestProjectActionIdeTest extends AbstractReadTheRootIdeTest {
             Await.until("the repository testin.yml names was not refused under a name already taken: " + said.shown(), () -> said.shown().contains(Refused.ALREADY_EXISTS.about("CHECKOUT")));
             assertFalse("a refused repository was cloned over the test project already there", Files.exists(root.resolve("CHECKOUT").resolve(".git")));
         } finally {
-            try {
-                if (ymlWas.isPresent()) Files.writeString(yml, ymlWas.orElseThrow());
-                else Files.deleteIfExists(yml);
-                LocalFileSystem.getInstance().refreshNioFiles(List.of(yml));
-            } catch (final IOException ex) {
-                throw new AssertionError("could not put " + TestinYml.fileName() + " back: " + ex.getMessage(), ex);
-            }
+            putBack(yml, ymlWas);
             TestinYml.reload(getProject());
         }
     }

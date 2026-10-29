@@ -211,7 +211,8 @@ public final class TestinYml {
         try {
             final @NotNull Optional<VirtualFile> existing = Optional.ofNullable(folder.findChild(name));
             final @NotNull VirtualFile file = existing.isPresent() ? existing.orElseThrow() : folder.createChildData(TestinYml.class, name);
-            if (!Files.isWritable(file.toNioPath())) throw new AccessDeniedException(file.getPath());
+            final @NotNull Path onDisk = file.toNioPath();
+            if (Files.exists(onDisk) && !Files.isWritable(onDisk)) throw new AccessDeniedException(file.getPath());
 
             final @NotNull Optional<Document> open = Optional.ofNullable(FileDocumentManager.getInstance().getCachedDocument(file));
 
