@@ -21,10 +21,12 @@ import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
+import org.testin.Said;
 import org.testin.TreeGesture;
 import org.testin.indexer.Nodes;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.notifications.Refused;
 import org.testin.services.Services;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.undo.UndoHistories;
@@ -122,6 +124,21 @@ public class RenameNodeIdeTest extends AbstractCodegenIdeTest {
 
         assertTrue("renaming to the same name moved the test set", nodes().nodeExists(login.getPath()));
         assertFalse("renaming to the same name went on the undo history", undoHistories().canUndo(UndoScope.TREE));
+    }
+
+    // UC-TREE-PANEL-011, Rule-TREE-PANEL-004
+    public void testRenamingToTheNameOfAnotherTestSetIsRefusedAndSaysSo() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        createdTestSet("Checkout");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        TreeGesture.pressed(getProject(), new RenameAction(), List.of(login));
+        ShownDialog.typed(getProject(), RenameDialog.class, "Checkout");
+        ShownDialog.press(getProject(), RenameDialog.class, Shortcuts.Enter);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertEquals("a rename to a name already taken did not say so", List.of(Refused.ALREADY_EXISTS.about("Checkout")), said.shown());
+        assertTrue("a rename to a name already taken moved the test set", nodes().nodeExists(login.getPath()));
     }
 
     // Rule-TREE-PANEL-037

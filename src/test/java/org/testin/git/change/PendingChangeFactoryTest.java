@@ -25,6 +25,7 @@ import org.testng.annotations.Test;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -164,6 +165,24 @@ public class PendingChangeFactoryTest {
         assertEquals(removed.fieldChanges().size(), 1, "a removed run item is not one row");
         assertEquals(removed.fieldChanges().getFirst().changeType(), ChangeType.REMOVE_RUN_ITEM);
         assertEquals(removed.fieldChanges().getFirst().newValue(), "", "a removed run item still reads as having a value");
+    }
+
+    // UC-SHARE-010, Rule-SHARE-047
+    @Test
+    public void aRunItemRowIsNamedByItsTestCaseOrByItsFileWhenTheTestCaseHasNoDescription() {
+        final UUID described = UUID.randomUUID();
+        final UUID undescribed = UUID.randomUUID();
+        final String recorded = """
+                {"default":1,"executions":[{"status":"PASSED"}]}""";
+        final Map<UUID, TestCase> testCases = Map.of(
+                described, TestCase.builder().uuid(described).description("Log in with a valid user").build(),
+                undescribed, TestCase.builder().uuid(undescribed).description(" ").build());
+
+        final PendingChange named = PendingChangeFactory.fromFile(GitStatusKind.ADDED, "", recorded, Path.of("Test Runs", "cycle 4", described + ".runitem"), RealJsonCodec.build(), testCaseUuid -> Optional.ofNullable(testCases.get(testCaseUuid)));
+        final PendingChange unnamed = PendingChangeFactory.fromFile(GitStatusKind.ADDED, "", recorded, Path.of("Test Runs", "cycle 4", undescribed + ".runitem"), RealJsonCodec.build(), testCaseUuid -> Optional.ofNullable(testCases.get(testCaseUuid)));
+
+        assertEquals(named.name(), "Log in with a valid user", "a run item row is not named by its test case");
+        assertEquals(unnamed.name(), undescribed + ".runitem", "a run item whose test case has no description is not named by its file");
     }
 
     @Test
