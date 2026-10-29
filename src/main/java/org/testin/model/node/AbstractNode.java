@@ -169,7 +169,7 @@ public abstract class AbstractNode {
 
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-127
     public boolean mayHaveChildren() {
-        return !fixedChildren().isEmpty() || getType().acceptsAnything();
+        return getType().acceptsAnything();
     }
 
     public boolean holdsTestCases() {
