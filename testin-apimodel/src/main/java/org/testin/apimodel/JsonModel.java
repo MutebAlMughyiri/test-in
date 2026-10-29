@@ -144,8 +144,6 @@ public final class JsonModel {
 
     // Rule-CODEGEN-102
     private static @NotNull JsonNode merged(final @NotNull List<JsonNode> values) {
-        if (values.stream().anyMatch(JsonNode::isMissingNode)) return MissingNode.getInstance();
-
         final @NotNull List<JsonNode> known = values.stream().filter(value -> !value.isNull()).toList();
         if (known.isEmpty()) return NullNode.getInstance();
         if (known.stream().allMatch(JsonNode::isObject)) return mergedObjects(known);
