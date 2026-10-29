@@ -183,15 +183,15 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-083
     private @NotNull List<String> ranksUnderTheSelection(final @NotNull TestSetEditor destinationEditor, final @NotNull Set<UUID> leaving, final int count) {
-        final @NotNull List<TestCase> ordered = TestCaseOrder.ordered(destinationEditor.getAllTestCases().stream().filter(testCase -> !leaving.contains(testCase.getUuid())).toList());
-        final @NotNull Optional<TestCase> anchor = destinationEditor.getSelectedTestCases().stream()
+        final @NotNull List<TestCase> placed = TestCaseOrder.ordered(destinationEditor.getAllTestCases().stream().filter(testCase -> !testCase.getOrder().isEmpty()).toList());
+        final int under = destinationEditor.getSelectedTestCases().stream()
                 .filter(selected -> !selected.getOrder().isEmpty())
-                .reduce((_, last) -> last);
+                .reduce((_, last) -> last)
+                .map(selected -> TestCaseOrder.positionOf(placed, selected))
+                .orElse(placed.size());
 
-        final int under = anchor.map(selected -> TestCaseOrder.positionOf(ordered, selected)).orElse(ordered.size());
-
-        @NotNull String previous = under > 0 && under <= ordered.size() ? ordered.get(under - 1).getOrder() : "";
-        final @NotNull String upperBound = under < ordered.size() ? ordered.get(under).getOrder() : "";
+        @NotNull String previous = nearestStaying(placed.subList(0, under).reversed(), leaving);
+        final @NotNull String upperBound = nearestStaying(placed.subList(under, placed.size()), leaving);
 
         final @NotNull List<String> ranks = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
@@ -200,6 +200,10 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
         }
 
         return ranks;
+    }
+
+    private static @NotNull String nearestStaying(final @NotNull List<TestCase> nearestFirst, final @NotNull Set<UUID> leaving) {
+        return nearestFirst.stream().filter(testCase -> !leaving.contains(testCase.getUuid())).findFirst().map(TestCase::getOrder).orElse("");
     }
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-081, Rule-EDITOR-PANEL-082
