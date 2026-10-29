@@ -23,6 +23,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import com.intellij.openapi.editor.markup.HighlighterLayer;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
+import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 import org.testin.Await;
@@ -70,7 +71,7 @@ public class BulkJsonEditorsIdeTest extends AbstractIdeTest {
         return Stream.of(editor.getMarkupModel().getAllHighlighters()).filter(highlighter -> DiffColors.DIFF_INSERTED.equals(highlighter.getTextAttributesKey())).toList();
     }
 
-    private static void pressed(final @NotNull Editor editor, final int offset, final int held) {
+    private static void pressed(final @NotNull Editor editor, final int offset, final @MagicConstant(flagsFromClass = InputEvent.class) int held) {
         final @NotNull Point at = editor.offsetToXY(offset);
         editor.getContentComponent().dispatchEvent(new MouseEvent(editor.getContentComponent(), MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), held | InputEvent.BUTTON1_DOWN_MASK, at.x + 1, at.y + 1, 1, false, MouseEvent.BUTTON1));
     }

@@ -138,9 +138,9 @@ public class RenamingNeverWritesTestinYmlIdeTest extends AbstractTempRootIdeTest
 
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-113
     public void testATestProjectUnderGitWithARemoteSavesWhereItIsClonedFrom() {
-        final @NotNull TestProjectNode testProject = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
-        bound().choose("NAFATH");
-        final @NotNull String clonedFrom = "https://github.com/acme/nafath-test-cases.git";
+        final @NotNull TestProjectNode testProject = new NodesOnDisk(getProject()).testProject(root.resolve("Ledger"));
+        bound().choose("Ledger");
+        final @NotNull String clonedFrom = "https://github.com/acme/ledger-test-cases.git";
         mustGit(testProject.getPath(), "init", "--initial-branch=main");
         mustGit(testProject.getPath(), "remote", "add", "origin", clonedFrom);
 
