@@ -109,6 +109,17 @@ public class BadgesTest {
     }
 
     // Rule-EDITOR-PANEL-253
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-253
+    @Test
+    public void aBugHalfIsNotJoinedToABadgeThatIsNotABug() {
+        final List<Badge> badges = new ArrayList<>();
+        badges.add(new Pill(Priority.HIGH.getLabel(), Priority.HIGH.getColor(), Priority.HIGH.tooltip()));
+
+        Badges.addBugBadge(badges, "Bug Severity", BugSeverity.MAJOR.getLabel(), BugSeverity.MAJOR.getColor());
+
+        assertEquals(badges.size(), 2, "a bug half was joined to a badge that is not a bug");
+    }
+
     @Test
     public void bothHalvesJoinIntoOneBadge() {
         final List<Badge> badges = new ArrayList<>();

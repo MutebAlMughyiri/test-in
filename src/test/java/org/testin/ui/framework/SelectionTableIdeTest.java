@@ -81,6 +81,20 @@ public class SelectionTableIdeTest extends AbstractIdeTest {
     }
 
     // Rule-SHARE-129
+    public void testAMarkerAboveTheChangeTakenAwayStaysTickedWhereItIs() {
+        final @NotNull SelectionTable review = new SelectionTable(List.of("Change", "Where"), List.of(20, 20));
+        review.addFixedRow(WHY, "Marker", "Login");
+        review.addRow("Description", "Login");
+        final @NotNull JTable table = theTable(review);
+        table.setSize(400, 200);
+
+        review.removeRow(1);
+        table.removeRowSelectionInterval(0, 0);
+
+        assertEquals("the marker above the change taken away can be unticked", List.of(0), review.getSelectedRows());
+    }
+
+    // Rule-SHARE-129
     public void testAMarkerStaysTickedAndGrayWhenTheChangeAboveItIsTakenAway() {
         final @NotNull SelectionTable review = aReviewOfOneChangeAndOneMarker();
         final @NotNull JTable table = theTable(review);

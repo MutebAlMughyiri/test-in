@@ -181,17 +181,17 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
         return eventOn(directory).getPresentation();
     }
 
-    private @NotNull AnActionEvent eventOn(final @NotNull PsiDirectory directory) {
+    private @NotNull AnActionEvent eventOn(final @NotNull PsiDirectory @NotNull ... directories) {
         final @NotNull AnAction action = action();
         final @NotNull IdeView view = new IdeView() {
             @Override
             public PsiDirectory @NotNull [] getDirectories() {
-                return new PsiDirectory[]{directory};
+                return directories;
             }
 
             @Override
             public @NotNull PsiDirectory getOrChooseDirectory() {
-                return directory;
+                return directories[0];
             }
         };
         final @NotNull AnActionEvent e = AnActionEvent.createEvent(action,
@@ -220,6 +220,14 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
 
         assertFalse("the entry works on a folder that is not a Java package", shown.isEnabled());
         assertEquals(Bundle.message("api.model.not.a.package"), shown.getDescription());
+    }
+
+    // UC-CODEGEN-022, Rule-CODEGEN-098
+    public void testWithTwoFoldersChosenItIsGray() {
+        final @NotNull PsiDirectory api = aPackage();
+        final @NotNull PsiDirectory model = WriteAction.computeAndWait(() -> directoryOf(sourceRoot()).createSubdirectory("model"));
+
+        assertFalse("the entry works with two folders chosen", eventOn(api, model).getPresentation().isEnabled());
     }
 
     // UC-CODEGEN-022, Rule-CODEGEN-082, Rule-CODEGEN-098
