@@ -120,8 +120,6 @@ final class TextInputField {
     }
 
     private void showPlaceholder() {
-        if (placeholder.isBlank()) return;
-
         field.getEmptyText().clear();
         field.getEmptyText().appendText(placeholder, SimpleTextAttributes.GRAYED_ATTRIBUTES);
         field.repaint();
