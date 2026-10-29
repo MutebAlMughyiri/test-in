@@ -3,6 +3,7 @@ import net.ltgt.gradle.errorprone.errorprone
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.extensions.IntelliJPlatformExtension
 import org.jetbrains.intellij.platform.gradle.tasks.RunIdeTask
 import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel
 import java.util.zip.ZipFile
@@ -168,15 +169,26 @@ allprojects {
 // report across the three modules, and check fails below either minimum. JaCoCo
 // recorded nothing here
 // once (#130) because the platform's class loader gives a class no code location
-// and the agent skips such a class unless told otherwise. The report reads the
-// instrumentCode output: JaCoCo matches a class by a checksum of its bytes, and
-// those are the bytes the tests load, not the ones in build/classes. Each
-// minimum is the whole percent under what was measured on 29 October 2026 -
-// 96.17% of lines, 60.77% of branches - so it stops coverage falling, and
+// and the agent skips such a class unless told otherwise. The report reads
+// build/classes, which are the bytes the tests load since instrumentCode is off
+// (below). Each minimum is the whole percent under what was measured on 29
+// October 2026 - 96.18% of lines, 91.45% of the branches written in the code -
+// so it stops coverage falling, and
 // raising it is a decision rather than a side effect. #425 left every line a
 // test can reach run by one; the rest are listed there. The agent measures only Testin's
 // own classes, and answers over JMX, so each test can save what it alone ran:
 // ruleTrace reads those files, and the report reads them with the rest.
+// #503 R10: the build writes no runtime null checks into the classes. Every
+// @NotNull stays in the code and NullAway still enforces it at compile time;
+// the checks instrumentCode added were 16,216 branches no test should take,
+// which kept the branch figure at 61% while 91% of the branches written in the
+// code were taken. No .form file needs the step.
+allprojects {
+    pluginManager.withPlugin("org.jetbrains.intellij.platform.base") {
+        the<IntelliJPlatformExtension>().instrumentCode.set(false)
+    }
+}
+
 allprojects {
     pluginManager.apply("jacoco")
 
@@ -225,7 +237,7 @@ tasks.withType<JacocoReportBase>().configureEach {
     allprojects.forEach { module ->
         dependsOn(module.tasks.withType<Test>().matching { it.name != "ruleTrace" })
         executionData.from(module.fileTree(module.layout.buildDirectory.dir("jacoco")).include("**/*.exec"))
-        classDirectories.from(module.tasks.named("instrumentCode"))
+        classDirectories.from(module.the<SourceSetContainer>()["main"].output.classesDirs)
         sourceDirectories.from(module.the<SourceSetContainer>()["main"].java.srcDirs)
     }
 }
@@ -249,7 +261,7 @@ tasks.jacocoTestCoverageVerification {
             }
             limit {
                 counter = "BRANCH"
-                minimum = "0.60".toBigDecimal()
+                minimum = "0.91".toBigDecimal()
             }
         }
     }

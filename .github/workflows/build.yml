@@ -22,10 +22,10 @@
 # one setting the IntelliJ Platform Gradle Plugin's FAQ names for this. With it,
 # ideTest alone takes the indexer from 4% to 58%.
 #
-# The report reads the instrumentCode output, never build/classes. JaCoCo
-# matches a class by a checksum of its bytes, and the uninstrumented classes are
-# not the ones the tests loaded. Pointed there, every class the instrumenter
-# rewrote reads as never run. The build would then stay green over a wrong figure.
+# The report reads build/classes. JaCoCo matches a class by a checksum of its
+# bytes, so it must read the bytes the tests loaded; since #503 R10 the build
+# writes no null checks into the classes (instrumentCode is off), and
+# build/classes are those bytes.
 name: Build
 
 on:

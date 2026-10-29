@@ -180,7 +180,7 @@ public class RuleTraceTest {
 
     private static @NotNull Map<String, List<Path>> classesBySource() {
         return ContentModules.ROOTS.stream()
-                .map(module -> Paths.get(module, "build", "instrumented", "instrumentCode"))
+                .map(module -> Paths.get(module, "build", "classes", "java", "main"))
                 .flatMap(classes -> filesUnder(classes, ".class").stream().map(file -> Map.entry(slashed(classes, file).replaceAll("(\\$.*)?\\.class$", ".java"), file)))
                 .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
     }
