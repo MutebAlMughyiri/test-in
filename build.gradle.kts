@@ -213,6 +213,7 @@ subprojects {
         val ranByEachTest = rootProject.layout.buildDirectory.dir("jacoco/per-test/${project.name}-$name")
         systemProperty("testin.testCoverage", ranByEachTest.get().asFile.path)
         doFirst { ranByEachTest.get().asFile.deleteRecursively() }
+        outputs.doNotCacheIf("what each test ran is saved outside the task's outputs") { true }
     }
 }
 
@@ -524,6 +525,15 @@ tasks {
         val ranByEachTest = layout.buildDirectory.dir("jacoco/per-test/$name")
         systemProperty("testin.testCoverage", ranByEachTest.get().asFile.path)
         doFirst { ranByEachTest.get().asFile.deleteRecursively() }
+
+        // That folder is not one of the task's outputs, and the agent's own file
+        // is emptied after every test, so a run taken from the build cache brings
+        // back no coverage at all: on 1457a0ace, whose change compiled to nothing,
+        // `test` came from the cache and the report read 94% of lines. A test task
+        // is therefore always run. Declaring the folder an output instead would
+        // make ruleTrace, which reads it after the tests rather than on them, use
+        // another task's output without depending on it.
+        outputs.doNotCacheIf("what each test ran is saved outside the task's outputs") { true }
 
         // The documents are an input to the tests that read them - RuleNumbersTest
         // scans every page for the numbers the code cites. Without this Gradle
