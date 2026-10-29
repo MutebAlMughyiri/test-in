@@ -104,6 +104,22 @@ public class SortFieldTest {
                 "Run Item Status follows the order the Run Item Status filter lists them in: Passed, Failed, Blocked, Pending");
     }
 
+    // Rule-EDITOR-PANEL-274, Rule-EDITOR-PANEL-275
+    @Test
+    public void executedAtSortsByWhenEachWasJudgedAndLeavesTheUnexecutedLast() {
+        final @NotNull ZonedDateTime monday = ZonedDateTime.of(2026, 10, 26, 9, 0, 0, 0, ZoneId.of("Asia/Riyadh"));
+        final @NotNull TestCase first = aTestCase("first", Priority.LOW, "");
+        final @NotNull TestCase second = aTestCase("second", Priority.LOW, "");
+        final @NotNull TestCase waiting = aTestCase("waiting", Priority.LOW, "");
+        final @NotNull Map<UUID, RunItem> runItems = Map.of(
+                first.getUuid(), RunItem.builder().uuid(first.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).executedAt(monday).build())).build(),
+                second.getUuid(), RunItem.builder().uuid(second.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).executedAt(monday.plusHours(1)).build())).build(),
+                waiting.getUuid(), RunItem.builder().uuid(waiting.getUuid()).build());
+        final @NotNull Function<UUID, Optional<RunItem>> inTheTestRun = testCaseUuid -> Optional.ofNullable(runItems.get(testCaseUuid));
+
+        assertEquals(descriptionsOf(SortField.EXECUTED_AT.sorted(List.of(waiting, second, first), SortDirection.ASCENDING, inTheTestRun)), List.of("first", "second", "waiting"));
+    }
+
     // Rule-EDITOR-PANEL-275
     @Test
     public void aRunItemFieldWithNoRunItemSortsNothingAndLosesNothing() {

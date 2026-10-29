@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 public class PageWindowTest {
@@ -47,6 +48,7 @@ public class PageWindowTest {
         assertEquals(page.totalPages(), 3);
         assertEquals(page.fromIndex(), 50);
         assertEquals(page.toIndex(), 100);
+        assertFalse(page.isEmpty());
     }
 
     @Test

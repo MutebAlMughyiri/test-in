@@ -133,10 +133,21 @@ public class SortMenuIdeTest extends AbstractTempRootIdeTest {
         Sorting.choose(sortOf(editor), SortField.PRIORITY.getLabel());
         Sorting.choose(sortOf(editor), SortDirection.DESCENDING.getLabel());
         Await.until("the status bar does not name the sort", () -> Drawn.holds(Drawn.words(editor.getStatusBar()), sortedByPriority));
+        assertTrue("Reset Sort is gray with a sort on", Gestures.updated(getProject(), Sorting.entry(sortOf(editor), Bundle.message("sort.reset")), editor.getList()).isEnabled());
 
         Sorting.press(sortOf(editor), Bundle.message("sort.reset"));
         assertEquals("Reset Sort did not put the sort back", SortField.ORDER, sortOf(editor).sortBy());
         assertEquals("Reset Sort did not put the direction back", SortDirection.ASCENDING, sortOf(editor).direction());
         Await.until("the status bar still names a sort", () -> !Drawn.holds(Drawn.words(editor.getStatusBar()), sortedByPriority));
+    }
+
+    // UC-EDITOR-PANEL-049, Rule-EDITOR-PANEL-280
+    public void testOrderDescendingIsASortTheStatusBarNames() {
+        lowHighMedium(EditorFixtures.testProject(getProject(), root));
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+
+        Sorting.choose(sortOf(editor), SortDirection.DESCENDING.getLabel());
+
+        Await.until("the status bar does not name Order, Descending", () -> Drawn.holds(Drawn.words(editor.getStatusBar()), Bundle.message("sort.button.active", SortField.ORDER.getLabel(), SortDirection.DESCENDING.getLabel())));
     }
 }

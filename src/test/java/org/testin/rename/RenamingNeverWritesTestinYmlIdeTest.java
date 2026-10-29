@@ -89,6 +89,21 @@ public class RenamingNeverWritesTestinYmlIdeTest extends AbstractTempRootIdeTest
         return Services.getInstance(getProject(), BoundTestProject.class);
     }
 
+    // UC-TREE-PANEL-011, Rule-TREE-PANEL-110, Rule-CODEGEN-082
+    public void testRenamingTheOpenTestProjectToTheNameTestinYmlGivesKeepsItOpenAndWritesNothing() {
+        final @NotNull TestProjectNode shop = new NodesOnDisk(getProject()).testProject(root.resolve("Shop"));
+        bound().choose("Shop");
+        final @NotNull String before = bytesOf(yml());
+
+        TreeGesture.pressed(getProject(), new RenameAction(), List.of(shop));
+        ShownDialog.typed(getProject(), RenameDialog.class, "NAFATH");
+        ShownDialog.press(getProject(), RenameDialog.class, Shortcuts.Enter);
+        Await.until("the test project was not renamed", () -> Services.getInstance(getProject(), Nodes.class).nodeExists(root.resolve("NAFATH")));
+
+        assertEquals("the test project chosen here did not follow its rename", "NAFATH", bound().name());
+        assertEquals("renaming the test project wrote " + TestinYml.fileName(), before, bytesOf(yml()));
+    }
+
     // Rule-TREE-PANEL-112
     public void testRenamingAndChoosingNeverWriteTestinYmlAndSaveDoes() {
         final @NotNull TestProjectNode testProject = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));

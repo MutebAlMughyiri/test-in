@@ -16,14 +16,19 @@
 
 package org.testin.rename;
 
+import com.intellij.testFramework.DumbModeTestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
+import org.testin.Said;
 import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.event.MovedNode;
 import org.testin.codegen.event.RenamedNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.notifications.Refused;
+import org.testin.util.Bundle;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RenameTestSetClassIdeTest extends AbstractCodegenIdeTest {
@@ -41,6 +46,16 @@ public class RenameTestSetClassIdeTest extends AbstractCodegenIdeTest {
 
         assertTrue("the class did not take the test set's new name", generatedClass("nafath.SignInTest").isPresent());
         assertTrue("the class kept the test set's old name", generatedClass("nafath.LoginTest").isEmpty());
+    }
+
+    // UC-TREE-PANEL-011, Rule-CODEGEN-081
+    public void testATestSetIsNotRenamedWhileTheIdeIsIndexingAndSaysWhy() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+
+        final @NotNull List<String> said = Said.during(getProject(), () -> assertTrue("a rename that moves code was let through while the IDE indexes",
+                DumbModeTestUtils.computeInDumbModeSynchronously(getProject(), () -> NodeRename.refused(getProject(), login, "Sign in"))));
+
+        assertEquals("the rename refused while indexing did not say why", List.of(Refused.WHILE_INDEXING.about(Bundle.message("dialog.rename.title"))), said);
     }
 
     // UC-CODEGEN-015, Rule-CODEGEN-052

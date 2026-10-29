@@ -30,6 +30,7 @@ import org.testng.annotations.Test;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.UUID;
 
 import static org.testng.Assert.assertEquals;
@@ -395,5 +396,13 @@ public class RunItemTest {
 
         assertEquals(runItem.getExecutions().get(0).getActualResult(), "first");
         assertEquals(runItem.getExecutions().get(1).getActualResult(), "corrected");
+    }
+
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-122
+    @Test
+    public void anAttemptNumberPastTheLastShowsTheDefaultExecution() {
+        final @NotNull RunItem runItem = withExecutions(execution(RunItemStatus.FAILED, "first"), execution(RunItemStatus.PASSED, "second"));
+
+        assertSame(runItem.shownExecution(OptionalInt.of(5)), runItem.shownExecution(), "an attempt that is not there was shown");
     }
 }

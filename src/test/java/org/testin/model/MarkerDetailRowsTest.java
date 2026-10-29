@@ -66,6 +66,15 @@ public class MarkerDetailRowsTest {
     }
 
     @Test
+    public void aTestRunStartedButNotEndedSaysNothingAboutHowLongItTook() {
+        final @NotNull TestRunMarker testRun = new TestRunMarker();
+        testRun.setExecutionStartedAt(ZonedDateTime.parse("2026-10-27T09:00:00+03:00"));
+
+        assertTrue(TestRunExecution.rowsOf(testRun).contains(new DetailRow(Bundle.message("execution.time"), "")),
+                "a test run still going says how long it took: " + TestRunExecution.rowsOf(testRun));
+    }
+
+    @Test
     public void aTestRunListsWhatItWasCreatedWith() {
         final @NotNull Map<TestRunConfiguration, String> answers = new EnumMap<>(TestRunConfiguration.class);
         answers.put(TestRunConfiguration.PLATFORM, "Web");

@@ -219,6 +219,9 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
         tick(filter, TestSetEditorFields.MODULE.getName(), "Payments");
         tick(filter, Bundle.message("filter.run.item.status"), RunItemStatus.PENDING.getLabel());
         assertTrue("the filters did not narrow the list", editor.getCurrentTestCases().size() < 32);
+        final @NotNull AnActionEvent somethingOn = TestActionEvent.createTestEvent(resetEntry);
+        ActionUtil.updateAction(resetEntry, somethingOn);
+        assertTrue("Reset Filters is gray with filters on", somethingOn.getPresentation().isEnabled());
 
         reset(filter);
 
