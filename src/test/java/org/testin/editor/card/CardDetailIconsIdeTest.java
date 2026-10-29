@@ -168,6 +168,17 @@ public class CardDetailIconsIdeTest extends AbstractIdeTest {
     }
 
     // Rule-EDITOR-PANEL-269
+    public void testHoveringACardAwayFromEveryLineSaysNothingThoughALineItShowedBeforeIsHidden() {
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").expectedResult(EXPECTED).reference(REFERENCE).build();
+        final @NotNull TestCaseCard card = new TestCaseCard(getProject());
+        card.updateData(0, testCase, Set.of(TestSetEditorFields.EXPECTED_RESULT, TestSetEditorFields.REFERENCE), AbstractCard.titleText(1, true, testCase.getDescription()));
+        card.updateData(0, testCase, Set.of(TestSetEditorFields.REFERENCE), AbstractCard.titleText(1, true, testCase.getDescription()));
+        card.layOutAs(CELL);
+
+        assertEquals("hovering a card away from every line said something", "", card.tooltipAt(new Point(CELL.width - 4, CELL.height - 4), CELL));
+    }
+
+    // Rule-EDITOR-PANEL-269
     public void testAFieldWithNoIconKeepsItsName() {
         final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").build();
         final @NotNull RunItem runItem = new RunItem().setUuid(testCase.getUuid()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
