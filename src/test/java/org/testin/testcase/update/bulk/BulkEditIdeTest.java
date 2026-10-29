@@ -403,6 +403,24 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         Await.until("the edited steps were not saved trimmed with the blank one dropped", () -> List.of("Open the app", "Log in with a password").equals(theTestCases().findTestCase(testCase.getUuid()).orElseThrow().getSteps()));
     }
 
+    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-043
+    public void testAnAddedStepTakesAGreenBackgroundOnceItHoldsAValue() {
+        final @NotNull TestCase testCase = aTestSetWithModules("Payments").getFirst();
+        theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase.edit().steps(new ArrayList<>(List.of("Open the app"))).build());
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+        editor.getList().setSelectionInterval(0, 0);
+        UpdateTestCaseAction.openField(getProject(), editor, UpdateTestCaseFields.STEPS);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+        final @NotNull Editor steps = editorsOf(StepsBulkDialog.class).stream().filter(values -> !values.isViewer()).findFirst().orElseThrow();
+
+        ShownDialog.press(getProject(), StepsBulkDialog.class, Shortcuts.AddItem.getKey());
+        final int added = steps.getCaretModel().getOffset();
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> steps.getDocument().insertString(added, "Pay"));
+
+        Await.until("an added step that holds a value never took a background", () -> greenIn(steps).size() == 1);
+        assertEquals("the background is not on the added step", added, greenIn(steps).getFirst().getStartOffset());
+    }
+
     // Rule-EDITOR-PANEL-006
     public void testASaveThatWouldLeaveTheFilesAsTheyAreWritesNothingAndSaysNothing() {
         aTestSetWithModules("Payments", "Cart");

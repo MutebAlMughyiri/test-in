@@ -20,6 +20,10 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiJavaCodeReferenceElement;
@@ -83,6 +87,26 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the class was left behind in its old package", generatedClass("nafath.LoginTest").isEmpty());
     }
 
+    // Rule-CODEGEN-053
+    public void testATestSetMovedIntoAPackageWhoseFolderCannotBeMadeKeepsItsClass() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        aFileWhereTheCardsFolderGoes();
+        final @NotNull TestSetPackageNode cards = indexedPackage("Cards", theTestCasesDirectory());
+
+        NodeCode.of(NodeType.TEST_SET).getMoved().execute(getProject(), new MovedNode(login, cards.getPath()));
+
+        assertTrue("the class left its package although no folder could take it", generatedClass("nafath.LoginTest").isPresent());
+    }
+
+    // Rule-CODEGEN-053
+    public void testATestSetMovedIntoThePackageItIsAlreadyInKeepsItsClass() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+
+        NodeCode.of(NodeType.TEST_SET).getMoved().execute(getProject(), new MovedNode(login, theTestCasesDirectory().getPath()));
+
+        assertTrue("the class left the package it was already in", generatedClass("nafath.LoginTest").isPresent());
+    }
+
     // Rule-CODEGEN-055
     public void testAMoveIntoAPlaceTestinHasNotReadLeavesTheClassAndSaysSo() {
         final @NotNull TestSetNode login = createdTestSet("Login");
@@ -117,6 +141,26 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the class directly in the package does not carry its new name", generatedClass("nafath.paymentmethods.LoginTest").isPresent());
         assertTrue("a class deeper in the package does not carry its new name", generatedClass("nafath.paymentmethods.cards.VisaTest").isPresent());
         assertTrue("the old package still holds the class", generatedClass("nafath.checkout.LoginTest").isEmpty());
+    }
+
+    // Rule-CODEGEN-056
+    public void testRenamingAPackageLeavesAFileBeneathItThatIsNotJavaAsItWas() {
+        final @NotNull TestSetPackageNode checkout = indexedPackage("Checkout", theTestCasesDirectory());
+        createdTestSet("Login", checkout);
+        final @NotNull VirtualFile notes = WriteAction.computeAndWait(() -> {
+            try {
+                final @NotNull VirtualFile created = TestSourceRoot.find(getProject()).map(root -> root.findFileByRelativePath("nafath/checkout")).orElseThrow(() -> new AssertionError("the package has no folder")).createChildData(this, "notes.txt");
+                VfsUtil.saveText(created, "package nafath.checkout;");
+                return created;
+            } catch (final IOException ex) {
+                throw new AssertionError("could not write a file that is not Java into the package: " + ex.getMessage(), ex);
+            }
+        });
+
+        NodeCode.of(NodeType.TEST_SET_PACKAGE).getRenamed().execute(getProject(), new RenamedNode(checkout, "Payment methods"));
+
+        assertEquals("the file that is not Java did not move with its package", Optional.of("paymentmethods"), Optional.ofNullable(notes.getParent()).map(VirtualFile::getName));
+        assertEquals("a file that is not Java was rewritten", Optional.of("package nafath.checkout;"), Optional.ofNullable(FileDocumentManager.getInstance().getDocument(notes)).map(Document::getText));
     }
 
     // Rule-CODEGEN-057

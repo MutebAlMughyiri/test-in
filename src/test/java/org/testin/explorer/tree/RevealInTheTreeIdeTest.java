@@ -52,4 +52,23 @@ public class RevealInTheTreeIdeTest extends AbstractReadTheRootIdeTest {
         Await.until("the path revealed was not selected in the tree", () -> waited.get() == 1);
         assertEquals("the tree did not select the path revealed, under the package it is in", Optional.of(card), selectedIn(tree));
     }
+
+    // UC-INTERNAL-001, Rule-INTERNAL-002
+    public void testAPathRevealedPastAnotherPackageIsSelectedUnderItsOwn() {
+        final @NotNull Path checkout = aTestProjectAt(root.resolve("CHECKOUT"));
+        final @NotNull Path accounts = marked(theTestCasesOf(checkout).resolve("Accounts"), NodeType.TEST_SET_PACKAGE);
+        marked(accounts.resolve("Sign up"), NodeType.TEST_SET);
+        final @NotNull Path card = marked(marked(theTestCasesOf(checkout).resolve("Payments"), NodeType.TEST_SET_PACKAGE).resolve("Card"), NodeType.TEST_SET);
+        readEverything();
+        Services.getInstance(getProject(), BoundTestProject.class).choose("CHECKOUT");
+        final @NotNull TestProjectTree tree = new TestProjectTree(getProject());
+        Disposer.register(getTestRootDisposable(), tree);
+        tree.refresh();
+        final @NotNull AtomicInteger waited = new AtomicInteger();
+
+        tree.reveal(card, waited::incrementAndGet);
+
+        Await.until("the path revealed past another package was not selected in the tree", () -> waited.get() == 1);
+        assertEquals("the tree did not select the path revealed, under its own package", Optional.of(card), selectedIn(tree));
+    }
 }

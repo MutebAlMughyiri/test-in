@@ -16,6 +16,8 @@
 
 package org.testin.view.details;
 
+import com.intellij.openapi.ui.popup.JBPopup;
+import com.intellij.ui.UiInterceptors;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Said;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
@@ -30,6 +32,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -77,5 +80,40 @@ public class CommittedTestRunF2IdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull List<String> said = Said.during(getProject(), () -> EditShownTestCase.openIfEditable(getProject(), TestCase.deleted(testCaseUuid), List.of("Shop", "Test Cases", "Login")));
 
         assertTrue("F2 did not say the test case was deleted: " + said, said.stream().anyMatch(line -> line.contains(Bundle.message("details.deleted.no.edit"))));
+    }
+
+    // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-110
+    public void testF2OnARunItemOfATestRunInProgressOpensTheEdit() {
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Shop"));
+        final @NotNull Path testSet = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET);
+        final @NotNull UUID testCaseUuid = aTestCaseIn(testSet);
+        final @NotNull Path testRun = theTestRunsOf(testProjectPath).resolve("Cycle 5");
+        try {
+            Files.createDirectories(testRun);
+            Files.writeString(testRun.resolve(NodeType.TEST_RUN.getMarker()), """
+                    {
+                      "createdBy" : "Sara",
+                      "createdAt" : "Friday 28-08-2026 At 01:12:47 [Asia/Riyadh]",
+                      "status" : "IN_PROGRESS"
+                    }""", StandardCharsets.UTF_8);
+        } catch (final IOException ex) {
+            throw new AssertionError("Could not write the test run: " + ex.getMessage(), ex);
+        }
+        runItemIn(testRun, FileKind.RUN_ITEM.fileName(testCaseUuid));
+        readEverything();
+        final @NotNull TestCase shown = Services.getInstance(getProject(), TestCases.class).findTestCase(testCaseUuid).orElseThrow();
+        final @NotNull List<JBPopup> menus = new ArrayList<>();
+        UiInterceptors.register(new UiInterceptors.UiInterceptor<>(JBPopup.class) {
+            @Override
+            protected void doIntercept(final @NotNull JBPopup popup) {
+                menus.add(popup);
+            }
+        });
+
+        final @NotNull List<String> said = Said.during(getProject(), () -> EditShownTestCase.openIfEditable(getProject(), shown, List.of("Shop", "Test Runs", "Cycle 5")));
+
+        assertEquals("F2 on a test run in progress refused: " + said, List.of(), said);
+        assertEquals("F2 on a test run in progress did not open the edit", 1, menus.size());
+        menus.forEach(JBPopup::cancel);
     }
 }

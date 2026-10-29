@@ -366,6 +366,16 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
         assertTrue("a section opened closed", boxes(again).stream().allMatch(box -> showsIn(again, box)));
     }
 
+    // Rule-CODEGEN-106
+    public void testANameTypedThenClearedLeavesEachSectionNamingNoFile() {
+        final @NotNull JComponent dialog = opened(aPackage()).getContent();
+        filledIn(dialog, "login", REQUEST_BODY);
+
+        filledIn(dialog, "", REQUEST_BODY);
+
+        assertFalse("a section still names a file once the name was cleared: " + Drawn.words(dialog), Drawn.words(dialog).stream().anyMatch(line -> line.contains(".java")));
+    }
+
     // Rule-CODEGEN-107
     public void testAnEmptyBoxIsThreeLinesAndAPasteGrowsItToItsShareOfTheFrameThenScrollsUncheckedForSpelling() {
         final @NotNull PopupsBuilt.Built built = opened(aPackage());

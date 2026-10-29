@@ -131,6 +131,24 @@ public class DetailsBandsIdeTest extends AbstractIdeTest {
         }
     }
 
+    // Rule-VIEW-PANEL-087
+    public void testClosingTheOpenedBandIsRememberedForTheNextTestCase() {
+        final boolean wasOpen = PropertiesComponent.getInstance().getBoolean(DetailsTab.TEST_CASE_OPEN, false);
+        PropertiesComponent.getInstance().setValue(DetailsTab.TEST_CASE_OPEN, true, false);
+        try {
+            final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), aTestCase(), Optional.of(failed()), List.of("Demo", "Test Cases", LAST_STEP));
+            final @NotNull Component heading = Drawn.first(tab, JLabel.class, label -> TEST_CASE.equalsIgnoreCase(label.getText())).getParent();
+            final @NotNull MouseEvent click = new MouseEvent(heading, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, 1, 1, 1, false);
+
+            for (final MouseListener listener : heading.getMouseListeners()) listener.mouseClicked(click);
+
+            assertFalse("closing the band was not remembered", PropertiesComponent.getInstance().getBoolean(DetailsTab.TEST_CASE_OPEN, false));
+            assertFalse("the next test case read did not open with the band closed", holds(shown(Optional.of(failed())), "The dashboard opens"));
+        } finally {
+            PropertiesComponent.getInstance().setValue(DetailsTab.TEST_CASE_OPEN, wasOpen, false);
+        }
+    }
+
     // Rule-INTERNAL-133
     public void testTheFoldedBandDrawsTheAccentChevron() {
         final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), aTestCase(), Optional.of(failed()), List.of("Demo", "Test Cases", LAST_STEP));

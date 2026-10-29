@@ -33,6 +33,7 @@ import org.testin.model.testrun.Failure;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.services.Services;
+import org.testin.testrun.RunItemRecorder;
 import org.testin.testrun.TestRunFixture;
 import org.testin.util.Bundle;
 
@@ -241,6 +242,24 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
             assertTrue("the status just set did not reach the panel: " + details(), holds(details(), RunItemStatus.PASSED.getLabel()));
             assertFalse("the panel still shows the status from before: " + details(), details().contains(RunItemStatus.PENDING.getLabel()));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // Rule-VIEW-PANEL-005
+    public void testARunItemStatusSetOnAnotherTestCaseLeavesThePanelAsItWas() {
+        final @NotNull List<TestCase> testCases = threeTestCases();
+        final @NotNull TestRunNode testRun = aTestRun(List.of(EditorFixtures.pending(testCases.getFirst()), EditorFixtures.pending(testCases.get(1))));
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
+        try {
+            view.getPanel().show(List.of(testCases.get(1)), treePathOf(testRun));
+
+            Services.getInstance(getProject(), RunItemRecorder.class).applyRunItemStatus(editor, List.of(testCases.getFirst()), RunItemStatus.PASSED);
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertEquals("a run item status set on another test case took the panel away", List.of(testCases.get(1).getUuid()), view.getPanel().getCurrentTestCase().map(TestCase::getUuid).stream().toList());
+            assertFalse("the panel shows a run item status set on another test case: " + details(), details().contains(RunItemStatus.PASSED.getLabel()));
         } finally {
             Disposer.dispose(editor);
         }

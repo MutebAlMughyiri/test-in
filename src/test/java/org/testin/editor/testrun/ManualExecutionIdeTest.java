@@ -23,6 +23,7 @@ import com.intellij.util.TimeoutUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
+import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.card.AbstractCard;
@@ -495,6 +496,28 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             assertEquals("a test case removed from its test set was given the run item status", List.of(RunItemStatus.PENDING), theTestRuns().getRunItems(testRun.getPath()).runItemOf(removed).orElseThrow().getExecutions().stream().map(RunItemExecution::getStatus).toList());
             assertEquals("a run item status given to several at once was timed", Duration.ZERO, runItemOf(testRun, testCases.getFirst()).shownExecution().getDuration());
             assertEquals(Duration.ZERO, runItemOf(testRun, testCases.get(1)).shownExecution().getDuration());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // Rule-EDITOR-PANEL-163, Rule-EDITOR-PANEL-165
+    public void testSeveralAtOnceThatWereAllRemovedRecordNothingAndSayNothing() {
+        final @NotNull TestCase kept = createdTestCases(1).getFirst();
+        final @NotNull List<UUID> removed = List.of(UUID.randomUUID(), UUID.randomUUID());
+        final @NotNull TestRunNode testRun = aTestRunOver(List.of(EditorFixtures.pending(kept), new RunItem().setUuid(removed.getFirst()), new RunItem().setUuid(removed.getLast())));
+        final @NotNull TestRunEditor editor = opened(testRun);
+        try {
+            final @NotNull List<TestCase> removedRows = editor.getAllTestCases().stream().filter(testCase -> removed.contains(testCase.getUuid())).toList();
+            assertEquals("a removed test case has no row", 2, removedRows.size());
+            final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+            runItemStatuses().applyRunItemStatus(editor, removedRows, RunItemStatus.BLOCKED);
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertEquals("a test case removed from its test set was given the run item status", List.of(List.of(RunItemStatus.PENDING), List.of(RunItemStatus.PENDING)),
+                    removed.stream().map(testCaseUuid -> theTestRuns().getRunItems(testRun.getPath()).runItemOf(testCaseUuid).orElseThrow().getExecutions().stream().map(RunItemExecution::getStatus).toList()).toList());
+            assertEquals("recording nothing said something", List.of(), said.shown());
         } finally {
             Disposer.dispose(editor);
         }

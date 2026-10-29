@@ -122,6 +122,23 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
         assertEquals("moving to an editor with nothing selected left a test case in the panel", List.of(Bundle.message("details.placeholder")), details());
     }
 
+    // UC-EDITOR-PANEL-025, Rule-EDITOR-PANEL-113
+    public void testMovingToATestinEditorWithATestCaseSelectedShowsIt() {
+        final @NotNull TestSetNode testSet = aTestSet("Login");
+        final @NotNull TestCase testCase = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestSetNode other = aTestSet("Logout");
+        final @NotNull TestCase selected = aTestCase(other, "Log out from the menu", "a");
+        final @NotNull TestSetEditor editor = anEditorOn(other);
+        view.getPanel().show(List.of(testCase), testSet.treePath());
+        selectIn(editor, selected);
+        view.getPanel().show(List.of(testCase), testSet.treePath());
+
+        new UnifiedFileEditor(getProject(), new UnifiedVirtualFile(other), editor).selectNotify();
+        settled();
+
+        assertTrue("moving to an editor with a test case selected did not show it: " + details(), holds(details(), "Log out from the menu"));
+    }
+
     // Rule-VIEW-PANEL-009, Rule-VIEW-PANEL-060
     public void testClosingTheEditorTheTestCaseCameFromEmptiesAndClosesThePanel() {
         final @NotNull TestSetNode testSet = aTestSet("Login");

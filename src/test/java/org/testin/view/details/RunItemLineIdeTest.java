@@ -96,6 +96,16 @@ public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
         assertTrue("the bug chip does not carry the bug priority: " + Drawn.text(bugChip), Drawn.text(bugChip).contains(BugPriority.HIGH.getLabel()));
     }
 
+    // Rule-VIEW-PANEL-086
+    public void testAPassedExecutionThatKeepsItsBugIssueLinksItWithNoChip() {
+        final @NotNull RunItem passed = RunItem.builder().uuid(TEST_CASE_UUID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(ISSUE).duration(Duration.ofSeconds(134)).build())).build();
+
+        final @NotNull JBPanel<?> tab = drawn(passed, shownTestRunTreePath());
+
+        assertTrue("the bug issue a passed execution keeps was not linked: " + Drawn.words(tab), Drawn.components(tab).stream().anyMatch(component -> component instanceof ActionLink link && "#412".equals(link.getText())));
+        assertTrue("a passed execution drew the bug chip: " + Drawn.words(tab), Drawn.components(tab).stream().noneMatch(component -> Drawn.text(component).startsWith(BugSeverity.MAJOR.getLabel())));
+    }
+
     // Rule-VIEW-PANEL-033
     public void testATestCaseTheTestRunHasNotReachedReadsPending() {
         final @NotNull List<String> words = Drawn.words(drawn(RunItem.builder().uuid(TEST_CASE_UUID).build(), shownTestRunTreePath()));

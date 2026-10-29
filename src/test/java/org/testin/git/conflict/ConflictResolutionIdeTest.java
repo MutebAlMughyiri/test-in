@@ -257,4 +257,19 @@ public class ConflictResolutionIdeTest extends AbstractGitRemoteIdeTest {
         assertTrue("a file Testin cannot merge was reported resolved", finished.isEmpty());
         assertEquals("the files Testin cannot merge were not named", List.of(Set.of(TEST_CASE, NOTES)), leftOver.stream().map(Set::copyOf).toList());
     }
+
+    // UC-SHARE-017, Rule-SHARE-079
+    public void testATestCaseTheOtherSideRemovedAndTheTesterChangedIsLeftOver() {
+        final @NotNull List<String> conflicting = pulledIntoAConflict(
+                repository -> write(repository, TEST_CASE, aTestCase("Log in")),
+                ConflictResolutionIdeTest::removeTheTestCase,
+                repository -> write(repository, TEST_CASE, aTestCase("Sign in")));
+        assertEquals("the pull did not stop on the test case", List.of(TEST_CASE), conflicting);
+
+        resolving(conflicting);
+        ended();
+
+        assertTrue("a test case the other side removed was reported resolved", finished.isEmpty());
+        assertEquals("the test case the other side removed was not named", List.of(Set.of(TEST_CASE)), leftOver.stream().map(Set::copyOf).toList());
+    }
 }

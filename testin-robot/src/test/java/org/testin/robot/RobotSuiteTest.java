@@ -93,6 +93,12 @@ public class RobotSuiteTest {
         assertEquals(RobotSuite.testStartAbove(SUITE, tagsOf("Pay with a new card")), Optional.of(SUITE.indexOf("Pay with a new card")), "a comment line above the test is not where it starts");
     }
 
+    // Rule-CODEGEN-119, Rule-CODEGEN-127
+    @Test
+    public void aCommentLineBetweenTwoTestsIsNoTestOfItsOwn() {
+        assertEquals(RobotSuite.blocksOf(SUITE).stream().map(RobotTestBlock::name).toList(), List.of("Pay with a saved card", "Pay with a new card", "Pay by bank transfer"), "a comment line was read as a test");
+    }
+
     // Rule-CODEGEN-003
     @Test
     public void aBodyIsTheTestersOnceItIsAnythingButTheTwoLinesTestinWrote() {

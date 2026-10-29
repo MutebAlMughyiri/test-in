@@ -140,6 +140,19 @@ public class CreateTestProjectActionIdeTest extends AbstractReadTheRootIdeTest {
         assertTrue("the clone did not land in the Testin folder", Files.isDirectory(root.resolve("CHECKOUT").resolve(".git")));
     }
 
+    // UC-TREE-PANEL-003, Rule-TREE-PANEL-107
+    public void testARepositoryWhoseNameTheTestinFolderAlreadyHoldsIsRefusedAndNotCloned() {
+        aTestProjectAt(root.resolve("CHECKOUT"));
+        readEverything();
+        final @NotNull String address = aBareRepositoryHoldingATestProject();
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        typedAndConfirmed(address);
+
+        Await.until("a repository whose name the Testin folder already holds was not refused: " + said.shown(), () -> said.shown().contains(Refused.ALREADY_EXISTS.about("CHECKOUT")));
+        assertFalse("a refused repository was cloned over the test project already there", Files.exists(root.resolve("CHECKOUT").resolve(".git")));
+    }
+
     // UC-TREE-PANEL-028, Rule-TREE-PANEL-115
     public void testNewTestProjectIsGrayUntilATestinFolderIsSetAndSaysWhy() {
         final @NotNull CreateTestProjectAction action = newTestProject();

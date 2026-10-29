@@ -193,6 +193,28 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
+    // Rule-EDITOR-PANEL-118
+    public void testRefreshAfterTheSelectedTestCaseWasRemovedSelectsNothing() {
+        final @NotNull TestSetNode testSet = aTestSet();
+        final @NotNull List<TestCase> testCases = EditorFixtures.testCases(getProject(), testSet, 5);
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+        try {
+            editor.choosePageSize(2);
+            editor.selectTestCase(testCases.get(4));
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            assertTrue("the test case could not be removed from its test set", Services.getInstance(getProject(), TestCases.class).removeTestCase(testSet.getPath(), testCases.get(4).getUuid()));
+
+            pressRefresh(editor);
+
+            Await.until("refresh did not read the test set again", () -> editor.getAllTestCases().size() == 4 && !editor.isLoading());
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            assertTrue("refresh selected something in place of a test case that is gone", editor.getList().isSelectionEmpty());
+        } finally {
+            editor.choosePageSize(TestinEditor.DEFAULT_PAGE_SIZE);
+            Disposer.dispose(editor);
+        }
+    }
+
     // Rule-EDITOR-PANEL-119
     public void testTheTestersRefreshReloadsEvenWithAGridCellOpen() {
         final @NotNull TestSetNode testSet = aTestSet();

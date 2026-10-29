@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
+import org.testin.Said;
 import org.testin.actions.TestinDataKeys;
 import org.testin.explorer.tree.TreeTransferHandler;
 import org.testin.indexer.Nodes;
@@ -39,6 +40,7 @@ import org.testin.model.node.TestSetPackageNode;
 import org.testin.services.Services;
 import org.testin.ui.framework.ConfirmDialog;
 import org.testin.ui.framework.ShownDialog;
+import org.testin.util.Bundle;
 import org.testin.util.ClipboardContents;
 import org.testin.util.Shortcuts;
 
@@ -178,5 +180,17 @@ public class PasteNodeAsksFirstIdeTest extends AbstractTempRootIdeTest {
 
         Await.until("Cut then Paste from the menu did not move the test set", () -> nodes().nodeExists(movedTo) && !nodes().nodeExists(wasAt));
         assertFalse("the test set Cut then Paste moved is still where it was on disk", Files.exists(wasAt));
+    }
+
+    // UC-TREE-PANEL-013, Rule-TREE-PANEL-006
+    public void testAPasteNothingCanLandInSaysToChooseAFolderAndAsksNothing() {
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        handler.copySelectionToClipboard(false);
+        final @NotNull Transferable held = ClipboardContents.withFlavor(TreeTransferHandler.NODE_FLAVOR).orElseThrow(() -> new AssertionError("the test set never reached the clipboard"));
+
+        new PasteNodeWork(getProject(), handler).paste(held, login);
+
+        Await.until("a paste nothing could land in did not say to choose a folder: " + said.shown(), () -> said.shown().contains(Bundle.message("paste.select.folder")));
+        assertFalse("a paste nothing could land in asked first", ShownDialog.isOpen(getProject(), ConfirmDialog.class));
     }
 }
