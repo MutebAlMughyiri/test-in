@@ -128,7 +128,7 @@ public class FieldsPopupIdeTest extends AbstractIdeTest {
         assertFalse("a remembered choice without Order brought it back", ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorFields.class).contains(TestSetEditorFields.ORDER));
     }
 
-    // Rule-EDITOR-PANEL-023
+    // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-022
     public void testARememberedChoiceOfNothingShowsOnlyWhatIsAlwaysShown() {
         ShownFields.write(ShownFields.IN_TEST_SETS, EnumSet.noneOf(TestSetEditorFields.class));
 

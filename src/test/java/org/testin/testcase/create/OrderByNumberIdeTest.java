@@ -78,7 +78,7 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    // Rule-EDITOR-PANEL-223
+    // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-055
     public void testThePlaceATestCaseAlreadyHasChangesNothing() {
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Login");
         EditorFixtures.testCase(getProject(), testSet, "Log in", "a");
