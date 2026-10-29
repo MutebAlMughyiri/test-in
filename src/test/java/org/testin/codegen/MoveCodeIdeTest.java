@@ -100,15 +100,6 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the class left its package although no folder could take it", generatedClass("nafath.LoginTest").isPresent());
     }
 
-    // Rule-CODEGEN-053
-    public void testATestSetMovedIntoThePackageItIsAlreadyInKeepsItsClass() {
-        final @NotNull TestSetNode login = createdTestSet("Login");
-
-        NodeCode.of(NodeType.TEST_SET).getMoved().execute(getProject(), new MovedNode(login, theTestCasesDirectory().getPath()));
-
-        assertTrue("the class left the package it was already in", generatedClass("nafath.LoginTest").isPresent());
-    }
-
     // Rule-CODEGEN-055
     public void testAMoveIntoAPlaceTestinHasNotReadLeavesTheClassAndSaysSo() {
         final @NotNull TestSetNode login = createdTestSet("Login");

@@ -22,6 +22,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.testFramework.PlatformTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
 import org.testin.Notified;
@@ -287,6 +288,20 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
 
         assertEquals("the box does not offer the branch a repository with no commit is on", List.of(MAIN), IntStream.range(0, branches.getItemCount()).mapToObj(branches::getItemAt).map(String::valueOf).toList());
         assertEquals("the box does not choose that branch", MAIN, String.valueOf(branches.getSelectedItem()));
+    }
+
+    // UC-SHARE-012, UC-SHARE-013
+    public void testACommitWithNoMessageCommitsNothingAndKeepsTheReviewOpen() {
+        write(work, "first.testcase", "{\"on\":\"main\"}");
+        final @NotNull String mainBefore = head(work, MAIN);
+
+        final @NotNull JComponent review = theReview(work);
+        ShareGestures.type(review, "");
+        ShareGestures.commitOnly(review);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertEquals("a commit with no message was made", mainBefore, head(work, MAIN));
+        assertTrue("a commit with no message closed the review", ShownDialog.isOpen(getProject(), PendingChangesDialog.class));
     }
 
     // UC-SHARE-014, Rule-SHARE-135

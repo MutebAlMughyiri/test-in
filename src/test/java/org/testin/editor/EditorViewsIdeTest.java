@@ -390,4 +390,22 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("right-clicking a card in the selection narrowed it", List.of(0, 1, 3), Arrays.stream(list.getSelectedIndices()).boxed().toList());
     }
+
+    // Rule-EDITOR-PANEL-109, Rule-EDITOR-PANEL-110
+    public void testRightClickingOutsideEveryCardClearsTheSelection() {
+        final @NotNull TestSetEditor editor = openedTestSet(6);
+        final @NotNull JBList<TestCase> list = editor.getList();
+        list.setSize(900, 4000);
+        list.setSelectedIndices(new int[]{0, 1});
+        final @NotNull JWindow onScreen = new JWindow();
+        onScreen.setBounds(-4000, -4000, 10, 10);
+        onScreen.setVisible(true);
+        Disposer.register(getTestRootDisposable(), onScreen::dispose);
+        final int below = list.getCellBounds(5, 5).y + list.getCellBounds(5, 5).height + 50;
+
+        final @NotNull MouseEvent click = new MouseEvent(onScreen, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), InputEvent.BUTTON3_DOWN_MASK, 10, below, 1, true, MouseEvent.BUTTON3);
+        for (final MouseListener listener : list.getMouseListeners()) listener.mouseClicked(click);
+
+        assertTrue("a right-click outside every card left test cases selected", list.isSelectionEmpty());
+    }
 }

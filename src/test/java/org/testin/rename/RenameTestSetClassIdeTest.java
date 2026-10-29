@@ -24,9 +24,12 @@ import org.testin.Said;
 import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.event.MovedNode;
 import org.testin.codegen.event.RenamedNode;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.notifications.Refused;
+import org.testin.services.Services;
+import org.testin.testproject.BoundTestProject;
 import org.testin.util.Bundle;
 
 import java.util.List;
@@ -57,6 +60,27 @@ public class RenameTestSetClassIdeTest extends AbstractCodegenIdeTest {
                 DumbModeTestUtils.computeInDumbModeSynchronously(getProject(), () -> NodeRename.refused(getProject(), login, "Sign in"))));
 
         assertEquals("the rename refused while indexing did not say why", List.of(Refused.WHILE_INDEXING.about(Bundle.message("dialog.rename.title"))), said);
+    }
+
+    // UC-TREE-PANEL-011, Rule-CODEGEN-081
+    public void testWhileTheIdeIsIndexingARenameWithTheCodeOffIsLetThrough() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull BoundTestProject bound = Services.getInstance(getProject(), BoundTestProject.class);
+        final @NotNull String chosen = bound.name();
+        try {
+            bound.choose("Payments");
+
+            assertFalse("a rename with the code off was refused while the IDE indexes", DumbModeTestUtils.computeInDumbModeSynchronously(getProject(), () -> NodeRename.refused(getProject(), login, "Sign in")));
+        } finally {
+            bound.choose(chosen);
+        }
+    }
+
+    // UC-TREE-PANEL-011, Rule-CODEGEN-081
+    public void testWhileTheIdeIsIndexingARenameThatWritesNoCodeIsLetThrough() {
+        final @NotNull AbstractNode testCases = theTestCasesDirectory();
+
+        assertFalse("a rename that writes no code was refused while the IDE indexes", DumbModeTestUtils.computeInDumbModeSynchronously(getProject(), () -> NodeRename.refused(getProject(), testCases, "Cases")));
     }
 
     // UC-CODEGEN-015, Rule-CODEGEN-052

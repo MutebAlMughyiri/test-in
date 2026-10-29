@@ -193,4 +193,18 @@ public class PasteNodeAsksFirstIdeTest extends AbstractTempRootIdeTest {
         Await.until("a paste nothing could land in did not say to choose a folder: " + said.shown(), () -> said.shown().contains(Bundle.message("paste.select.folder")));
         assertFalse("a paste nothing could land in asked first", ShownDialog.isOpen(getProject(), ConfirmDialog.class));
     }
+
+    // UC-TREE-PANEL-013, Rule-TREE-PANEL-004
+    public void testAPasteWhoseEveryNodeCollidesSaysOnlyThatTheNameIsTaken() {
+        new NodesOnDisk(getProject()).testSet(payments, "Login");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        handler.copySelectionToClipboard(false);
+        final @NotNull Transferable held = ClipboardContents.withFlavor(TreeTransferHandler.NODE_FLAVOR).orElseThrow(() -> new AssertionError("the test set never reached the clipboard"));
+
+        new PasteNodeWork(getProject(), handler).paste(held, payments);
+
+        Await.until("a paste whose every node collides did not say the name is taken: " + said.shown(), () -> said.shown().stream().anyMatch(line -> line.contains("Login")));
+        assertFalse("a paste whose every node collides also said to choose a folder: " + said.shown(), said.shown().contains(Bundle.message("paste.select.folder")));
+        assertFalse("a paste whose every node collides asked first", ShownDialog.isOpen(getProject(), ConfirmDialog.class));
+    }
 }
