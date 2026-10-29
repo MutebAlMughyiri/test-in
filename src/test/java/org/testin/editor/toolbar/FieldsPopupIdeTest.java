@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class FieldsPopupIdeTest extends AbstractIdeTest {
@@ -125,6 +126,16 @@ public class FieldsPopupIdeTest extends AbstractIdeTest {
         ShownFields.write(ShownFields.IN_TEST_SETS, EnumSet.of(TestSetEditorFields.UUID));
         assertTrue("a remembered choice without Description hid it", ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorFields.class).contains(TestSetEditorFields.DESCRIPTION));
         assertFalse("a remembered choice without Order brought it back", ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorFields.class).contains(TestSetEditorFields.ORDER));
+    }
+
+    // Rule-EDITOR-PANEL-023
+    public void testARememberedChoiceOfNothingShowsOnlyWhatIsAlwaysShown() {
+        ShownFields.write(ShownFields.IN_TEST_SETS, EnumSet.noneOf(TestSetEditorFields.class));
+
+        final @NotNull Set<TestSetEditorFields> shown = ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorFields.class);
+
+        assertTrue("a remembered choice of nothing hid Description", shown.contains(TestSetEditorFields.DESCRIPTION));
+        assertFalse("a remembered choice of nothing brought Order back", shown.contains(TestSetEditorFields.ORDER));
     }
 
     // Rule-EDITOR-PANEL-272

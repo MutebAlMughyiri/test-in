@@ -123,6 +123,17 @@ public class CardDetailIconsIdeTest extends AbstractIdeTest {
     }
 
     // Rule-EDITOR-PANEL-267
+    public void testARunItemCardWithPriorityShownNamesItInTheMargin() {
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").priority(Priority.HIGH).build();
+        final @NotNull RunItem runItem = new RunItem().setUuid(testCase.getUuid()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
+        final @NotNull RunItemCard card = new RunItemCard(getProject());
+        card.updateData(0, Set.of(TestRunEditorFields.PRIORITY), runItem, AbstractCard.titleText(1, true, testCase.getDescription()));
+        card.layOutAs(CELL);
+
+        assertEquals("the margin of a run item card does not name its test case's priority", Priority.HIGH.tooltip(), card.tooltipAt(new Point(2, CELL.height / 2), CELL));
+    }
+
+    // Rule-EDITOR-PANEL-267
     public void testHoveringTheLeftMarginNamesAPriorityAndSaysNothingForLow() {
         final @NotNull Point margin = new Point(2, CELL.height / 2);
 

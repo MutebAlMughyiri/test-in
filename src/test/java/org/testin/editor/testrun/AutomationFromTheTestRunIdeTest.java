@@ -306,6 +306,26 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
         }
     }
 
+    // UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-289
+    public void testATestCaseTheSearchHidesIsNotBroughtIntoViewWhenItStarts() {
+        final @NotNull List<TestCase> testCases = automatedTestCases(2);
+        final @NotNull TestRunNode testRun = aTestRun("Cycle-1", testCases.stream().map(EditorFixtures::pending).toList());
+        final @NotNull TestRunEditor editor = opened(testRun);
+        try {
+            editor.runWhenLoaded();
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            editor.getToolBar().getSearchText().setText(testCases.getFirst().getDescription());
+            Await.until("the search never narrowed the list", () -> editor.getCurrentTestCases().size() == 1);
+
+            CapturedRunner.startedByTestNg(getProject(), testCases.get(1));
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertEquals("a test case the search hides was brought into view", List.of(testCases.getFirst()), editor.getCurrentTestCases());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
     // Rule-EDITOR-PANEL-184, Rule-EDITOR-PANEL-290
     public void testRunTestsLeavesOutATestCaseItsOwnRunButtonIsAlreadyRunning() {
         final @NotNull List<TestCase> testCases = automatedTestCases(2);

@@ -18,11 +18,15 @@ package org.testin.editor.testrun;
 
 import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.PlatformTestUtil;
+import com.intellij.ui.table.JBTable;
 import com.intellij.util.TimeoutUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.editor.EditorFixtures;
+import org.testin.editor.TestinEditor;
+import org.testin.editor.card.AbstractCard;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.editor.toolbar.StartExecutionButton;
 import org.testin.editor.toolbar.StopExecutionButton;
 import org.testin.filter.SortDirection;
@@ -44,6 +48,7 @@ import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.services.Services;
 import org.testin.testrun.RunItemRecorder;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.JsonCodec;
 
@@ -55,6 +60,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
@@ -212,6 +218,21 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
+    // UC-EDITOR-PANEL-027, Rule-EDITOR-PANEL-119
+    public void testATestRunWithAGridCellOpenIsBusyThoughNoWalkIsGoing() {
+        final @NotNull TestRunEditor editor = opened(aPendingTestRunOver(createdTestCases(1)));
+        try {
+            editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            final @NotNull JBTable table = (JBTable) editor.getPreferredFocusedComponent();
+
+            assertTrue("no cell of the test run's grid opened", IntStream.range(0, table.getColumnCount()).anyMatch(column -> table.editCellAt(0, column)));
+            assertTrue("a test run with a grid cell open is not busy, so a refresh Testin starts could reload under it", editor.isBusy());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
     // Rule-EDITOR-PANEL-131
     public void testStartingMarksTheTestRunInProgressAndStampsWhenExecutionBegan() {
         final @NotNull TestRunNode testRun = aPendingTestRunOver(createdTestCases(2));
@@ -259,6 +280,26 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             Await.until("the walk did not end at the end of the list", () -> !editor.getWalk().isExecuting());
             assertNotSame("the test run was marked Completed with a test case still waiting", TestRunStatus.COMPLETED, editor.getParent().getMarker().getStatus());
         } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-130
+    public void testTheWalkTurnsThePageToTheTestCaseItMovesTo() {
+        final @NotNull List<TestCase> testCases = createdTestCases(2);
+        final @NotNull TestRunEditor editor = opened(aPendingTestRunOver(testCases));
+        try {
+            editor.choosePageSize(1);
+            editor.refreshView();
+            editor.onStartExecutionClicked();
+            awaitWalkOn(editor, testCases.getFirst());
+
+            record(editor, RunItemStatus.PASSED);
+            awaitWalkOn(editor, testCases.get(1));
+
+            assertEquals("the walk did not turn to the page of the test case it moved to", 2, editor.getCurrentPage());
+        } finally {
+            editor.choosePageSize(TestinEditor.DEFAULT_PAGE_SIZE);
             Disposer.dispose(editor);
         }
     }
@@ -502,6 +543,19 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
                     assertEquals("a test run card is numbered by its place in its own test set", place, editor.positionOf(testSet.get(place - 1)));
                 }
             }
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014
+    public void testWithDescriptionTurnedOffACardInATestRunShowsOnlyItsNumber() {
+        final @NotNull List<TestCase> testCases = createdTestCases(1);
+        final @NotNull TestRunEditor editor = opened(aPendingTestRunOver(testCases));
+        try {
+            editor.getSelectedDetails().remove(TestRunEditorFields.DESCRIPTION);
+
+            assertEquals("a card with Description turned off still shows it", AbstractCard.titleText(1, true, ""), editor.cardTitle(testCases.getFirst()));
         } finally {
             Disposer.dispose(editor);
         }
