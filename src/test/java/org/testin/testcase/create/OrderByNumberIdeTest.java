@@ -91,8 +91,8 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-223
     public void testATestCaseTheOnlyOneWithNoPlaceTakesTheTypedOneAndPlacesNoOther() {
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Login");
-        EditorFixtures.testCase(getProject(), testSet, "Log in", "a");
-        EditorFixtures.testCase(getProject(), testSet, "Log out", "b");
+        EditorFixtures.testCase(getProject(), testSet, "Log in", "m");
+        EditorFixtures.testCase(getProject(), testSet, "Log out", "n");
         final @NotNull TestCase unplaced = EditorFixtures.testCase(getProject(), testSet, "Sign up", "");
         final @NotNull OrderSection order = new OrderSection(getProject());
         order.fillData(stored(unplaced));
@@ -101,6 +101,6 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestCase moved = order.applyTo(stored(unplaced));
 
         assertEquals("a test case around the one placed was given a place too", List.of(), order.getRankedAlongside());
-        assertTrue("the test case was not placed first: " + moved.getOrder(), moved.getOrder().compareTo("a") < 0);
+        assertTrue("the test case was not placed first: " + moved.getOrder(), moved.getOrder().compareTo("m") < 0);
     }
 }
