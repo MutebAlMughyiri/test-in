@@ -19,10 +19,12 @@ package org.testin.codegen;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
+import com.intellij.psi.PsiFile;
 import com.intellij.ui.components.ActionLink;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 import org.testin.Gestures;
+import org.testin.LoginTestSource;
 import org.testin.Said;
 import org.testin.config.TestinYml;
 import org.testin.help.Hints;
@@ -153,5 +155,16 @@ public class CodeOffHintIdeTest extends AbstractIdeTest {
 
         assertFalse("the Run key works with the code off", Gestures.updated(getProject(), runKey, shownOn).isEnabled());
         Services.getInstance(getProject(), Hints.class).clear(SetupStep.TEST_PROJECT_LINK);
+    }
+
+    // UC-CODEGEN-007, Rule-CODEGEN-082
+    public void testWithTheCodeOffATestNamingATestCaseHasNoMark() {
+        final @NotNull String testCaseUuid = UUID.randomUUID().toString();
+        final @NotNull String text = LoginTestSource.withTestNg(testCaseUuid);
+        final @NotNull PsiFile file = myFixture.addFileToProject("nafath/LoginTest.java", text);
+        myFixture.configureFromExistingVirtualFile(file.getVirtualFile());
+        myFixture.getEditor().getCaretModel().moveToOffset(text.indexOf(testCaseUuid));
+
+        assertTrue("a test naming a test case has a mark with the code off", myFixture.findGuttersAtCaret().stream().noneMatch(mark -> Bundle.message("gutter.view.details").equals(mark.getTooltipText())));
     }
 }

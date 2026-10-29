@@ -43,6 +43,7 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.event.MouseEvent;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
@@ -242,6 +243,46 @@ public class HelpIdeTest extends AbstractIdeTest {
                     List.of("Please set the Testin folder", Guide.SET_UP_THIS_MACHINE.getTitle(), "testin.yml does not name this test project", "Save to testin.yml", Guide.LINK_THIS_REPOSITORY.getTitle()),
                     Drawn.words((JComponent) pages.getComponentAt(0)));
             assertEquals("the guides page does not list the guides offered", List.of(Guide.SET_UP_THIS_MACHINE.getTitle(), Guide.LINK_THIS_REPOSITORY.getTitle()), Drawn.words((JComponent) pages.getComponentAt(1)));
+        } finally {
+            shown.forEach(Disposer::dispose);
+            Disposer.dispose(mark);
+            nothingWaits();
+        }
+    }
+
+    // UC-INTERNAL-009, Rule-INTERNAL-127
+    public void testAHintAboutOneFolderIsNotClearedByAnother() {
+        final @NotNull Hints hints = nothingWaits();
+        try {
+            hints.fire(SetupHint.of(SetupStep.GIT_REPOSITORY, "Shop is not under Git").about(Path.of("Shop")));
+
+            hints.clear(SetupStep.GIT_REPOSITORY, Path.of("Checkout"));
+            assertEquals("a hint about one folder was cleared by another", 1, hints.waiting().size());
+
+            hints.clear(SetupStep.GIT_REPOSITORY, Path.of("Shop"));
+            assertTrue("a hint was not cleared by its own folder", hints.waiting().isEmpty());
+        } finally {
+            nothingWaits();
+        }
+    }
+
+    // UC-INTERNAL-009, Rule-INTERNAL-128
+    public void testWithOnlyGuidesOfferedTheMarkOpensOnlyTheGuides() {
+        nothingWaits();
+        Services.getInstance(getProject(), Guides.class).add(Guide.GETTING_STARTED);
+        final @NotNull List<JBPopup> shown = new ArrayList<>();
+        UiInterceptors.register(new UiInterceptors.UiInterceptor<>(JBPopup.class) {
+            @Override
+            protected void doIntercept(final @NotNull JBPopup popup) {
+                shown.add(popup);
+            }
+        });
+        final @NotNull StatusBarWidget mark = aMark();
+        try {
+            click(entryOf(mark));
+
+            final @NotNull JBTabbedPane pages = Drawn.first(shown.getFirst().getContent(), JBTabbedPane.class);
+            assertEquals("with no hint waiting the popup is not the guides alone", List.of(Bundle.message("guide.list.title")), IntStream.range(0, pages.getTabCount()).mapToObj(pages::getTitleAt).toList());
         } finally {
             shown.forEach(Disposer::dispose);
             Disposer.dispose(mark);
