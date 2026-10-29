@@ -45,7 +45,7 @@ public class ShownTestCaseCursor {
 
     // Rule-VIEW-PANEL-002
     public @NotNull Optional<TestCase> getCurrentTestCase() {
-        return currentIndex >= 0 && currentIndex < shownTestCases.size()
+        return currentIndex < shownTestCases.size()
                 ? Optional.of(shownTestCases.get(currentIndex))
                 : Optional.empty();
     }
