@@ -46,6 +46,7 @@ import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.Failure;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
+import org.testin.runner.AutomationExecution;
 import org.testin.services.Services;
 import org.testin.testrun.RunItemRecorder;
 import org.testin.testrun.TestRunEditorFields;
@@ -59,6 +60,7 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -199,6 +201,19 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             assertEquals("an empty test run does not say it holds no test cases", Bundle.message("editor.test.run.empty"), editor.getList().getEmptyText().getText());
         } finally {
             Disposer.dispose(editor);
+        }
+    }
+
+    // Rule-VIEW-PANEL-121, Rule-CODEGEN-111
+    public void testTheExecutionsOfATestCaseStillRunningCannotBeChangedAndSayWhy() {
+        final @NotNull List<TestCase> testCases = createdTestCases(1);
+        final @NotNull TestRunNode testRun = aPendingTestRunOver(testCases);
+        final @NotNull AutomationExecution execution = Services.getInstance(getProject(), AutomationExecution.class);
+        execution.starting(testCases.getFirst());
+        try {
+            assertEquals("the executions of a test case still running can be changed", Optional.of(Bundle.message("execution.still.running")), runItemStatuses().whyExecutionsAreFixed(testRun.getPath(), testCases.getFirst().getUuid()));
+        } finally {
+            execution.stop(testCases);
         }
     }
 

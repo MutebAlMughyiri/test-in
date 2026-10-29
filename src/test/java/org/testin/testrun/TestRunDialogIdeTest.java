@@ -286,6 +286,16 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         assertEquals("the edit of a test run that went away was not refused naming it", List.of(Bundle.message("test.run.gone", "Cycle-1")), said.shown());
     }
 
+    // UC-TREE-PANEL-022, Rule-TREE-PANEL-004
+    public void testAnEditToTheNameOfAnotherTestRunIsRefusedAndSaysSo() {
+        final @NotNull TestRunNode testRun = cycle1In(testProject.getTestRunsFolder(), List.of(new RunItem().setUuid(first.getUuid())));
+        new NodesOnDisk(getProject()).testRun(testProject.getTestRunsFolder(), "Cycle-2");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        assertFalse("an edit to the name of another test run was saved", new EditTestRunWork(getProject()).saveEdit(testRun, "Cycle-2", Set.of(first.getUuid()), Set.of(first.getUuid()), everyQuestionAnswered()));
+        assertEquals("an edit to a name already taken did not say so", List.of(Refused.ALREADY_EXISTS.about("Cycle-2")), said.shown());
+    }
+
     // UC-TREE-PANEL-022
     public void testAnEditThatChangesTheNameRenamesTheFolderAndThenSavesTheTestRunThere() {
         final @NotNull TestRunNode testRun = cycle1In(testProject.getTestRunsFolder(), List.of(new RunItem().setUuid(first.getUuid())));
