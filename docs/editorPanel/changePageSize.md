@@ -66,8 +66,9 @@ There is no key for this. The box is at the right of the status bar.
 This opens no screen. The tester types into the small box at the right of the
 status bar, and the list is drawn again from the first page.
 
-Nothing is said. A number Testin cannot use is corrected in the box itself, so
-the tester can see what happened.
+A size Testin can use says nothing. A number it cannot use is corrected in the
+box itself, so the tester can see what happened, and one outside 1 to 1000 is
+also said.
 
 ## Main flow
 
@@ -81,8 +82,8 @@ the tester can see what happened.
 
 ## What Testin refuses
 
-**Nothing is refused.** Every value is taken. Testin quietly turns it into
-something it can use.
+**Nothing is refused.** Every value is taken. Testin turns it into something it
+can use.
 
 | The tester types           | What the page holds |
 |----------------------------|---------------------|
@@ -91,8 +92,8 @@ something it can use.
 | `0`, or a negative number  | 50                  |
 | Letters, or nothing at all | 50                  |
 
-The box is corrected in place, so the tester can see what happened. No message
-is raised.
+The box is corrected in place, so the tester can see what happened. Only a
+number outside the range is also said, below.
 
 **If the number is outside the range** — the box shows the number Testin used
 and says *A page holds between 1 and 1000 test cases*. Typing `5000` gives 1000
