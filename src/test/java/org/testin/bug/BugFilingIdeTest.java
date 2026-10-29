@@ -16,10 +16,12 @@
 
 package org.testin.bug;
 
+import com.intellij.notification.Notification;
 import com.intellij.openapi.application.WriteAction;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
+import org.testin.Said;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
@@ -100,6 +102,18 @@ public class BugFilingIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull String storedLink(final RunItemPath runItemPath) {
         return indexedTestRuns().findRunItems(runItemPath.testRunPath()).flatMap(runItemPath::in).orElseThrow().shownExecution().getBugIssueUrl();
+    }
+
+    // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-089
+    public void testAnIssueFiledWithScreenshotsLeftBehindOrAProblemSaysSo() {
+        final RunItemPath runItemPath = indexedRunItemPath(RunItemStatus.FAILED);
+        final List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        BugFiling.record(getProject(), runItemPath, new IssueCreation(Optional.of(ISSUE), 2, ""));
+        BugFiling.record(getProject(), runItemPath, new IssueCreation(Optional.of(ISSUE), 0, "The labels could not be set"));
+
+        assertTrue("the screenshots left behind were not counted: " + said.stream().map(Notification::getContent).toList(), said.stream().anyMatch(notification -> notification.getContent().contains(Bundle.message("bug.not.uploaded", 2))));
+        assertTrue("the problem filing the issue was not said: " + said.stream().map(Notification::getContent).toList(), said.stream().anyMatch(notification -> notification.getContent().contains("The labels could not be set")));
     }
 
     // Rule-VIEW-PANEL-074

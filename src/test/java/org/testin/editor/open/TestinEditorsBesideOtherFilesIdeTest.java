@@ -54,6 +54,25 @@ public class TestinEditorsBesideOtherFilesIdeTest extends AbstractTempRootIdeTes
         }
     }
 
+    // Rule-EDITOR-PANEL-015
+    public void testAFileOfTheCodeOpenBesideIsNeverTakenForTheTestRunsEditor() {
+        final @NotNull TestRunNode testRun = EditorFixtures.testRunOver(getProject(), root, List.of());
+        final @NotNull VirtualFile notes = aNoteOpenBeside();
+        EditorFixtures.openTestRunInTheIde(getProject(), testRun);
+        final @NotNull TestinEditors editors = Services.getInstance(getProject(), TestinEditors.class);
+        try {
+            assertTrue("the test run's own editor was not found beside a file of the code", editors.editorFor(testRun).isPresent());
+            assertFalse("a file of the code made the test run busy", editors.busyUnder(testRun));
+
+            editors.close(testRun);
+
+            assertEquals("closing the test run's editor closed a file of the code", List.of(notes), Arrays.asList(FileEditorManager.getInstance(getProject()).getOpenFiles()));
+        } finally {
+            FileEditorManager.getInstance(getProject()).closeFile(notes);
+            editors.closeAll();
+        }
+    }
+
     public void testTheEditorProviderTakesOnlyTestinsOwnFiles() {
         final @NotNull VirtualFile notes = aNoteOpenBeside();
         try {
