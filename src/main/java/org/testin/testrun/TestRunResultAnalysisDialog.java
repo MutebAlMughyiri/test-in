@@ -42,13 +42,11 @@ public final class TestRunResultAnalysisDialog extends AbstractFrameworkDialog {
 
     private final @NotNull Consumer<@NotNull Map<TestRunResultAnalysis, String>> onSave;
 
-    private final boolean readOnly;
-
     // UC-EDITOR-PANEL-045, Rule-EDITOR-PANEL-190, Rule-EDITOR-PANEL-192
     public TestRunResultAnalysisDialog(final @NotNull Project project, final @NotNull TestRunSummary summary, final @NotNull Map<TestRunResultAnalysis, String> current, final @NotNull TestRunStatus testRunStatus, final @NotNull Consumer<@NotNull Map<TestRunResultAnalysis, String>> onSave) {
         super(project);
         this.onSave = onSave;
-        this.readOnly = testRunStatus.isRecord();
+        final boolean readOnly = testRunStatus.isRecord();
 
         title = Bundle.message("dialog.analysis.title");
 

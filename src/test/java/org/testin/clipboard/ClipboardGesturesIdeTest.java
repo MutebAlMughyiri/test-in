@@ -417,6 +417,6 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
         choose(PASTE, checkout.getList());
 
         Await.until("the copy was never pasted", () -> orderedIn(checkout).size() == 4);
-        assertEquals("a paste under a test case with no place did not land after every placed one", "Log in (Copy)", descriptionsOf(orderedIn(checkout).stream().filter(testCase -> !testCase.getOrder().isEmpty()).toList()).getLast());
+        assertEquals("a paste under a test case with no place did not land after every placed one", List.of("Open the cart", "Pay", "Log in (Copy)", "Get a receipt"), descriptionsOf(orderedIn(checkout)));
     }
 }

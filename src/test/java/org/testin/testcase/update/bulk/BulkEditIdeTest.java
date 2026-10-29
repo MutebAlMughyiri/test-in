@@ -405,10 +405,10 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-043
     public void testAnAddedStepTakesAGreenBackgroundOnceItHoldsAValue() {
-        final @NotNull TestCase testCase = aTestSetWithModules("Payments").getFirst();
+        final @NotNull TestCase testCase = aTestSetWithModules("Payments", "Cart").getFirst();
         theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase.edit().steps(new ArrayList<>(List.of("Open the app"))).build());
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
-        editor.getList().setSelectionInterval(0, 0);
+        editor.getList().setSelectionInterval(0, 1);
         UpdateTestCaseAction.openField(getProject(), editor, UpdateTestCaseFields.STEPS);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         final @NotNull Editor steps = editorsOf(StepsBulkDialog.class).stream().filter(values -> !values.isViewer()).findFirst().orElseThrow();

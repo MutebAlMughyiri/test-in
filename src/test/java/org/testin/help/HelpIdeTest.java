@@ -253,13 +253,14 @@ public class HelpIdeTest extends AbstractIdeTest {
     // UC-INTERNAL-009, Rule-INTERNAL-127
     public void testAHintAboutOneFolderIsNotClearedByAnother() {
         final @NotNull Hints hints = nothingWaits();
+        final @NotNull Path shop = Path.of("Shop");
         try {
-            hints.fire(SetupHint.of(SetupStep.GIT_REPOSITORY, "Shop is not under Git").about(Path.of("Shop")));
+            hints.fire(SetupHint.of(SetupStep.GIT_REPOSITORY, "Shop is not under Git").about(shop));
 
             hints.clear(SetupStep.GIT_REPOSITORY, Path.of("Checkout"));
             assertEquals("a hint about one folder was cleared by another", 1, hints.waiting().size());
 
-            hints.clear(SetupStep.GIT_REPOSITORY, Path.of("Shop"));
+            hints.clear(SetupStep.GIT_REPOSITORY, shop);
             assertTrue("a hint was not cleared by its own folder", hints.waiting().isEmpty());
         } finally {
             nothingWaits();

@@ -21,10 +21,12 @@ import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.testFramework.TestActionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
 import org.testin.Said;
+import org.testin.config.TestinYml;
 import org.testin.creator.dialogs.CreateTestProjectDialog;
 import org.testin.explorer.TreePanel;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
@@ -39,6 +41,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.testin.git.LocalGit.mustGit;
@@ -141,16 +144,36 @@ public class CreateTestProjectActionIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     // UC-TREE-PANEL-003, Rule-TREE-PANEL-107
-    public void testARepositoryWhoseNameTheTestinFolderAlreadyHoldsIsRefusedAndNotCloned() {
+    public void testTheRepositoryTestinYmlNamesUnderANameTheTestinFolderAlreadyHoldsIsRefusedAndNotCloned() {
         aTestProjectAt(root.resolve("CHECKOUT"));
         readEverything();
         final @NotNull String address = aBareRepositoryHoldingATestProject();
-        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        final @NotNull Path yml = TestinYml.savePath(getProject()).orElseThrow(() -> new AssertionError("the project has no " + TestinYml.fileName()));
+        final @NotNull Optional<String> ymlWas;
+        try {
+            Files.createDirectories(yml.getParent());
+            ymlWas = Files.exists(yml) ? Optional.of(Files.readString(yml)) : Optional.empty();
+        } catch (final IOException ex) {
+            throw new AssertionError("could not read " + TestinYml.fileName() + ": " + ex.getMessage(), ex);
+        }
+        assertTrue("could not write " + TestinYml.fileName(), TestinYml.save(getProject(), TestinYml.lines("CHECKOUT", address)));
+        try {
+            final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
 
-        typedAndConfirmed(address);
+            typedAndConfirmed(address);
 
-        Await.until("a repository whose name the Testin folder already holds was not refused: " + said.shown(), () -> said.shown().contains(Refused.ALREADY_EXISTS.about("CHECKOUT")));
-        assertFalse("a refused repository was cloned over the test project already there", Files.exists(root.resolve("CHECKOUT").resolve(".git")));
+            Await.until("the repository testin.yml names was not refused under a name already taken: " + said.shown(), () -> said.shown().contains(Refused.ALREADY_EXISTS.about("CHECKOUT")));
+            assertFalse("a refused repository was cloned over the test project already there", Files.exists(root.resolve("CHECKOUT").resolve(".git")));
+        } finally {
+            try {
+                if (ymlWas.isPresent()) Files.writeString(yml, ymlWas.orElseThrow());
+                else Files.deleteIfExists(yml);
+                LocalFileSystem.getInstance().refreshNioFiles(List.of(yml));
+            } catch (final IOException ex) {
+                throw new AssertionError("could not put " + TestinYml.fileName() + " back: " + ex.getMessage(), ex);
+            }
+            TestinYml.reload(getProject());
+        }
     }
 
     // UC-TREE-PANEL-028, Rule-TREE-PANEL-115

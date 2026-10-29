@@ -26,6 +26,8 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaCodeReferenceElement;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiMethod;
@@ -159,7 +161,7 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
 
         NodeCode.of(NodeType.TEST_SET_PACKAGE).getRenamed().execute(getProject(), new RenamedNode(checkout, "Payment methods"));
 
-        assertEquals("the file that is not Java did not move with its package", Optional.of("paymentmethods"), Optional.ofNullable(notes.getParent()).map(VirtualFile::getName));
+        assertEquals("the file that is not Java did not move with its package", generatedClass("nafath.paymentmethods.LoginTest").map(PsiElement::getContainingFile).map(PsiFile::getVirtualFile).map(VirtualFile::getParent), Optional.ofNullable(notes.getParent()));
         assertEquals("a file that is not Java was rewritten", Optional.of("package nafath.checkout;"), Optional.ofNullable(FileDocumentManager.getInstance().getDocument(notes)).map(Document::getText));
     }
 
