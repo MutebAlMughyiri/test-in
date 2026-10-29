@@ -101,7 +101,7 @@ public final class AutomationState implements Disposable {
         // Rule-CODEGEN-082
         if (!CodeOn.isOn(project, TestMethodCode.need(project))) {
             readAtCodeVersion = NEVER_READ;
-            if (known.isEmpty() && withAMethod.isEmpty()) return;
+            if (known.isEmpty()) return;
 
             known.clear();
             withAMethod.clear();
