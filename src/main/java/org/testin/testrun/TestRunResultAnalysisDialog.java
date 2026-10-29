@@ -83,11 +83,6 @@ public final class TestRunResultAnalysisDialog extends AbstractFrameworkDialog {
     // UC-EDITOR-PANEL-045
     @Override
     protected void submit() {
-        if (readOnly) {
-            closeOk();
-            return;
-        }
-
         final @NotNull Map<TestRunResultAnalysis, String> analysis = new EnumMap<>(TestRunResultAnalysis.class);
 
         written.forEach((section, box) -> analysis.put(section, box.getText().trim()));
