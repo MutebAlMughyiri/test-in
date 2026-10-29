@@ -180,6 +180,7 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
         final @NotNull List<TestCase> testCases = threeStatesOfAutomation();
         readAndAwait(testCases);
         final @NotNull BoundTestProject bound = Services.getInstance(getProject(), BoundTestProject.class);
+        final @NotNull String chosen = bound.name();
         final @NotNull AtomicBoolean answered = new AtomicBoolean();
         try {
             bound.choose("Payments");
@@ -189,7 +190,7 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
             Await.until("turning the code off was never answered", answered::get);
             assertTrue("the automation read while the code was on is still shown with it off", testCases.stream().allMatch(testCase -> state().of(testCase.getUuid()) == Automated.UNKNOWN));
         } finally {
-            bound.choose("");
+            bound.choose(chosen);
         }
     }
 
