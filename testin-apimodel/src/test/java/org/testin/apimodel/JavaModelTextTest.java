@@ -108,4 +108,13 @@ public class JavaModelTextTest {
 
         assertTrue(written.contains(" field"), "a key with no letter or digit has no name: " + written);
     }
+
+    // Rule-CODEGEN-103
+    @Test
+    public void anObjectUnderAKeyWithNoLetterOrDigitIsAClassNamedField() {
+        final @NotNull String written = JavaModelText.responseRecord("com.example.api", model("Odd", """
+                { "@@": { "id": 1 } }"""));
+
+        assertTrue(written.contains("record Field("), "an object under a key with no letter or digit has no class name: " + written);
+    }
 }

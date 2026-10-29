@@ -17,6 +17,8 @@
 package org.testin.codegen;
 
 import com.intellij.openapi.util.Disposer;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiMethod;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckedTreeNode;
@@ -44,6 +46,7 @@ import java.awt.Container;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
@@ -106,6 +109,21 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
         assertEquals("a body holding only the tester's comment is not the tester's", Automated.WRITTEN, state().of(commented.getUuid()));
         assertEquals("a body whose TODO the tester deleted is not the tester's", Automated.WRITTEN, state().of(emptied.getUuid()));
         assertEquals("the one TODO line Testin wrote counts as automation", Automated.NONE, state().of(untouched.getUuid()));
+    }
+
+    // Rule-EDITOR-PANEL-195, Rule-CODEGEN-003
+    public void testABodyThatKeepsTheTodoAndAddsAStatementIsTheTesters() {
+        testSet = createdTestSet("Checkout");
+        final @NotNull TestCase kept = createdTestCase(testSet, "Log in with a valid user", "m0001");
+        settled();
+        final @NotNull PsiMethod testMethod = writtenMethodOf(GENERATED_CLASS, kept);
+        final @NotNull String body = Optional.ofNullable(testMethod.getBody()).map(PsiElement::getText).orElseThrow(() -> new AssertionError("the generated method has no body"));
+        writtenByTheTester(testMethod, body.substring(1, body.length() - 1).strip() + "\nSystem.out.println(1);");
+        settled();
+
+        readAndAwait(List.of(kept));
+
+        assertEquals("a body that kept the TODO and added a statement is not the tester's", Automated.WRITTEN, state().of(kept.getUuid()));
     }
 
     // Rule-TREE-PANEL-129
