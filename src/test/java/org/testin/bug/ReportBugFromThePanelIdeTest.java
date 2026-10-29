@@ -78,6 +78,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
@@ -224,6 +225,29 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
         for (final AnAction action : KeyPress.answering(field, ENTER))
             ActionUtil.performAction(action, KeyPress.eventIn(getProject(), action, field));
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+    }
+
+    // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-072
+    public void testAReportOpenedWhileThisOneWasPreparedKeepsThisOneClosedAndSaysSo() {
+        final @NotNull RunItemPath other = new RunItemPath(testRun.getPath(), UUID.randomUUID());
+        final @NotNull OpenBugReports reports = Services.getInstance(getProject(), OpenBugReports.class);
+        BackgroundWork.watch(getTestRootDisposable(), task -> {
+            if (Bundle.message("bug.preparing").equals(task.getTitle())) {
+                reports.begin(other);
+                reports.moveTo(other, Stage.OPEN);
+            }
+            return false;
+        });
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        try {
+            ReportBug.start(getProject(), testRun, testCase.getUuid(), testCase, () -> {
+            });
+
+            Await.until("a report opened elsewhere while this one was prepared was not said: " + said.shown(), () -> said.shown().contains(Bundle.message("bug.finish.open.report")));
+            assertFalse("this report opened over the other one", ShownDialog.isOpen(getProject(), ReportBugDialog.class));
+        } finally {
+            reports.discard(other);
+        }
     }
 
     // Rule-VIEW-PANEL-067, Rule-VIEW-PANEL-078
