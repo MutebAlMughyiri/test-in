@@ -25,6 +25,7 @@ import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.event.MovedNode;
 import org.testin.codegen.event.RenamedNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.node.TestSetPackageNode;
 import org.testin.notifications.Refused;
 import org.testin.util.Bundle;
 
@@ -74,5 +75,12 @@ public class RenameTestSetClassIdeTest extends AbstractCodegenIdeTest {
         CodeChangeType.MOVE_TEST_SET.execute(getProject(), new MovedNode(login, theTestCasesDirectory().getPath()));
 
         assertTrue("a class moved into the package it is in did not stay", generatedClass("nafath.LoginTest").isPresent());
+    }
+
+    // UC-CODEGEN-017, Rule-CODEGEN-080
+    public void testAPackageRenamedOnlyInItsCapitalsHasNoPackageInTheWay() {
+        final @NotNull TestSetPackageNode checkout = indexedPackage("Checkout", theTestCasesDirectory());
+
+        assertFalse("a package renamed only in its capitals found itself in the way", new RenamedNode(checkout, "CHECKOUT").packageInTheWay(getProject()));
     }
 }

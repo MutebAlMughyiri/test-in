@@ -37,9 +37,12 @@ import org.testin.AbstractCodegenIdeTest;
 import org.testin.Said;
 import org.testin.TestinLog;
 import org.testin.actions.TestinDataKeys;
+import org.testin.help.Hints;
+import org.testin.help.SetupStep;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
+import org.testin.navigate.TestMethodCode;
 import org.testin.quickaction.Offered;
 import org.testin.quickaction.TestCaseQuickAction;
 import org.testin.services.OptionalPlugin;
@@ -171,5 +174,15 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
         createdTestSet("Login");
         settled();
         assertNull("a class was written while Testin counts the Java plugin missing", theTestSourceRoot().findFileByRelativePath("nafath/LoginTest.java"));
+    }
+
+    // Rule-CODEGEN-082, Rule-CODEGEN-062
+    public void testWithoutTheJavaPluginAGestureThatNeedsCodeSaysThePluginIsMissingOnce() {
+        OptionalPlugin.JAVA.missingUntil(getTestRootDisposable());
+
+        final @NotNull List<String> said = Said.during(getProject(), () -> assertTrue("a gesture that needs code went on without the Java plugin", CodeOn.isOffAndWarned(getProject(), TestMethodCode.need(getProject()))));
+
+        assertEquals("the missing Java plugin was not said once: " + said, 1, said.size());
+        Arrays.stream(SetupStep.values()).forEach(Services.getInstance(getProject(), Hints.class)::clear);
     }
 }

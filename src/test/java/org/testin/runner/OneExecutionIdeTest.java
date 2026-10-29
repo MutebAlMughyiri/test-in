@@ -208,6 +208,18 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         assertEquals("an execution of one test case is not named Testin: then its class, a dot and its method", Bundle.message("runner.execution.name", "LoginTest." + writtenMethodOf(LOGIN_TEST, testCase).getName()), launched.getFirst().getRunProfile().getName());
     }
 
+    // UC-CODEGEN-008, Rule-CODEGEN-094
+    public void testAnExecutionOfTestCasesInTwoClassesIsNamedAfterTheFirstAndHowManyMore() {
+        nothingIsReallyStarted();
+        final @NotNull List<TestCase> selected = theTestCases(List.of(createdTestCase(createdTestSet("Login"), "Log in", "b"), createdTestCase(createdTestSet("Payment"), "Pay", "b")));
+        settled();
+
+        ExecuteTestCases.run(getProject(), selected);
+        Await.until("the execution never started", () -> !launched.isEmpty());
+
+        assertEquals("an execution over two classes is not named after the first and how many more", Bundle.message("runner.execution.name", Bundle.message("codegen.named.and.more", "LoginTest", "1")), launched.getFirst().getRunProfile().getName());
+    }
+
     // Rule-CODEGEN-074
     public void testATestCaseThatCannotRunIsReportedOnceAndSeveralByCount() {
         final @NotNull TestSetNode login = createdTestSet("Login");

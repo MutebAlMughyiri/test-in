@@ -17,6 +17,7 @@
 package org.testin.codegen.agent;
 
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiCodeBlock;
@@ -115,6 +116,27 @@ public class AgentRequestIdeTest extends AbstractCodegenIdeTest {
         final @NotNull String request = theRequestSentTo(tab);
         assertTrue("the request does not ask for the empty one: " + request, request.contains("Sign out"));
         assertFalse("the request asks for the body the tester left: " + request, request.contains("Sign in"));
+    }
+
+    // UC-CODEGEN-021, Rule-CODEGEN-091
+    public void testLeavingEveryBodyTheTesterWroteAsksTheAgentNothing() {
+        final @NotNull RecordedAgentTab tab = RecordedAgentTab.installed(getProject(), getTestRootDisposable());
+        anAgentIsChosen();
+        final @NotNull TestCase signIn = createdTestCase(createdTestSet("Login"), "Sign in", "a");
+        settled();
+        aBodyWrittenInto(signIn);
+
+        WriteBodies.forAll(getProject(), List.of(signIn));
+        ShownDialog.waitedFor(getProject(), ConfirmDialog.class);
+        ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Escape);
+        settled();
+
+        assertEquals("leaving every body the tester wrote still asked the agent", List.of(), tab.getTypedLines());
+    }
+
+    // UC-CODEGEN-021, Rule-CODEGEN-085
+    public void testCheckingWithNoAgentRunsNothing() {
+        assertEquals("Check ran something with no agent", Optional.empty(), AgentCli.onPath(new EmptyProgressIndicator()).check(new AgentConnection("", "", "")));
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-086, Rule-CODEGEN-091
