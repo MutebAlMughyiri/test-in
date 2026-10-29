@@ -46,6 +46,9 @@ import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -180,6 +183,29 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
         assertFalse("Order can be chosen for two test cases", order.isEnabled());
         assertEquals("Order's name is not gray for two test cases", SimpleTextAttributes.GRAYED_ATTRIBUTES, name.getTextAttributes());
         assertTrue("Order does not say why in place of its key: " + order.getCharSequence(false), order.getCharSequence(false).toString().endsWith(Bundle.message("update.order.one.at.a.time")));
+        shown.getFirst().cancel();
+    }
+
+    // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-009
+    public void testClickingTheGrayOrderEntryOpensNothingAndKeepsTheMenu() {
+        final @NotNull TestSetEditor editor = sixTestCases();
+        final @NotNull List<JBPopup> shown = new ArrayList<>();
+        UiInterceptors.register(new UiInterceptors.UiInterceptor<>(JBPopup.class) {
+            @Override
+            protected void doIntercept(final @NotNull JBPopup popup) {
+                shown.add(popup);
+            }
+        });
+        new UpdateTestCaseMenu(getProject(), List.of(editor.getList().getModel().getElementAt(0), editor.getList().getModel().getElementAt(1)), (_, _) -> {
+        }).show();
+        final @NotNull JBList<?> offered = Drawn.first(shown.getFirst().getContent(), JBList.class);
+        final @NotNull Rectangle order = offered.getCellBounds(Arrays.asList(UpdateTestCaseFields.values()).indexOf(UpdateTestCaseFields.ORDER), Arrays.asList(UpdateTestCaseFields.values()).indexOf(UpdateTestCaseFields.ORDER));
+
+        final @NotNull MouseEvent click = new MouseEvent(offered, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, order.x + 2, order.y + order.height / 2, 1, false, MouseEvent.BUTTON1);
+        for (final MouseListener listener : offered.getMouseListeners()) listener.mouseClicked(click);
+
+        assertFalse("clicking the gray Order entry closed the menu", shown.getFirst().isDisposed());
+        assertFalse("clicking the gray Order entry opened its dialog", ShownDialog.isOpen(getProject(), UpdateTestCaseDialog.class));
         shown.getFirst().cancel();
     }
 
