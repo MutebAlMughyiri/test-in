@@ -79,4 +79,16 @@ public class SearchBoxIdeTest extends AbstractIdeTest {
         assertEquals("Escape did not hand the keyboard back to the list", 1, handedBack.get());
         assertEquals("Escape changed the search text", "log in", box.getText());
     }
+
+    // Rule-EDITOR-PANEL-093
+    public void testOnlyEscapePressedHandsTheKeyboardBack() {
+        final @NotNull AtomicInteger handedBack = new AtomicInteger();
+        final @NotNull SearchText box = aSearchBox(() -> {
+        }, handedBack::incrementAndGet);
+
+        box.preprocessEventForTextField(new KeyEvent(box.getTextEditor(), KeyEvent.KEY_RELEASED, System.currentTimeMillis(), 0, KeyEvent.VK_ESCAPE, KeyEvent.CHAR_UNDEFINED));
+        box.preprocessEventForTextField(new KeyEvent(box.getTextEditor(), KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_A, 'a'));
+
+        assertEquals("a key other than Escape pressed handed the keyboard back", 0, handedBack.get());
+    }
 }

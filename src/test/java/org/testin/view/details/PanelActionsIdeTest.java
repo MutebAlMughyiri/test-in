@@ -277,4 +277,25 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the panel does not show the test case behind the mark: " + view.words(ViewTab.DETAILS), Drawn.holds(view.words(ViewTab.DETAILS), "Log in with a valid user"));
         assertFalse("the mark handed over more than one test case", view.getPanel().getPage().hasNext());
     }
+
+    // Rule-VIEW-PANEL-005, Rule-CODEGEN-111
+    public void testAFailureReportedForATestCaseNotShownIsRecordedAndLeavesTheShownOneAsItWas() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase shown = indexedTestCase(login, "Log in with a valid user", "b");
+        final @NotNull TestCase other = indexedTestCase(login, "Log out", "c");
+        final @NotNull AutomationExecution execution = Services.getInstance(getProject(), AutomationExecution.class);
+        AutomationExecutionRecorder.startRecording(getProject());
+        view.getPanel().show(List.of(shown), shown.getParent().treePath());
+        final @NotNull List<String> before = view.words(ViewTab.DETAILS);
+        execution.starting(other);
+        try {
+            AutomationExecutionReported.broadcast(getProject(), other.getUuid().toString(), AutomationExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
+            settled();
+
+            assertEquals("a failure of a test case nobody stopped was not recorded as failed", AutomationExecutionStatus.FAILED, execution.automationExecutionStatusOf(other));
+            assertEquals("a report for a test case not shown changed the panel", before, view.words(ViewTab.DETAILS));
+        } finally {
+            execution.stop(List.of(other));
+        }
+    }
 }
