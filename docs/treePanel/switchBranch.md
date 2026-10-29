@@ -168,7 +168,8 @@ cannot be opened.
 **If Git is on no branch at all** — the box lists the branches and shows none of
 them selected. A checkout of a tag or a commit made outside Testin, bisecting, or
 a rebase stopped partway all leave the repository like this, and there is no
-branch to name. Picking one from the list switches to it, which is the way out.
+branch to name. Picking one from the list switches to it, which is the way out. A
+switch that asks first, or that Git refuses, puts the box back to none selected.
 
 **While the branches are still loading** — the box reads *Loading branches...*
 and cannot be opened.

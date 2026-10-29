@@ -287,6 +287,21 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
         assertEquals("a repository on no branch shows a branch selected", -1, box.getSelectedIndex());
     }
 
+    // UC-TREE-PANEL-026, Rule-TREE-PANEL-085
+    public void testOnNoBranchAtAllASwitchThatAsksFirstPutsTheBoxBackToNoneSelected() {
+        git(testProject.getPath(), "checkout", "-q", "--detach");
+        changedTheLoginMarker();
+        final @NotNull JComboBox<?> box = branchBox();
+
+        box.setSelectedItem("feature");
+        Await.until("switching with uncommitted changes did not ask first", () -> ShownDialog.isOpen(getProject(), ConfirmDialog.class));
+
+        assertEquals("the box names a branch while the repository is on none", -1, box.getSelectedIndex());
+        ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Escape);
+        assertEquals("the box names a branch after the switch was called off", -1, box.getSelectedIndex());
+        assertEquals("calling the switch off switched", "HEAD", branchOnDisk());
+    }
+
     // UC-SHARE-014, Rule-SHARE-064
     public void testABranchStartedElsewhereIsListedWhenTheBranchesAreReadAgain() {
         final @NotNull BranchSelector selector = listingBoth();

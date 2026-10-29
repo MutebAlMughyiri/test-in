@@ -212,9 +212,8 @@ public class BranchSelector {
     private void restoreSelectedBranch() {
         isUpdating = true;
         try {
-            if (!currentBranch.isEmpty()) {
-                comboBox.setSelectedItem(currentBranch);
-            }
+            if (currentBranch.isEmpty()) comboBox.setSelectedIndex(-1);
+            else comboBox.setSelectedItem(currentBranch);
         } finally {
             isUpdating = false;
         }
