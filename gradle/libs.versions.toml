@@ -34,5 +34,5 @@ errorprone-annotations = { module = "com.google.errorprone:error_prone_annotatio
 nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
 
 [plugins]
-errorprone = { id = "net.ltgt.errorprone", version = "5.1.1" }
+errorprone = { id = "net.ltgt.errorprone", version = "5.2.0" }
 changelog = { id = "org.jetbrains.changelog", version = "2.5.0" }
